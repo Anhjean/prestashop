@@ -39,7 +39,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class MaintenanceController extends FrameworkBundleAdminController
 {
-    public const CONTROLLER_NAME = 'AdminMaintenance';
+    const CONTROLLER_NAME = 'AdminMaintenance';
 
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
@@ -64,15 +64,15 @@ class MaintenanceController extends FrameworkBundleAdminController
             'enableSidebar' => true,
             'help_link' => $this->generateSidebarLink('AdminMaintenance'),
             'requireFilterStatus' => false,
-            'generalForm' => $form->createView(),
+            'form' => $form->createView(),
+            'currentIp' => $request->getClientIp(),
         ]);
     }
 
     /**
      * @param Request $request
      *
-     * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
+     * @AdminSecurity("is_granted(['update', 'create', 'delete'], request.get('_legacy_controller'))",
      *     message="You do not have permission to edit this.",
      *     redirectRoute="admin_maintenance")
      * @DemoRestricted(redirectRoute="admin_maintenance")

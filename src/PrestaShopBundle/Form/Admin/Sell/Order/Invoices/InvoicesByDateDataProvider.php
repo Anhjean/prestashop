@@ -54,8 +54,10 @@ final class InvoicesByDateDataProvider implements FormDataProviderInterface
         $date = (new DateTime())->format('Y-m-d');
 
         return [
-            'date_from' => $date,
-            'date_to' => $date,
+            'generate_by_date' => [
+                'date_from' => $date,
+                'date_to' => $date,
+            ],
         ];
     }
 
@@ -79,8 +81,8 @@ final class InvoicesByDateDataProvider implements FormDataProviderInterface
     {
         $errors = [];
 
-        $dateFrom = date_create($data['date_from']);
-        $dateTo = date_create($data['date_to']);
+        $dateFrom = date_create($data['generate_by_date']['date_from']);
+        $dateTo = date_create($data['generate_by_date']['date_to']);
 
         if (false === $dateFrom) {
             $errors[] = [

@@ -432,7 +432,7 @@ class AdminImportControllerCore extends AdminController
                     'firstname' => ['label' => $this->trans('First name', [], 'Admin.Global') . '*'],
                     'address1' => ['label' => $this->trans('Address', [], 'Admin.Global') . '*'],
                     'address2' => ['label' => $this->trans('Address (2)', [], 'Admin.Global')],
-                    'postcode' => ['label' => $this->trans('Zip/Postal code', [], 'Admin.Global') . '*'],
+                    'postcode' => ['label' => $this->trans('Zip/postal code', [], 'Admin.Global') . '*'],
                     'city' => ['label' => $this->trans('City', [], 'Admin.Global') . '*'],
                     'country' => ['label' => $this->trans('Country', [], 'Admin.Global') . '*'],
                     'state' => ['label' => $this->trans('State', [], 'Admin.Global')],
@@ -519,7 +519,7 @@ class AdminImportControllerCore extends AdminController
                     'name' => ['label' => $this->trans('Name', [], 'Admin.Global')],
                     'address1' => ['label' => $this->trans('Address', [], 'Admin.Global') . '*'],
                     'address2' => ['label' => $this->trans('Address (2)', [], 'Admin.Advparameters.Feature')],
-                    'postcode' => ['label' => $this->trans('Zip/Postal code', [], 'Admin.Global')],
+                    'postcode' => ['label' => $this->trans('Zip/postal code', [], 'Admin.Global')],
                     'state' => ['label' => $this->trans('State', [], 'Admin.Global')],
                     'city' => ['label' => $this->trans('City', [], 'Admin.Global') . '*'],
                     'country' => ['label' => $this->trans('Country', [], 'Admin.Global') . '*'],
@@ -895,7 +895,7 @@ class AdminImportControllerCore extends AdminController
                 $html .= '<th>
 							<select id="type_value[' . $i . ']"
 								name="type_value[' . $i . ']"
-								class="type_value chosen">
+								class="type_value">
 								' . $this->getTypeValuesOptions($i) . '
 							</select>
 						</th>';
@@ -1050,7 +1050,7 @@ class AdminImportControllerCore extends AdminController
      *
      * @param $in_array boolean
      *
-     * @return string|array
+     * @return string or return array
      */
     public function getAvailableFields($in_array = false)
     {
@@ -1224,6 +1224,10 @@ class AdminImportControllerCore extends AdminController
             $parced_url['query'] = http_build_query($query_parts);
         }
 
+        if (!function_exists('http_build_url')) {
+            require_once _PS_TOOL_DIR_ . 'http_build_url/http_build_url.php';
+        }
+
         $url = http_build_url('', $parced_url);
 
         $orig_tmpfile = $tmpfile;
@@ -1243,6 +1247,7 @@ class AdminImportControllerCore extends AdminController
             $images_types = ImageType::getImagesTypes($entity, true);
 
             if ($regenerate) {
+                $previous_path = null;
                 $path_infos = [];
                 $path_infos[] = [$tgt_width, $tgt_height, $path . '.jpg'];
                 foreach ($images_types as $image_type) {
@@ -1275,9 +1280,10 @@ class AdminImportControllerCore extends AdminController
                             }
                         }
                     }
+                    if (in_array($image_type['id_image_type'], $watermark_types)) {
+                        Hook::exec('actionWatermark', ['id_image' => $id_image, 'id_product' => $id_entity]);
+                    }
                 }
-
-                Hook::exec('actionWatermark', ['id_image' => $id_image, 'id_product' => $id_entity]);
             }
         } else {
             @unlink($orig_tmpfile);
@@ -2477,7 +2483,7 @@ class AdminImportControllerCore extends AdminController
         if ($crossStepsVariables !== false && array_key_exists('attributes', $crossStepsVariables)) {
             $attributes = $crossStepsVariables['attributes'];
         }
-        foreach (ProductAttribute::getAttributes($default_language) as $attribute) {
+        foreach (Attribute::getAttributes($default_language) as $attribute) {
             $attributes[$attribute['attribute_group'] . '_' . $attribute['name']] = (int) $attribute['id_attribute'];
         }
 
@@ -2740,11 +2746,11 @@ class AdminImportControllerCore extends AdminController
                     $group = $groups_attributes[$key]['group'];
                     if (!isset($attributes[$group . '_' . $attribute]) && count($groups_attributes[$key]) == 2) {
                         $id_attribute_group = $groups_attributes[$key]['id'];
-                        $obj = new ProductAttribute();
+                        $obj = new Attribute();
                         // sets the proper id (corresponding to the right key)
                         $obj->id_attribute_group = $groups_attributes[$key]['id'];
                         $obj->name[$default_language] = str_replace('\n', '', str_replace('\r', '', $attribute));
-                        $obj->position = (!$position && isset($groups[$group])) ? ProductAttribute::getHigherPosition($groups[$group]) + 1 : $position;
+                        $obj->position = (!$position && isset($groups[$group])) ? Attribute::getHigherPosition($groups[$group]) + 1 : $position;
 
                         if (($field_error = $obj->validateFields(UNFRIENDLY_ERROR, true)) === true &&
                             ($lang_field_error = $obj->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true) {
@@ -2862,7 +2868,7 @@ class AdminImportControllerCore extends AdminController
 
                     // after insertion, we clean attribute position and group attribute position
                     if (!$validateOnly) {
-                        $obj = new ProductAttribute();
+                        $obj = new Attribute();
                         $obj->cleanPositions((int) $id_attribute_group, false);
                         AttributeGroup::cleanPositions();
                     }

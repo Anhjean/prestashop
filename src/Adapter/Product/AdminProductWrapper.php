@@ -119,7 +119,7 @@ class AdminProductWrapper
      * @param object $product
      * @param array $combinationValues the posted values
      *
-     * @return void
+     * @return AdminProductsController instance
      */
     public function processProductAttribute($product, $combinationValues)
     {
@@ -144,7 +144,7 @@ class AdminProductWrapper
         // choice but to hard code this one to make sure enough precision is saved in the DB or it results in errors
         // of 1 cent in the shop
         $computingPrecision = CustomMoneyType::PRESTASHOP_DECIMALS;
-        if (!isset($combinationValues['attribute_ecotax']) || 0.0 === (float) $combinationValues['attribute_ecotax']) {
+        if (!isset($combinationValues['attribute_ecotax'])) {
             $combinationValues['attribute_ecotax'] = 0;
         } else {
             // Value is displayed tax included but must be saved tax excluded
@@ -200,7 +200,9 @@ class AdminProductWrapper
 
         if ((isset($combinationValues['attribute_default']) && $combinationValues['attribute_default'] == 1)) {
             Product::updateDefaultAttribute((int) $product->id);
-            $product->cache_default_attribute = (int) $id_product_attribute;
+            if (isset($id_product_attribute)) {
+                $product->cache_default_attribute = (int) $id_product_attribute;
+            }
 
             // We need to reload the product because some other calls have modified the database
             // It's done just for the setAvailableDate to avoid side effects
@@ -274,14 +276,14 @@ class AdminProductWrapper
      *
      * @param int $id_product
      * @param array $specificPriceValues the posted values
-     * @param int|null $idSpecificPrice if this is an update of an existing specific price, null else
+     * @param int (optional) $id_specific_price if this is an update of an existing specific price, null else
      *
-     * @return AdminProductsController|array
+     * @return AdminProductsController instance
      */
     public function processProductSpecificPrice($id_product, $specificPriceValues, $idSpecificPrice = null)
     {
         // ---- data formatting ----
-        $id_product_attribute = $specificPriceValues['sp_id_product_attribute'] ?? 0;
+        $id_product_attribute = $specificPriceValues['sp_id_product_attribute'];
         $id_shop = $specificPriceValues['sp_id_shop'] ? $specificPriceValues['sp_id_shop'] : 0;
         $id_currency = $specificPriceValues['sp_id_currency'] ? $specificPriceValues['sp_id_currency'] : 0;
         $id_country = $specificPriceValues['sp_id_country'] ? $specificPriceValues['sp_id_country'] : 0;
@@ -420,10 +422,7 @@ class AdminProductWrapper
     public function getSpecificPricesList($product, $defaultCurrency, $shops, $currencies, $countries, $groups)
     {
         $content = [];
-        $specific_prices = array_merge(
-            SpecificPrice::getByProductId((int) $product->id),
-            SpecificPrice::getByProductId(0)
-        );
+        $specific_prices = SpecificPrice::getByProductId((int) $product->id);
 
         $tmp = [];
         foreach ($shops as $shop) {
@@ -537,7 +536,7 @@ class AdminProductWrapper
      *
      * @return SpecificPrice
      *
-     * @throws EntityNotFoundException
+     * @throws PrestaShopObjectNotFoundException
      */
     public function getSpecificPriceDataById($id)
     {
@@ -614,7 +613,7 @@ class AdminProductWrapper
      * @param object $product
      * @param array $data
      *
-     * @return array<int, int>
+     * @return bool
      */
     public function processProductCustomization($product, $data)
     {
@@ -737,7 +736,7 @@ class AdminProductWrapper
      * @param object $product
      * @param array $data
      *
-     * @return ProductDownload
+     * @return bool
      */
     public function updateDownloadProduct($product, $data)
     {
@@ -762,8 +761,8 @@ class AdminProductWrapper
             $download->date_expiration = $data['expiration_date'] ? $data['expiration_date'] . ' 23:59:59' : '';
             $download->nb_days_accessible = (int) $data['nb_days'];
             $download->nb_downloadable = (int) $data['nb_downloadable'];
-            $download->active = true;
-            $download->is_shareable = false;
+            $download->active = 1;
+            $download->is_shareable = 0;
 
             if (!$id_product_download) {
                 $download->save();
@@ -773,7 +772,7 @@ class AdminProductWrapper
         } else {
             if (!empty($id_product_download)) {
                 $download->date_expiration = date('Y-m-d H:i:s', time() - 1);
-                $download->active = false;
+                $download->active = 0;
                 $download->update();
             }
         }
@@ -791,7 +790,7 @@ class AdminProductWrapper
         $id_product_download = ProductDownload::getIdFromIdProduct((int) $product->id, false);
         $download = new ProductDownload($id_product_download ? $id_product_download : null);
 
-        if (!empty($download->filename)) {
+        if ($download && !empty($download->filename)) {
             unlink(_PS_DOWNLOAD_DIR_ . $download->filename);
             Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'product_download` SET filename = "" WHERE `id_product_download` = ' . (int) $download->id);
         }
@@ -806,7 +805,8 @@ class AdminProductWrapper
     {
         $id_product_download = ProductDownload::getIdFromIdProduct((int) $product->id, false);
         $download = new ProductDownload($id_product_download ? $id_product_download : null);
-        if (Validate::isLoadedObject($download)) {
+
+        if ($download) {
             $download->delete(true);
         }
     }
@@ -885,7 +885,7 @@ class AdminProductWrapper
         $img = new Image((int) $idImage);
         if ($data['cover']) {
             Image::deleteCover((int) $img->id_product);
-            $img->cover = true;
+            $img->cover = 1;
         }
         $img->legend = $data['legend'];
         $img->update();
@@ -899,12 +899,12 @@ class AdminProductWrapper
      * @param object $product
      * @param bool $preview
      *
-     * @return string|bool Preview url
+     * @return string preview url
      */
     public function getPreviewUrl($product, $preview = true)
     {
         $context = Context::getContext();
-        $id_lang = (int) Configuration::get('PS_LANG_DEFAULT', null, null, $context->shop->id);
+        $id_lang = Configuration::get('PS_LANG_DEFAULT', null, null, $context->shop->id);
 
         if (!ShopUrl::getMainShopDomain()) {
             return false;

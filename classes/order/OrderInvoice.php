@@ -112,7 +112,7 @@ class OrderInvoiceCore extends ObjectModel
             'total_wrapping_tax_excl' => ['type' => self::TYPE_FLOAT],
             'total_wrapping_tax_incl' => ['type' => self::TYPE_FLOAT],
             'shop_address' => ['type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'size' => 1000],
-            'note' => ['type' => self::TYPE_HTML],
+            'note' => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 65000],
             'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
         ],
     ];
@@ -724,10 +724,6 @@ class OrderInvoiceCore extends ObjectModel
      */
     public function getRestPaid()
     {
-        if (!$this->number) {
-            return 0;
-        }
-
         return round($this->total_paid_tax_incl + $this->getSiblingTotal() - $this->getTotalPaid(), 2);
     }
 

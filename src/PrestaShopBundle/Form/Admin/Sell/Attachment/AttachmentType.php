@@ -31,33 +31,29 @@ use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\TypedRegex;
 use PrestaShop\PrestaShop\Core\Domain\Attachment\Configuration\AttachmentConstraint;
 use PrestaShopBundle\Form\Admin\Type\TranslatableType;
-use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
+use PrestaShopBundle\Translation\TranslatorAwareTrait;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\Length;
 
 /**
- * Backwards compatibility break introduced in 1.7.8.0 due to extension of TranslationAwareType instead of using trait
- *
  * Attachment form type definition
  */
-class AttachmentType extends TranslatorAwareType
+class AttachmentType extends AbstractType
 {
+    use TranslatorAwareTrait;
+
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $required = true;
-        if (isset($options['data']['file_name']) && $options['data']['file_name']) {
-            $required = false;
-        }
         $builder
             ->add('name', TranslatableType::class, [
                 'type' => TextType::class,
                 'required' => true,
-                'label' => $this->trans('File name', 'Admin.Global'),
                 'options' => [
                     'constraints' => [
                         new TypedRegex(
@@ -70,8 +66,8 @@ class AttachmentType extends TranslatorAwareType
                                 'max' => AttachmentConstraint::MAX_NAME_LENGTH,
                                 'maxMessage' => $this->trans(
                                     'This field cannot be longer than %limit% characters',
-                                    'Admin.Notifications.Error',
-                                    ['%limit%' => AttachmentConstraint::MAX_NAME_LENGTH]
+                                    ['%limit%' => AttachmentConstraint::MAX_NAME_LENGTH],
+                                    'Admin.Notifications.Error'
                                 ),
                             ]
                         ),
@@ -84,7 +80,6 @@ class AttachmentType extends TranslatorAwareType
             ->add('file_description', TranslatableType::class, [
                 'type' => TextType::class,
                 'required' => false,
-                'label' => $this->trans('Description', 'Admin.Global'),
                 'options' => [
                     'constraints' => [
                         new CleanHtml(),
@@ -92,8 +87,7 @@ class AttachmentType extends TranslatorAwareType
                 ],
             ])
             ->add('file', FileType::class, [
-                'required' => $required,
-                'label' => $this->trans('File', 'Admin.Global'),
+                'required' => false,
             ])
         ;
     }

@@ -56,15 +56,16 @@ class EntityManager
     /**
      * Return current repository used.
      *
-     * @param string $className
+     * @param $className
      *
      * @return mixed
      */
     public function getRepository($className)
     {
-        $repositoryClass = null;
         if (is_callable([$className, 'getRepositoryClassName'])) {
             $repositoryClass = call_user_func([$className, 'getRepositoryClassName']);
+        } else {
+            $repositoryClass = null;
         }
 
         if (!$repositoryClass) {
@@ -83,7 +84,7 @@ class EntityManager
     /**
      * Return entity's meta data.
      *
-     * @param string $className
+     * @param $className
      *
      * @return mixed
      *

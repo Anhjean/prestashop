@@ -52,9 +52,11 @@ class CurrencyInstalled
     /**
      * Check if a currency is currently available (not deleted + active).
      *
-     * @param string $currencyCode The said currency ISO code
+     * @param $currencyCode
+     *  The said currency ISO code
      *
-     * @return bool True if this currency is available
+     * @return bool
+     *              True if this currency is available
      */
     public function isAvailable($currencyCode)
     {

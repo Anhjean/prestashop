@@ -36,7 +36,7 @@ class Validate
     /**
      * @param mixed $way
      *
-     * @return int
+     * @return bool
      */
     public static function isOrderWay($way)
     {
@@ -74,18 +74,6 @@ class Validate
     public function isCleanHtml($html, $allowIframe = false)
     {
         return ValidateLegacy::isCleanHtml($html, $allowIframe);
-    }
-
-    /**
-     * Check for a given email validity.
-     *
-     * @param string $email
-     *
-     * @return bool
-     */
-    public function isEmail(string $email): bool
-    {
-        return ValidateLegacy::isEmail($email);
     }
 
     /**

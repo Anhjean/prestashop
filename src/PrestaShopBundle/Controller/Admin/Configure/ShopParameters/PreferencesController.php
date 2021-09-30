@@ -26,9 +26,11 @@
 
 namespace PrestaShopBundle\Controller\Admin\Configure\ShopParameters;
 
+use Doctrine\ORM\EntityManager;
 use PrestaShop\PrestaShop\Adapter\Tools;
-use PrestaShop\PrestaShop\Core\Domain\Tab\Command\UpdateTabStatusByClassNameCommand;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
+use PrestaShopBundle\Entity\Repository\TabRepository;
+use PrestaShopBundle\Entity\Tab;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use PrestaShopBundle\Security\Annotation\DemoRestricted;
 use Symfony\Component\Form\FormInterface;
@@ -40,35 +42,55 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PreferencesController extends FrameworkBundleAdminController
 {
-    public const CONTROLLER_NAME = 'AdminPreferences';
+    const CONTROLLER_NAME = 'AdminPreferences';
 
     /**
      * @param Request $request
      * @param FormInterface|null $form
      *
+     * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     *
      * @return Response
      *
-     * @throws \Exception
-     * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     * @throws \LogicException
      */
     public function indexAction(Request $request, FormInterface $form = null)
     {
-        $form = $this->get('prestashop.adapter.preferences.form_handler')->getForm();
+        if (null === $form) {
+            $form = $this->get('prestashop.adapter.preferences.form_handler')->getForm();
+        }
 
-        return $this->renderForm($request, $form);
+        /** @var Tools $toolsAdapter */
+        $toolsAdapter = $this->get('prestashop.adapter.tools');
+
+        // SSL URI is used for the merchant to check if he has SSL enabled
+        $sslUri = 'https://' . $toolsAdapter->getShopDomainSsl() . $request->getRequestUri();
+
+        return $this->render('@PrestaShop/Admin/Configure/ShopParameters/preferences.html.twig', [
+            'layoutHeaderToolbarBtn' => [],
+            'layoutTitle' => $this->get('translator')->trans('Preferences', [], 'Admin.Navigation.Menu'),
+            'requireAddonsSearch' => true,
+            'requireBulkActions' => false,
+            'showContentHeader' => true,
+            'enableSidebar' => true,
+            'help_link' => $this->generateSidebarLink('AdminPreferences'),
+            'requireFilterStatus' => false,
+            'form' => $form->createView(),
+            'isSslEnabled' => $this->configuration->get('PS_SSL_ENABLED'),
+            'sslUri' => $sslUri,
+        ]);
     }
 
     /**
      * @param Request $request
      *
-     * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
+     * @AdminSecurity("is_granted(['update', 'create', 'delete'], request.get('_legacy_controller'))",
      *     message="You do not have permission to update this.",
      *     redirectRoute="admin_preferences")
      *
      * @DemoRestricted(redirectRoute="admin_preferences")
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
      * @throws \LogicException
      */
@@ -80,49 +102,32 @@ class PreferencesController extends FrameworkBundleAdminController
         $form = $this->get('prestashop.adapter.preferences.form_handler')->getForm();
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $saveErrors = $this->get('prestashop.adapter.preferences.form_handler')->save($data);
-
-            if (0 === count($saveErrors)) {
-                $this->getCommandBus()->handle(
-                    new UpdateTabStatusByClassNameCommand(
-                        'AdminShopGroup',
-                        $this->configuration->get('PS_MULTISHOP_FEATURE_ACTIVE')
-                    )
-                );
-
-                $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
-
-                return $this->redirectToRoute('admin_preferences');
-            }
-
-            $this->flashErrors($saveErrors);
+        if (!$form->isSubmitted()) {
+            return $this->redirectToRoute('admin_preferences');
         }
 
-        return $this->renderForm($request, $form);
-    }
+        $data = $form->getData();
+        $saveErrors = $this->get('prestashop.adapter.preferences.form_handler')->save($data);
 
-    private function renderForm(Request $request, FormInterface $form): Response
-    {
-        /** @var Tools $toolsAdapter */
-        $toolsAdapter = $this->get('prestashop.adapter.tools');
+        if (0 === count($saveErrors)) {
+            /** @var EntityManager $em */
+            $em = $this->get('doctrine.orm.entity_manager');
 
-        // SSL URI is used for the merchant to check if he has SSL enabled
-        $sslUri = 'https://' . $toolsAdapter->getShopDomainSsl() . $request->getRequestUri();
+            /** @var TabRepository $tabRepository */
+            $tabRepository = $em->getRepository(Tab::class);
 
-        return $this->render('@PrestaShop/Admin/Configure/ShopParameters/preferences.html.twig', [
-            'layoutHeaderToolbarBtn' => [],
-            'layoutTitle' => $this->trans('Preferences', 'Admin.Navigation.Menu'),
-            'requireAddonsSearch' => true,
-            'requireBulkActions' => false,
-            'showContentHeader' => true,
-            'enableSidebar' => true,
-            'help_link' => $this->generateSidebarLink('AdminPreferences'),
-            'requireFilterStatus' => false,
-            'generalForm' => $form->createView(),
-            'isSslEnabled' => $this->configuration->get('PS_SSL_ENABLED'),
-            'sslUri' => $sslUri,
-        ]);
+            $tabRepository->changeStatusByClassName(
+                'AdminShopGroup',
+                (bool) $this->configuration->get('PS_MULTISHOP_FEATURE_ACTIVE')
+            );
+
+            $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
+
+            return $this->redirectToRoute('admin_preferences');
+        }
+
+        $this->flashErrors($saveErrors);
+
+        return $this->redirectToRoute('admin_preferences');
     }
 }

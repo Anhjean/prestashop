@@ -28,7 +28,6 @@ namespace PrestaShop\PrestaShop\Core\Product;
 
 use PrestaShopBundle\Component\CsvResponse;
 use PrestaShopBundle\Service\DataProvider\Admin\ProductInterface as ProductDataProviderInterface;
-use Symfony\Component\Translation\Exception\InvalidArgumentException;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -99,12 +98,12 @@ final class ProductCsvExporter implements ProductExporterInterface
     /**
      * Translator helper.
      *
-     * @param string $key
-     * @param string $domain
+     * @param $key
+     * @param $domain
      *
      * @return string
      *
-     * @throws InvalidArgumentException
+     * @throws \Symfony\Component\Translation\Exception\InvalidArgumentException
      */
     private function trans($key, $domain)
     {

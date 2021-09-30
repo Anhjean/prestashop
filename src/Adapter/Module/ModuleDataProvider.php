@@ -77,7 +77,7 @@ class ModuleDataProvider
     }
 
     /**
-     * @param int $employeeID
+     * @param $employeeID
      */
     public function setEmployeeId($employeeID)
     {
@@ -101,7 +101,7 @@ class ModuleDataProvider
             $lastAccessDate = '0000-00-00 00:00:00';
 
             if (!Tools::isPHPCLI() && null !== $this->entityManager && $this->employeeID) {
-                $moduleID = isset($result['id']) ? (int) $result['id'] : 0;
+                $moduleID = (int) $result['id'];
 
                 $qb = $this->entityManager->createQueryBuilder();
                 $qb->select('mh')
@@ -158,7 +158,7 @@ class ModuleDataProvider
     /**
      * Check if a module is enabled in the current shop context.
      *
-     * @param string $name The technical module name
+     * @param bool $name The technical module name
      *
      * @return bool True if enable
      */
@@ -218,11 +218,7 @@ class ModuleDataProvider
             return false;
         }
 
-        $parser = (new PhpParser\ParserFactory())->create(PhpParser\ParserFactory::ONLY_PHP7);
-        $log_context_data = [
-            'object_type' => 'Module',
-            'object_id' => LegacyModule::getModuleIdByName($name),
-        ];
+        $parser = (new PhpParser\ParserFactory())->create(PhpParser\ParserFactory::PREFER_PHP7);
 
         try {
             $parser->parse(file_get_contents($file_path));
@@ -235,8 +231,7 @@ class ModuleDataProvider
                         '%parse_error%' => $exception->getMessage(),
                     ],
                     'Admin.Modules.Notification'
-                ),
-                $log_context_data
+                )
             );
 
             return false;
@@ -248,7 +243,7 @@ class ModuleDataProvider
         // -> We use an anonymous function here because if a test is made twice
         // on the same module, the test on require_once would immediately return true
         // (as the file would have already been evaluated).
-        $require_correct = function ($name) use ($file_path, $logger, $log_context_data) {
+        $require_correct = function ($name) use ($file_path, $logger) {
             try {
                 require_once $file_path;
             } catch (\Exception $e) {
@@ -259,8 +254,7 @@ class ModuleDataProvider
                             '%module%' => $name,
                             '%error_message%' => $e->getMessage(), ],
                         'Admin.Modules.Notification'
-                    ),
-                    $log_context_data
+                    )
                 );
 
                 return false;
@@ -291,7 +285,7 @@ class ModuleDataProvider
      *
      * @param string $name The technical module name to check
      *
-     * @return int|false The devices enabled for this module
+     * @return int The devices enabled for this module
      */
     private function getDeviceStatus($name)
     {

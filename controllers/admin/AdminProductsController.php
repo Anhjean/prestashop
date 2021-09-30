@@ -2071,18 +2071,7 @@ class AdminProductsControllerCore extends AdminController
         }
         foreach ($languages as $language) {
             if ($this->isProductFieldUpdated('description_short', $language['id_lang']) && ($value = Tools::getValue('description_short_' . $language['id_lang']))) {
-                // This validation computation actually comes from TinyMceMaxLengthValidator if you modify it here you
-                // should keep the validator in sync (along with other parts of the code, more info in the
-                // TinyMceMaxLengthValidator comments).
-                $replaceArray = [
-                    "\n",
-                    "\r",
-                    "\n\r",
-                    "\r\n",
-                ];
-                $str = str_replace($replaceArray, [''], strip_tags($value));
-                $shortDescriptionLength = iconv_strlen($str);
-                if ($shortDescriptionLength > $limit) {
+                if (Tools::strlen(strip_tags($value)) > $limit) {
                     $this->errors[] = $this->trans(
                         'This %1$s field (%2$s) is too long: %3$d chars max (current count %4$d).',
                         [
@@ -2620,7 +2609,7 @@ class AdminProductsControllerCore extends AdminController
 
             $elements_to_manage = [];
 
-            // get form information
+            // get form inforamtion
             foreach ($attributes as $attribute) {
                 foreach ($warehouses as $warehouse) {
                     $key = $warehouse['id_warehouse'] . '_' . $product->id . '_' . $attribute['id_product_attribute'];

@@ -214,9 +214,7 @@ final class ImportRuntimeConfig implements ImportRuntimeConfigInterface
     }
 
     /**
-     * @param array $notices
-     *
-     * @return array|void
+     * {@inheritdoc}
      */
     public function setNotices(array $notices)
     {
@@ -224,9 +222,7 @@ final class ImportRuntimeConfig implements ImportRuntimeConfigInterface
     }
 
     /**
-     * @param array $warnings
-     *
-     * @return array|void
+     * {@inheritdoc}
      */
     public function setWarnings(array $warnings)
     {
@@ -234,9 +230,7 @@ final class ImportRuntimeConfig implements ImportRuntimeConfigInterface
     }
 
     /**
-     * @param array $errors
-     *
-     * @return array|void
+     * {@inheritdoc}
      */
     public function setErrors(array $errors)
     {

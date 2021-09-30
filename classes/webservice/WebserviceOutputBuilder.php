@@ -413,8 +413,6 @@ class WebserviceOutputBuilderCore
                     } else {
                         $output .= $this->renderEntity($object, $depth);
                     }
-                } elseif ($key == 'empty' && $this->objectRender->getContentType() == 'application/json') {
-                    $output .= $this->renderEntity($object, $depth);
                 }
             }
         } else {
@@ -503,7 +501,7 @@ class WebserviceOutputBuilderCore
         }
         $output .= $this->setIndent($depth) . $this->objectRender->renderNodeHeader($ws_params['objectNodeName'], $ws_params);
 
-        if (!empty($object->id)) {
+        if ($object->id != 0) {
             // This to add virtual Fields for a particular entity.
             $virtual_fields = $this->addVirtualFields($ws_params['objectsNodeName'], $object);
             if (!empty($virtual_fields)) {

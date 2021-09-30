@@ -34,5 +34,5 @@ class AttributeConstraintException extends AttributeException
     /**
      * When attribute id contains invalid values
      */
-    public const INVALID_ID = 10;
+    const INVALID_ID = 10;
 }

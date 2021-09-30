@@ -57,7 +57,7 @@ class TaxRuleDataProvider
      */
     public function getIdTaxRulesGroupMostUsed()
     {
-        return (int) Product::getIdTaxRulesGroupMostUsed();
+        return Product::getIdTaxRulesGroupMostUsed();
     }
 
     /**

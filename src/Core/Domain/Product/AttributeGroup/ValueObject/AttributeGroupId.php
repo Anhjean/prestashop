@@ -50,10 +50,7 @@ final class AttributeGroupId
     }
 
     /**
-     * @deprecated
-     * @see getValue()
-     *
-     * @return int
+     * @return mixed
      */
     public function getAttributeGroupId()
     {
@@ -71,7 +68,7 @@ final class AttributeGroupId
     /**
      * Validates that the value is integer and is greater than zero
      *
-     * @param int $value
+     * @param $value
      *
      * @throws AttributeGroupConstraintException
      */

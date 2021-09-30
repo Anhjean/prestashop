@@ -35,7 +35,6 @@
 {block name='order_messages'}
 {/block}
 
-{if !$is_customer}
 {block name='page_content' append}
   {block name='guest_to_customer'}
     <form action="{$urls.pages.guest_tracking}" method="post">
@@ -69,4 +68,3 @@
     </form>
   {/block}
 {/block}
-{/if}

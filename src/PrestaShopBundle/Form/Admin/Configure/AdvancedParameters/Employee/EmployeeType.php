@@ -30,6 +30,7 @@ use PrestaShop\PrestaShop\Core\Domain\Employee\ValueObject\FirstName;
 use PrestaShop\PrestaShop\Core\Domain\Employee\ValueObject\LastName;
 use PrestaShop\PrestaShop\Core\Domain\Employee\ValueObject\Password;
 use PrestaShop\PrestaShop\Core\Domain\ValueObject\Email as EmployeeEmail;
+use PrestaShopBundle\Form\Admin\Type\AddonsConnectType;
 use PrestaShopBundle\Form\Admin\Type\ChangePasswordType;
 use PrestaShopBundle\Form\Admin\Type\EmailType;
 use PrestaShopBundle\Form\Admin\Type\ShopChoiceTreeType;
@@ -37,7 +38,6 @@ use PrestaShopBundle\Form\Admin\Type\SwitchType;
 use PrestaShopBundle\Translation\TranslatorAwareTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -128,19 +128,20 @@ final class EmployeeType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('avatarUrl', FileType::class, [
-                'required' => false,
-                'attr' => [
-                    'accept' => 'gif,jpg,jpeg,jpe,png',
-                ],
-            ])
-            ->add('has_enabled_gravatar', SwitchType::class, [
-                'required' => false,
-            ])
         ;
 
         if ($options['is_restricted_access']) {
             $builder->add('change_password', ChangePasswordType::class);
+
+            if ($options['show_addons_connect_button']) {
+                $builder->add(
+                    'prestashop_addons',
+                    AddonsConnectType::class,
+                    [
+                        'label' => $this->trans('Sign in', [], 'Admin.Advparameters.Feature'),
+                    ]
+                );
+            }
         } else {
             $builder->add('password', PasswordType::class, [
                 'required' => !$options['is_for_editing'],
@@ -210,9 +211,13 @@ final class EmployeeType extends AbstractType
 
                 // Is this form used for editing the employee.
                 'is_for_editing' => false,
+
+                // Whether to show addons connect button in the form.
+                'show_addons_connect_button' => true,
             ])
             ->setAllowedTypes('is_restricted_access', 'bool')
             ->setAllowedTypes('is_for_editing', 'bool')
+            ->setAllowedTypes('show_addons_connect_button', 'bool')
         ;
     }
 
@@ -251,7 +256,7 @@ final class EmployeeType extends AbstractType
     private function getNotBlankConstraint()
     {
         return new NotBlank([
-            'message' => $this->trans('This field cannot be empty.', [], 'Admin.Notifications.Error'),
+            'message' => $this->trans('This field cannot be empty', [], 'Admin.Notifications.Error'),
         ]);
     }
 }

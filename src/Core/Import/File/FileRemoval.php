@@ -47,7 +47,7 @@ final class FileRemoval
     /**
      * Remove file from import directory.
      *
-     * @param string $filename
+     * @param $filename
      */
     public function remove($filename)
     {

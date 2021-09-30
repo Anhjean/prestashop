@@ -27,23 +27,15 @@
 namespace PrestaShop\PrestaShop\Core\Domain\SpecificPrice\Command;
 
 use DateTime;
-use PrestaShop\Decimal\DecimalNumber;
+use Exception;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Core\Domain\Exception\DomainConstraintException;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductId;
+use PrestaShop\PrestaShop\Core\Domain\SpecificPrice\Exception\SpecificPriceConstraintException;
 use PrestaShop\PrestaShop\Core\Domain\ValueObject\Reduction;
 
-@trigger_error(
-    sprintf(
-        '%s is deprecated since version 1.7.9.0 and will be removed in the next major version.',
-        AddSpecificPriceCommand::class
-    ),
-    E_USER_DEPRECATED
-);
-
 /**
- * @deprecated since 1.7.9.0 and will be removed in the next major version.
- * @see UpdateProductPriceInCartCommand or
- * @see AddProductSpecificPriceCommand
+ * Adds specific price
  */
 class AddSpecificPriceCommand
 {
@@ -63,7 +55,7 @@ class AddSpecificPriceCommand
     private $includeTax;
 
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $price;
 
@@ -100,7 +92,7 @@ class AddSpecificPriceCommand
     /**
      * @var int|null
      */
-    private $catalogPriceRuleId;
+    private $cartRuleId;
 
     /**
      * @var int|null
@@ -130,7 +122,7 @@ class AddSpecificPriceCommand
     /**
      * @param int $productId
      * @param string $reductionType
-     * @param string $reductionValue
+     * @param float $reductionValue
      * @param bool $includeTax
      * @param float $price
      * @param int $fromQuantity
@@ -140,7 +132,7 @@ class AddSpecificPriceCommand
     public function __construct(
         int $productId,
         string $reductionType,
-        string $reductionValue,
+        float $reductionValue,
         bool $includeTax,
         float $price,
         int $fromQuantity
@@ -148,7 +140,7 @@ class AddSpecificPriceCommand
         $this->productId = new ProductId($productId);
         $this->reduction = new Reduction($reductionType, $reductionValue);
         $this->includeTax = $includeTax;
-        $this->price = new DecimalNumber((string) $price);
+        $this->price = new Number((string) $price);
         $this->fromQuantity = $fromQuantity;
     }
 
@@ -177,9 +169,9 @@ class AddSpecificPriceCommand
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getPrice(): DecimalNumber
+    public function getPrice(): Number
     {
         return $this->price;
     }
@@ -205,7 +197,7 @@ class AddSpecificPriceCommand
      */
     public function setDateTimeFrom(?DateTime $dateTimeFrom): void
     {
-        $this->dateTimeFrom = $dateTimeFrom;
+        $this->dateTimeFrom = $this->createDateTime($dateTimeFrom);
     }
 
     /**
@@ -290,38 +282,18 @@ class AddSpecificPriceCommand
 
     /**
      * @return int|null
-     *
-     * @deprecated use getCatalogPriceRuleId() instead. (wrong naming used in migration process)
      */
     public function getCartRuleId(): ?int
     {
-        return $this->catalogPriceRuleId;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getCatalogPriceRuleId(): ?int
-    {
-        return $this->catalogPriceRuleId;
+        return $this->cartRuleId;
     }
 
     /**
      * @param int $cartRuleId
-     *
-     * @deprecated use setCatalogPriceRuleId() instead. (wrong naming used in migration process)
      */
     public function setCartRuleId(int $cartRuleId): void
     {
-        $this->catalogPriceRuleId = $cartRuleId;
-    }
-
-    /**
-     * @param int $catalogPriceRuleId
-     */
-    public function setCatalogPriceRuleId(int $catalogPriceRuleId): void
-    {
-        $this->catalogPriceRuleId = $catalogPriceRuleId;
+        $this->cartRuleId = $cartRuleId;
     }
 
     /**
@@ -385,6 +357,22 @@ class AddSpecificPriceCommand
      */
     public function setDateTimeTo(?DateTime $dateTimeTo): void
     {
-        $this->dateTimeTo = $dateTimeTo;
+        $this->dateTimeTo = $this->createDateTime($dateTimeTo);
+    }
+
+    /**
+     * @param string $dateTime
+     *
+     * @return DateTime
+     *
+     * @throws SpecificPriceConstraintException
+     */
+    private function createDateTime(string $dateTime): DateTime
+    {
+        try {
+            return new DateTime($dateTime);
+        } catch (Exception $e) {
+            throw new SpecificPriceConstraintException('An error occured when creating DateTime object for specific price', SpecificPriceConstraintException::INVALID_DATETIME, $e);
+        }
     }
 }

@@ -30,20 +30,19 @@ use PrestaShop\PrestaShop\Core\Foundation\Filesystem\FileSystem;
 
 class EmailLister
 {
-    /**
-     * @var FileSystem
-     */
     private $filesystem;
 
     public function __construct(FileSystem $fs)
     {
+        // Register dependencies
         $this->filesystem = $fs;
     }
 
     /**
      * Return the list of available mails.
      *
-     * @param string $dir
+     * @param null $lang
+     * @param null $dir
      *
      * @return array|null
      */
@@ -62,7 +61,7 @@ class EmailLister
                 $tmp = explode('.', $mail->getFilename());
 
                 // Check for filename existence (left part) and if extension is html (right part)
-                if (!isset($tmp[0]) || (isset($tmp[1]) && $tmp[1] !== 'html')) {
+                if (($tmp === false || !isset($tmp[0])) || (isset($tmp[1]) && $tmp[1] !== 'html')) {
                     continue;
                 }
 
@@ -86,7 +85,7 @@ class EmailLister
         if (strpos($mail_name, '.') !== false) {
             $tmp = explode('.', $mail_name);
 
-            if (!isset($tmp[0])) {
+            if ($tmp === false || !isset($tmp[0])) {
                 return $mail_name;
             }
 

@@ -34,5 +34,5 @@ class AttributeGroupConstraintException extends AttributeGroupException
     /**
      * When attribute group Id contains invalid values
      */
-    public const INVALID_ID = 10;
+    const INVALID_ID = 10;
 }

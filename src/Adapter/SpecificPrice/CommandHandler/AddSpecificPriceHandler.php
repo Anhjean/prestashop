@@ -24,11 +24,8 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-declare(strict_types=1);
-
 namespace PrestaShop\PrestaShop\Adapter\SpecificPrice\CommandHandler;
 
-use PrestaShop\PrestaShop\Adapter\Product\SpecificPrice\CommandHandler\AddProductSpecificPriceHandler;
 use PrestaShop\PrestaShop\Adapter\SpecificPrice\AbstractSpecificPriceHandler;
 use PrestaShop\PrestaShop\Core\Domain\SpecificPrice\Command\AddSpecificPriceCommand;
 use PrestaShop\PrestaShop\Core\Domain\SpecificPrice\CommandHandler\AddSpecificPriceHandlerInterface;
@@ -39,17 +36,8 @@ use PrestaShop\PrestaShop\Core\Util\DateTime\DateTime;
 use PrestaShopException;
 use SpecificPrice;
 
-@trigger_error(
-    sprintf(
-        '%s is deprecated since version 1.7.9.0 and will be removed in the next major version.',
-        AddSpecificPriceHandler::class
-    ),
-    E_USER_DEPRECATED
-);
-
 /**
- * @deprecated since 1.7.9.0 and will be removed in next major version.
- * @see AddProductSpecificPriceHandler
+ * Handles AddSpecificPriceCommand using legacy object model
  */
 final class AddSpecificPriceHandler extends AbstractSpecificPriceHandler implements AddSpecificPriceHandlerInterface
 {
@@ -77,7 +65,7 @@ final class AddSpecificPriceHandler extends AbstractSpecificPriceHandler impleme
             throw new SpecificPriceException('An error occurred when trying to add new specific price');
         }
 
-        return new SpecificPriceId((int) $specificPrice->id);
+        return new SpecificPriceId($specificPrice->id);
     }
 
     /**
@@ -105,12 +93,12 @@ final class AddSpecificPriceHandler extends AbstractSpecificPriceHandler impleme
         $specificPrice->id_cart = $command->getCartId() ?? 0;
         $specificPrice->id_product_attribute = $command->getProductAttributeId() ?? 0;
         $specificPrice->id_currency = $command->getCurrencyId() ?? 0;
-        $specificPrice->id_specific_price_rule = $command->getCatalogPriceRuleId() ?? 0;
+        $specificPrice->id_specific_price_rule = $command->getCartRuleId() ?? 0;
         $specificPrice->id_country = $command->getCountryId() ?? 0;
         $specificPrice->id_group = $command->getGroupId() ?? 0;
         $specificPrice->id_customer = $command->getCustomerId() ?? 0;
-        $specificPrice->from = DateTime::NULL_DATETIME;
-        $specificPrice->to = DateTime::NULL_DATETIME;
+        $specificPrice->from = DateTime::NULL_VALUE;
+        $specificPrice->to = DateTime::NULL_VALUE;
 
         $from = $command->getDateTimeFrom();
         $to = $command->getDateTimeTo();

@@ -40,7 +40,7 @@ class GetSqlRequestForEditing
     private $requestSqlId;
 
     /**
-     * @param int $requestSqlId
+     * @param $requestSqlId
      *
      * @throws SqlRequestException
      */

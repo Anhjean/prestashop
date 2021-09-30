@@ -144,9 +144,7 @@ class ContactsController extends FrameworkBundleAdminController
         }
 
         return $this->render('@PrestaShop/Admin/Configure/ShopParameters/Contact/Contacts/create.html.twig', [
-            'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
             'contactForm' => $contactForm->createView(),
-            'enableSidebar' => true,
         ]);
     }
 
@@ -188,9 +186,7 @@ class ContactsController extends FrameworkBundleAdminController
         }
 
         return $this->render('@PrestaShop/Admin/Configure/ShopParameters/Contact/Contacts/edit.html.twig', [
-            'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
             'contactForm' => $contactForm->createView(),
-            'enableSidebar' => true,
         ]);
     }
 

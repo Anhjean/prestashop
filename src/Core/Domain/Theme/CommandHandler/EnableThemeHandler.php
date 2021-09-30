@@ -55,7 +55,7 @@ final class EnableThemeHandler implements EnableThemeHandlerInterface
     /**
      * @param ThemeManager $themeManager
      * @param CacheClearerInterface $smartyCacheClearer
-     * @param bool $isSingleShopContext
+     * @param $isSingleShopContext
      */
     public function __construct(
         ThemeManager $themeManager,

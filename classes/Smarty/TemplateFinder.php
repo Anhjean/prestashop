@@ -35,7 +35,7 @@ class TemplateFinderCore
     private $directories;
     private $extension;
     private $productListEntities = ['category', 'manufacturer', 'supplier'];
-    private $productListSearchEntities = ['search', 'price-drop', 'best-sale', 'prices-drop', 'best-sales', 'new-products'];
+    private $productListSearchEntities = ['search', 'price-drop', 'best-sale'];
     private $productEntities = ['product'];
     private $brandListEntities = ['manufacturers', 'suppliers'];
 
@@ -102,12 +102,6 @@ class TemplateFinderCore
                 'cms/page-' . $id,
                 $template,
                 'cms/page',
-            ];
-        } elseif ('cms_category' === $entity) {
-            $templates = [
-                'cms/category-' . $id,
-                $template,
-                'cms/category',
             ];
         } else {
             $templates = [$template];

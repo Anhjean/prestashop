@@ -48,14 +48,14 @@ use Tools;
  */
 class AdminModuleDataProvider implements ModuleInterface
 {
-    public const _CACHEKEY_MODULES_ = '_addons_modules';
+    const _CACHEKEY_MODULES_ = '_addons_modules';
 
-    public const _DAY_IN_SECONDS_ = 86400; /* Cache for One Day */
+    const _DAY_IN_SECONDS_ = 86400; /* Cache for One Day */
 
     /**
      * @const array giving a translation domain key for each module action
      */
-    public const _ACTIONS_TRANSLATION_DOMAINS_ = [
+    const _ACTIONS_TRANSLATION_DOMAINS_ = [
         'install' => 'Admin.Actions',
         'uninstall' => 'Admin.Actions',
         'enable' => 'Admin.Actions',
@@ -103,12 +103,12 @@ class AdminModuleDataProvider implements ModuleInterface
     private $moduleProvider;
 
     /**
-     * @var CacheProvider|null
+     * @var CacheProvider
      */
     private $cacheProvider;
 
     /**
-     * @var Employee|null
+     * @var Employee
      */
     private $employee;
 
@@ -307,6 +307,13 @@ class AdminModuleDataProvider implements ModuleInterface
                     unset($urls['configure']);
                 }
 
+                if ($addon->canBeUpgraded()) {
+                    $url_active = 'upgrade';
+                } else {
+                    unset(
+                        $urls['upgrade']
+                    );
+                }
                 if (!$addon->database->getBoolean('active_on_mobile')) {
                     unset($urls['disable_mobile']);
                 } else {
@@ -356,7 +363,7 @@ class AdminModuleDataProvider implements ModuleInterface
     }
 
     /**
-     * @param int $moduleId
+     * @param $moduleId
      *
      * @return array
      */
@@ -451,7 +458,6 @@ class AdminModuleDataProvider implements ModuleInterface
                     // so we know whether is bought
 
                     $addons = $this->addonsDataProvider->request($action, $params);
-                    /** @var \stdClass $addon */
                     foreach ($addons as $addonsType => $addon) {
                         if (empty($addon->name)) {
                             $this->logger->error(sprintf('The addon with id %s does not have name.', $addon->id));
@@ -485,7 +491,7 @@ class AdminModuleDataProvider implements ModuleInterface
                 }
             } catch (\Exception $e) {
                 if (!$this->fallbackOnCatalogCache()) {
-                    $this->logger->error('Data from PrestaShop Addons is invalid, and cannot fallback on cache.');
+                    $this->logger->error('Data from PrestaShop Addons is invalid, and cannot fallback on cache. ', ['exception' => $e->getMessage()]);
                 }
             }
         }

@@ -23,20 +23,14 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-use PrestaShop\PrestaShop\Adapter\ContainerFinder;
-use PrestaShop\PrestaShop\Adapter\Module\Repository\ModuleRepository;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
-use PrestaShop\PrestaShop\Core\Exception\ContainerNotFoundException;
 use PrestaShop\PrestaShop\Core\Localization\CLDR\ComputingPrecision;
 use PrestaShop\PrestaShop\Core\Localization\Locale;
-use PrestaShopBundle\Install\Language as InstallLanguage;
 use PrestaShopBundle\Translation\TranslatorComponent as Translator;
 use PrestaShopBundle\Translation\TranslatorLanguageLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * Class ContextCore.
@@ -57,16 +51,13 @@ class ContextCore
     /** @var Cookie */
     public $cookie;
 
-    /** @var SessionInterface|null */
-    public $session;
-
     /** @var Link */
     public $link;
 
     /** @var Country */
     public $country;
 
-    /** @var Employee|null */
+    /** @var Employee */
     public $employee;
 
     /** @var AdminController|FrontController */
@@ -75,16 +66,16 @@ class ContextCore
     /** @var string */
     public $override_controller_name_for_translations;
 
-    /** @var Language|InstallLanguage */
+    /** @var Language */
     public $language;
 
-    /** @var Currency|null */
+    /** @var Currency */
     public $currency;
 
     /**
      * Current locale instance.
      *
-     * @var Locale|null
+     * @var Locale
      */
     public $currentLocale;
 
@@ -253,7 +244,7 @@ class ContextCore
     }
 
     /**
-     * @return Locale|null
+     * @return Locale
      */
     public function getCurrentLocale()
     {
@@ -288,7 +279,6 @@ class ContextCore
 
         return isset($_SERVER['HTTP_USER_AGENT'], Context::getContext()->cookie)
             && (bool) Configuration::get('PS_ALLOW_MOBILE_DEVICE')
-            && defined('_PS_THEME_MOBILE_DIR_')
             && @filemtime(_PS_THEME_MOBILE_DIR_)
             && !Context::getContext()->cookie->no_mobile;
     }
@@ -296,7 +286,7 @@ class ContextCore
     /**
      * Get a singleton instance of Context object.
      *
-     * @return Context|null
+     * @return Context
      */
     public static function getContext()
     {
@@ -388,7 +378,7 @@ class ContextCore
      */
     public function getTranslator($isInstaller = false)
     {
-        if (null !== $this->translator && $this->language->locale === $this->translator->getLocale()) {
+        if (null !== $this->translator) {
             return $this->translator;
         }
 
@@ -439,24 +429,11 @@ class ContextCore
         $translator->clearLanguage($locale);
 
         $adminContext = defined('_PS_ADMIN_DIR_');
-        // Do not load DB translations when $this->language is InstallLanguage
+        // Do not load DB translations when $this->language is PrestashopBundle\Install\Language
         // because it means that we're looking for the installer translations, so we're not yet connected to the DB
-        $withDB = !$this->language instanceof InstallLanguage;
+        $withDB = !$this->language instanceof PrestashopBundle\Install\Language;
         $theme = $this->shop !== null ? $this->shop->theme : null;
-
-        try {
-            $containerFinder = new ContainerFinder($this);
-            $containerFinder->getContainer()->get('prestashop.translation.translator_language_loader')
-                ->setIsAdminContext($adminContext)
-                ->loadLanguage($translator, $locale, $withDB, $theme);
-        } catch (ContainerNotFoundException $exception) {
-            // If a container is still not found, instantiate manually the translator loader
-            // This will happen in the Front as we have legacy controllers, the Sf container won't be available.
-            // As we get the translator in the controller's constructor and the container is built in the init method, we won't find it here
-            (new TranslatorLanguageLoader(new ModuleRepository()))
-                ->setIsAdminContext($adminContext)
-                ->loadLanguage($translator, $locale, $withDB, $theme);
-        }
+        (new TranslatorLanguageLoader($adminContext))->loadLanguage($translator, $locale, $withDB, $theme);
 
         return $translator;
     }
@@ -466,7 +443,7 @@ class ContextCore
      */
     protected function getTranslationResourcesDirectories()
     {
-        $locations = [_PS_ROOT_DIR_ . '/translations'];
+        $locations = [_PS_ROOT_DIR_ . '/app/Resources/translations'];
 
         if (null !== $this->shop) {
             $activeThemeLocation = _PS_ROOT_DIR_ . '/themes/' . $this->shop->theme_name . '/translations';

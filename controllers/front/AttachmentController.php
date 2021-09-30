@@ -27,8 +27,8 @@ class AttachmentControllerCore extends FrontController
 {
     public function postProcess()
     {
-        $attachment = new Attachment(Tools::getValue('id_attachment'), $this->context->language->id);
-        if (!$attachment->id) {
+        $a = new Attachment(Tools::getValue('id_attachment'), $this->context->language->id);
+        if (!$a->id) {
             Tools::redirect('index.php');
         }
 
@@ -39,11 +39,11 @@ class AttachmentControllerCore extends FrontController
         }
 
         header('Content-Transfer-Encoding: binary');
-        header('Content-Type: ' . $attachment->mime);
-        header('Content-Length: ' . filesize(_PS_DOWNLOAD_DIR_ . $attachment->file));
-        header('Content-Disposition: attachment; filename="' . utf8_decode($attachment->file_name) . '"');
+        header('Content-Type: ' . $a->mime);
+        header('Content-Length: ' . filesize(_PS_DOWNLOAD_DIR_ . $a->file));
+        header('Content-Disposition: attachment; filename="' . utf8_decode($a->file_name) . '"');
         @set_time_limit(0);
-        $this->readfileChunked(_PS_DOWNLOAD_DIR_ . $attachment->file);
+        $this->readfileChunked(_PS_DOWNLOAD_DIR_ . $a->file);
         exit;
     }
 

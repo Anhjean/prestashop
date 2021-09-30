@@ -39,7 +39,7 @@ class ProductDataProvider
     /**
      * Get a new ProductCore instance.
      *
-     * @param int|null $idProduct
+     * @param null $idProduct
      *
      * @return Product
      */
@@ -72,15 +72,16 @@ class ProductDataProvider
         }
 
         $product = new Product($id_product, $full, $id_lang, $id_shop, $context);
+        if ($product) {
+            if (!is_array($product->link_rewrite)) {
+                $linkRewrite = $product->link_rewrite;
+            } else {
+                $linkRewrite = $product->link_rewrite[$id_lang ? $id_lang : key($product->link_rewrite)];
+            }
 
-        if (!is_array($product->link_rewrite)) {
-            $linkRewrite = $product->link_rewrite;
-        } else {
-            $linkRewrite = $product->link_rewrite[$id_lang ? $id_lang : key($product->link_rewrite)];
+            $cover = Product::getCover($product->id);
+            $product->image = Context::getContext()->link->getImageLink($linkRewrite, $cover ? $cover['id_image'] : '', 'home_default');
         }
-
-        $cover = Product::getCover($product->id);
-        $product->image = Context::getContext()->link->getImageLink($linkRewrite, $cover ? $cover['id_image'] : '', 'home_default');
 
         return $product;
     }

@@ -60,7 +60,7 @@ final class CreditSlipId
     /**
      * Validates that the value is integer and is greater than zero
      *
-     * @param int $value
+     * @param $value
      *
      * @throws CreditSlipConstraintException
      */

@@ -33,16 +33,12 @@ namespace PrestaShop\PrestaShop\Adapter\Module;
 class ModuleZip
 {
     /**
-     * Module technical name, guessed from the path [module name]/[module name].php
-     *
-     * @var string|null
+     * @var string Module technical name, guessed from the path [module name]/[module name].php
      */
     private $name;
 
     /**
-     * Temporary path to extract the module files before going into the modules folder
-     *
-     * @var string|null
+     * @var string Temporary path to extract the module files before going into the modules folder
      */
     private $sandboxPath;
 
@@ -83,7 +79,7 @@ class ModuleZip
     }
 
     /**
-     * @param string|null $name
+     * @param $name
      *
      * @return $this
      */
@@ -95,7 +91,7 @@ class ModuleZip
     }
 
     /**
-     * @param string|null $sandboxPath
+     * @param $sandboxPath
      *
      * @return $this
      */

@@ -89,7 +89,7 @@ class BulkToggleManufacturerStatusCommand
     /**
      * Validates that value is of type boolean
      *
-     * @param mixed $value
+     * @param $value
      *
      * @throws ManufacturerConstraintException
      */

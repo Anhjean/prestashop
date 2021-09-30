@@ -34,71 +34,66 @@ class CartRuleConstraintException extends CartRuleException
     /**
      * Used when cart rule is using an invalid discount application type
      */
-    public const INVALID_DISCOUNT_APPLICATION_TYPE = 1;
+    const INVALID_DISCOUNT_APPLICATION_TYPE = 1;
 
     /**
      * Used when cart rule name is empty
      */
-    public const EMPTY_NAME = 2;
+    const EMPTY_NAME = 2;
 
     /**
      * Used when cart rule's priority is invalid
      */
-    public const INVALID_PRIORITY = 3;
+    const INVALID_PRIORITY = 3;
 
     /**
      * Used when cart rule's date from is greater than date to
      */
-    public const DATE_FROM_GREATER_THAN_DATE_TO = 4;
+    const DATE_FROM_GREATER_THAN_DATE_TO = 4;
 
     /**
      * Used when cart rule's quantity is invalid
      */
-    public const INVALID_QUANTITY = 5;
+    const INVALID_QUANTITY = 5;
 
     /**
      * Used when quantity per user is invalid
      */
-    public const INVALID_QUANTITY_PER_USER = 6;
+    const INVALID_QUANTITY_PER_USER = 6;
 
     /**
      * Used when percentage discount is invalid
      */
-    public const INVALID_PERCENTAGE = 7;
+    const INVALID_PERCENTAGE = 7;
 
     /**
      * Used when cart rule has invalid gift product assigned
      */
-    public const INVALID_GIFT_PRODUCT = 8;
+    const INVALID_GIFT_PRODUCT = 8;
 
     /**
      * Used when cart rule has invalid gift product attribute
      */
-    public const INVALID_GIFT_PRODUCT_ATTRIBUTE = 9;
+    const INVALID_GIFT_PRODUCT_ATTRIBUTE = 9;
 
     /**
      * Used when cart rule has incompatible actions,
      * e.g. both amount and percentage discounts at the same time.
      */
-    public const INCOMPATIBLE_CART_RULE_ACTIONS = 10;
+    const INCOMPATIBLE_CART_RULE_ACTIONS = 10;
 
     /**
      * Used when cart rule is missing an action.
      */
-    public const MISSING_ACTION = 11;
+    const MISSING_ACTION = 11;
 
     /**
      * Used when discount is applied to specific product, but that product is not set.
      */
-    public const MISSING_DISCOUNT_APPLICATION_PRODUCT = 12;
+    const MISSING_DISCOUNT_APPLICATION_PRODUCT = 12;
 
     /**
      * Used when cart rule id constraints are violated
      */
-    public const INVALID_ID = 13;
-
-    /**
-     * When cart rule status is not valid
-     */
-    public const INVALID_STATUS = 20;
+    const INVALID_ID = 13;
 }

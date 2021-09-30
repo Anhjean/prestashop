@@ -39,7 +39,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  */
 class EmployeeProvider implements UserProviderInterface
 {
-    public const ROLE_EMPLOYEE = 'ROLE_EMPLOYEE';
+    const ROLE_EMPLOYEE = 'ROLE_EMPLOYEE';
 
     private $legacyContext;
 
@@ -62,7 +62,8 @@ class EmployeeProvider implements UserProviderInterface
      *
      * @return Employee
      *
-     * @throws UsernameNotFoundException
+     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws \Symfony\Component\Security\Core\Exception\UsernameNotFoundException
      */
     public function loadUserByUsername($username)
     {

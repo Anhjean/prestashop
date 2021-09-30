@@ -48,23 +48,11 @@ class StockAvailableCore extends ObjectModel
     /** @var int the quantity available for sale */
     public $quantity = 0;
 
-    /**
-     * @deprecated since 1.7.8
-     * This property was only relevant to advanced stock management and that feature is not maintained anymore
-     *
-     * @var bool determine if the available stock value depends on physical stock
-     */
+    /** @var bool determine if the available stock value depends on physical stock */
     public $depends_on_stock = false;
 
-    /**
-     * Determine if a product is out of stock - it was previously in Product class
-     *  - O Deny orders
-     *  - 1 Allow orders
-     *  - 2 Use global setting
-     *
-     * @var int
-     */
-    public $out_of_stock = 0;
+    /** @var bool determine if a product is out of stock - it was previously in Product class */
+    public $out_of_stock = false;
 
     /** @var string the location of the stock for this product / combination */
     public $location = '';
@@ -80,7 +68,7 @@ class StockAvailableCore extends ObjectModel
             'id_product_attribute' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
             'id_shop' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
             'id_shop_group' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'quantity' => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true, 'size' => 10],
+            'quantity' => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true],
             'depends_on_stock' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
             'out_of_stock' => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true],
             'location' => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'size' => 255],
@@ -201,7 +189,7 @@ class StockAvailableCore extends ObjectModel
 
                 // if it's a simple product
                 if (empty($ids_product_attribute)) {
-                    $allowed_warehouse_for_product = Warehouse::getProductWarehouseList((int) $id_product, 0, (int) $id_shop);
+                    $allowed_warehouse_for_product = WareHouse::getProductWarehouseList((int) $id_product, 0, (int) $id_shop);
                     $allowed_warehouse_for_product_clean = [];
                     foreach ($allowed_warehouse_for_product as $warehouse) {
                         $allowed_warehouse_for_product_clean[] = (int) $warehouse['id_warehouse'];
@@ -225,7 +213,7 @@ class StockAvailableCore extends ObjectModel
                 } else {
                     // else this product has attributes, hence loops on $ids_product_attribute
                     foreach ($ids_product_attribute as $id_product_attribute) {
-                        $allowed_warehouse_for_combination = Warehouse::getProductWarehouseList((int) $id_product, (int) $id_product_attribute, (int) $id_shop);
+                        $allowed_warehouse_for_combination = WareHouse::getProductWarehouseList((int) $id_product, (int) $id_product_attribute, (int) $id_shop);
                         $allowed_warehouse_for_combination_clean = [];
                         foreach ($allowed_warehouse_for_combination as $warehouse) {
                             $allowed_warehouse_for_combination_clean[] = (int) $warehouse['id_warehouse'];
@@ -304,7 +292,7 @@ class StockAvailableCore extends ObjectModel
      * For a given id_product, sets if stock available depends on stock.
      *
      * @param int $id_product
-     * @param bool $depends_on_stock Optional : true by default
+     * @param int $depends_on_stock Optional : true by default
      * @param int $id_shop Optional : gets context by default
      */
     public static function setProductDependsOnStock($id_product, $depends_on_stock = true, $id_shop = null, $id_product_attribute = 0)
@@ -562,10 +550,10 @@ class StockAvailableCore extends ObjectModel
     /**
      * For a given id_product and id_product_attribute sets the quantity available.
      *
-     * @param int $id_product
-     * @param int $id_product_attribute
+     * @param $id_product
+     * @param $id_product_attribute
      * @param $quantity
-     * @param int|null $id_shop
+     * @param null $id_shop
      * @param bool $add_movement
      *
      * @return bool
@@ -589,7 +577,7 @@ class StockAvailableCore extends ObjectModel
             if ($id_stock_available) {
                 $stock_available = new StockAvailable($id_stock_available);
 
-                $deltaQuantity = (int) $quantity - (int) $stock_available->quantity;
+                $deltaQuantity = -1 * ((int) $stock_available->quantity - (int) $quantity);
 
                 $stock_available->quantity = (int) $quantity;
                 $stock_available->update();
@@ -651,7 +639,7 @@ class StockAvailableCore extends ObjectModel
             return false;
         }
 
-        if (Shop::getContext() == Shop::CONTEXT_SHOP) {
+        if (Shop::getContext() == SHOP::CONTEXT_SHOP) {
             if (Shop::getContextShopGroup()->share_stock == 1) {
                 $pa_sql = '';
                 if ($id_product_attribute !== null) {
@@ -664,7 +652,7 @@ class StockAvailableCore extends ObjectModel
                 if ((int) Db::getInstance()->getValue('SELECT COUNT(*)
 						FROM ' . _DB_PREFIX_ . 'product' . $pa_sql . '_shop
 						WHERE id_product' . $pa_sql . '=' . (int) $id_product_attribute_sql . '
-							AND id_shop IN (' . implode(',', array_map('intval', Shop::getContextListShopID(Shop::SHARE_STOCK))) . ')')) {
+							AND id_shop IN (' . implode(',', array_map('intval', Shop::getContextListShopID(SHOP::SHARE_STOCK))) . ')')) {
                     return true;
                 }
             }
@@ -748,9 +736,9 @@ class StockAvailableCore extends ObjectModel
      * For a given product, get its "out of stock" flag.
      *
      * @param int $id_product
-     * @param int|null $id_shop Optional : gets context if null @see Context::getContext()
+     * @param int $id_shop Optional : gets context if null @see Context::getContext()
      *
-     * @return int|bool : depends on stock @see $depends_on_stock
+     * @return bool : depends on stock @see $depends_on_stock
      */
     public static function outOfStock($id_product, $id_shop = null)
     {

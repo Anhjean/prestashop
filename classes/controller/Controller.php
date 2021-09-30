@@ -84,7 +84,7 @@ abstract class ControllerCore
     /**
      * Set to true to display page footer.
      *
-     * @var bool
+     * @var string
      */
     protected $display_footer;
 
@@ -160,16 +160,6 @@ abstract class ControllerCore
      * Check if the current user/visitor has valid view permissions.
      */
     abstract public function viewAccess();
-
-    /**
-     * Errors displayed after post processing
-     *
-     * @var array<string>
-     */
-    public $errors = [];
-
-    /** @var string */
-    public $layout;
 
     /**
      * Initialize the page.
@@ -429,7 +419,7 @@ abstract class ControllerCore
      * @param int|null $offset
      * @param bool $check_path
      *
-     * @return void
+     * @return true
      */
     public function addCSS($css_uri, $css_media_type = 'all', $offset = null, $check_path = true)
     {
@@ -694,13 +684,7 @@ abstract class ControllerCore
      */
     public static function myErrorHandler($errno, $errstr, $errfile, $errline)
     {
-        /**
-         * Prior to PHP 8.0.0, the $errno value was always 0 if the expression which caused the diagnostic was prepended by the @ error-control operator.
-         *
-         * @see https://www.php.net/manual/fr/function.set-error-handler.php
-         * @see https://www.php.net/manual/en/language.operators.errorcontrol.php
-         */
-        if (!(error_reporting() & $errno)) {
+        if (error_reporting() === 0) {
             return false;
         }
 
@@ -755,9 +739,9 @@ abstract class ControllerCore
     }
 
     /**
-     * @param string|null $value
-     * @param string|null $controller
-     * @param string|null $method
+     * @param null $value
+     * @param null $controller
+     * @param null $method
      *
      * @throws PrestaShopException
      */
@@ -824,7 +808,7 @@ abstract class ControllerCore
     /**
      * Gets the dependency container.
      *
-     * @return ContainerBuilder|null
+     * @return ContainerBuilder
      */
     public function getContainer()
     {

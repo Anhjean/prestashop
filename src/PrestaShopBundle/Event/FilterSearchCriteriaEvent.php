@@ -27,7 +27,7 @@
 namespace PrestaShopBundle\Event;
 
 use PrestaShop\PrestaShop\Core\Grid\Search\SearchCriteriaInterface;
-use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class FilterSearchParametersEvent allows to filter search criteria when it is resolved.
@@ -39,7 +39,7 @@ class FilterSearchCriteriaEvent extends Event
     /**
      * Name of event.
      */
-    public const NAME = 'prestashop.search_criteria.filter';
+    const NAME = 'prestashop.search_criteria.filter';
 
     /**
      * @var SearchCriteriaInterface

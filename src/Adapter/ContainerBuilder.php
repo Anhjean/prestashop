@@ -26,6 +26,7 @@
 
 namespace PrestaShop\PrestaShop\Adapter;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Tools\Setup;
 use Exception;
 use LegacyCompilerPass;
@@ -36,9 +37,6 @@ use PrestaShop\PrestaShop\Adapter\Container\LegacyContainer;
 use PrestaShop\PrestaShop\Adapter\Container\LegacyContainerBuilder;
 use PrestaShop\PrestaShop\Core\EnvironmentInterface;
 use PrestaShopBundle\DependencyInjection\Compiler\LoadServicesFromModulesPass;
-use PrestaShopBundle\Exception\ServiceContainerException;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
-use Symfony\Component\Cache\DoctrineProvider;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
@@ -58,7 +56,7 @@ class ContainerBuilder
     private static $containers;
 
     /**
-     * @var EnvironmentInterface
+     * @var string
      */
     private $environment;
 
@@ -92,11 +90,6 @@ class ContainerBuilder
      */
     public static function getContainer($containerName, $isDebug)
     {
-        if ($containerName === 'admin') {
-            throw new ServiceContainerException(
-                'You should use `SymfonyContainer::getInstance()` instead of `ContainerBuilder::getContainer(\'admin\')`'
-            );
-        }
         if (!isset(self::$containers[$containerName])) {
             $builder = new ContainerBuilder(new Environment($isDebug));
             self::$containers[$containerName] = $builder->buildContainer($containerName);
@@ -135,11 +128,6 @@ class ContainerBuilder
         if (null === $container) {
             $container = $this->compileContainer();
         }
-
-        // synthetic definitions can't be compiled
-        $container->set('shop', $container->get('context')->shop);
-        $container->set('employee', $container->get('context')->employee);
-
         $this->loadModulesAutoloader($container);
 
         return $container;
@@ -208,8 +196,7 @@ class ContainerBuilder
     private function loadDoctrineAnnotationMetadata()
     {
         //IMPORTANT: we need to provide a cache because doctrine tries to init a connection on redis, memcached, ... on its own
-        $cacheProvider = new DoctrineProvider(new ArrayAdapter());
-        Setup::createAnnotationMetadataConfiguration([], $this->environment->isDebug(), null, $cacheProvider);
+        Setup::createAnnotationMetadataConfiguration([], $this->environment->isDebug(), null, new ArrayCache());
     }
 
     /**

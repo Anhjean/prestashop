@@ -34,10 +34,10 @@ class DeleteAttributeException extends AttributeException
     /**
      * When fails to delete single attribute
      */
-    public const FAILED_DELETE = 10;
+    const FAILED_DELETE = 10;
 
     /**
      * When deleting fails in bulk action
      */
-    public const FAILED_BULK_DELETE = 20;
+    const FAILED_BULK_DELETE = 20;
 }

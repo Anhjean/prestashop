@@ -88,7 +88,7 @@ final class SupplierFormDataHandler implements FormDataHandlerInterface
             $data['dni']
         ));
 
-        /** @var UploadedFile $uploadedLogo */
+        /** @var UploadedFile $uploadedFlagImage */
         $uploadedLogo = $data['logo'];
 
         if ($uploadedLogo instanceof UploadedFile) {
@@ -103,7 +103,7 @@ final class SupplierFormDataHandler implements FormDataHandlerInterface
      */
     public function update($supplierId, array $data)
     {
-        /** @var UploadedFile $uploadedLogo */
+        /** @var UploadedFile $uploadedFlagImage */
         $uploadedLogo = $data['logo'];
         $logo = null;
 
@@ -157,9 +157,6 @@ final class SupplierFormDataHandler implements FormDataHandlerInterface
         }
         if (null !== $data['meta_description']) {
             $command->setLocalizedMetaDescriptions($data['meta_description']);
-        }
-        if (null !== $data['meta_keyword']) {
-            $command->setLocalizedMetaKeywords($data['meta_keyword']);
         }
         if (null !== $data['is_enabled']) {
             $command->setEnabled((bool) $data['is_enabled']);

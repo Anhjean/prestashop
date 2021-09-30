@@ -75,7 +75,7 @@ class SqlQueryValidator
     /**
      * Get request sql errors.
      *
-     * @param array<string, string|array<string>> $sqlErrors
+     * @param array $sqlErrors
      *
      * @return array
      */
@@ -349,11 +349,11 @@ class SqlQueryValidator
     /**
      * Get reference related SQL error.
      *
-     * @param array|bool $legacyError
+     * @param array $legacyError
      *
-     * @return array<string, string|array<string, string>>
+     * @return array
      */
-    private function getReferenceError($legacyError): array
+    private function getReferenceError(array $legacyError)
     {
         if (isset($legacyError['reference'])) {
             return [

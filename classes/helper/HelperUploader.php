@@ -39,9 +39,6 @@ class HelperUploaderCore extends Uploader
     private $_name;
     private $_max_files;
     private $_multiple;
-    /**
-     * @var int|null
-     */
     private $_post_max_size;
     protected $_template;
     private $_template_directory;
@@ -155,7 +152,7 @@ class HelperUploaderCore extends Uploader
     public function getPostMaxSize()
     {
         if (!isset($this->_post_max_size)) {
-            $this->_post_max_size = parent::getPostMaxSizeBytes();
+            $this->_post_max_size = parent::getPostMaxSize();
         }
 
         return $this->_post_max_size;

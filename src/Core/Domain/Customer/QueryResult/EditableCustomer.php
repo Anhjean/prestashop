@@ -48,17 +48,17 @@ class EditableCustomer
     private $genderId;
 
     /**
-     * @var FirstName
+     * @var string
      */
     private $firstName;
 
     /**
-     * @var LastName
+     * @var string
      */
     private $lastName;
 
     /**
-     * @var Email
+     * @var string
      */
     private $email;
 

@@ -34,5 +34,5 @@ class WebserviceConstraintException extends WebserviceException
     /**
      * @var string Code is used when invalid webservice key is encountered
      */
-    public const INVALID_KEY = 1;
+    const INVALID_KEY = 1;
 }

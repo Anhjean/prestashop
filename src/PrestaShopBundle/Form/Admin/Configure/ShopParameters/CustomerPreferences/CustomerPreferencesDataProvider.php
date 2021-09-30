@@ -59,7 +59,9 @@ final class CustomerPreferencesDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->generalDataConfiguration->getConfiguration();
+        return [
+            'general' => $this->generalDataConfiguration->getConfiguration(),
+        ];
     }
 
     /**
@@ -67,6 +69,35 @@ final class CustomerPreferencesDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        return $this->generalDataConfiguration->updateConfiguration($data);
+        if ($errors = $this->validate($data)) {
+            return $errors;
+        }
+
+        return $this->generalDataConfiguration->updateConfiguration($data['general']);
+    }
+
+    /**
+     * Perform validations on form data.
+     *
+     * @param array $data
+     *
+     * @return array Array of errors if any
+     */
+    private function validate(array $data)
+    {
+        $errors = [];
+
+        $passwordResetDelay = $data['general']['password_reset_delay'];
+        if (!is_numeric($passwordResetDelay) || $passwordResetDelay < 0) {
+            $fieldName = $this->translator->trans('Password reset delay', [], 'Admin.Shopparameters.Feature');
+
+            $errors[] = [
+                'key' => 'The %s field is invalid.',
+                'domain' => 'Admin.Notifications.Error',
+                'parameters' => [$fieldName],
+            ];
+        }
+
+        return $errors;
     }
 }

@@ -43,16 +43,16 @@ class ImageTypeCore extends ObjectModel
     /** @var bool Apply to products */
     public $products;
 
-    /** @var bool Apply to categories */
+    /** @var int Apply to categories */
     public $categories;
 
-    /** @var bool Apply to manufacturers */
+    /** @var int Apply to manufacturers */
     public $manufacturers;
 
-    /** @var bool Apply to suppliers */
+    /** @var int Apply to suppliers */
     public $suppliers;
 
-    /** @var bool Apply to store */
+    /** @var int Apply to store */
     public $stores;
 
     /**
@@ -128,7 +128,7 @@ class ImageTypeCore extends ObjectModel
         Db::getInstance()->executeS('
 			SELECT `id_image_type`
 			FROM `' . _DB_PREFIX_ . 'image_type`
-			WHERE `name` = \'' . pSQL($typeName) . '\'', false);
+			WHERE `name` = \'' . pSQL($typeName) . '\'');
 
         return Db::getInstance()->numRows();
     }

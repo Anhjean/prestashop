@@ -34,10 +34,10 @@ class ManufacturerConstraintException extends ManufacturerException
     /**
      * When manufacturer id is not valid
      */
-    public const INVALID_ID = 10;
+    const INVALID_ID = 10;
 
     /**
      * When manufacturer status is not valid
      */
-    public const INVALID_STATUS = 20;
+    const INVALID_STATUS = 20;
 }

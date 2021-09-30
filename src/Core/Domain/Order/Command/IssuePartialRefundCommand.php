@@ -27,7 +27,7 @@
 namespace PrestaShop\PrestaShop\Core\Domain\Order\Command;
 
 use InvalidArgumentException;
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Core\Domain\Order\Exception\InvalidAmountException;
 use PrestaShop\PrestaShop\Core\Domain\Order\Exception\InvalidCancelProductException;
 use PrestaShop\PrestaShop\Core\Domain\Order\Exception\OrderException;
@@ -39,7 +39,7 @@ use PrestaShop\PrestaShop\Core\Domain\Order\ValueObject\OrderDetailRefund;
 class IssuePartialRefundCommand extends AbstractRefundCommand
 {
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $shippingCostRefundAmount;
 
@@ -86,16 +86,16 @@ class IssuePartialRefundCommand extends AbstractRefundCommand
             $voucherRefundAmount
         );
         try {
-            $this->shippingCostRefundAmount = new DecimalNumber($shippingCostRefundAmount);
+            $this->shippingCostRefundAmount = new Number($shippingCostRefundAmount);
         } catch (InvalidArgumentException $e) {
             throw new InvalidAmountException();
         }
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getShippingCostRefundAmount(): DecimalNumber
+    public function getShippingCostRefundAmount(): Number
     {
         return $this->shippingCostRefundAmount;
     }

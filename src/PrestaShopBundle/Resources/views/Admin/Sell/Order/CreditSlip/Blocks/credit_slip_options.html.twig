@@ -23,13 +23,12 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  *#}
 
-{% form_theme creditSlipOptionsForm '@PrestaShop/Admin/TwigTemplateForm/prestashop_ui_kit.html.twig' %}
 {% trans_default_domain "Admin.Orderscustomers.Feature" %}
+{% import '@PrestaShop/Admin/macros.html.twig' as ps %}
 
 {{ form_start(creditSlipOptionsForm, {
   'method': 'POST',
-  'action': path('admin_credit_slips_process_options'),
-  attr: {id: 'form-credit-slips-options'}})
+  'action': path('admin_credit_slips_process_options')})
 }}
 <div class="card">
 
@@ -39,15 +38,19 @@
 
   <div class="card-block row">
     <div class="card-text">
-      {% block credit_slip_options_form %}
-        {{ form_widget(creditSlipOptionsForm) }}
-      {% endblock %}
+      {{ ps.form_group_row(creditSlipOptionsForm.options.slip_prefix, {}, {
+        'label': 'Credit slip prefix'|trans({}, 'Admin.Orderscustomers.Feature'),
+        'help': 'Prefix used for credit slips.'|trans({}, 'Admin.Orderscustomers.Help')
+      }) }}
     </div>
+    {% block credit_slip_options_form_rest %}
+      {{ form_rest(creditSlipOptionsForm) }}
+    {% endblock %}
   </div>
 
   <div class="card-footer">
     <div class="d-flex justify-content-end">
-      <button class="btn btn-primary" id="save-credit-slip-options-button">
+      <button class="btn btn-primary">
         {{ 'Save'|trans({}, 'Admin.Actions') }}
       </button>
     </div>

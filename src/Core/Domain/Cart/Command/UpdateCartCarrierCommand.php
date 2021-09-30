@@ -46,7 +46,7 @@ class UpdateCartCarrierCommand
 
     /**
      * @param int $cartId
-     * @param int $newCarrierId
+     * @param $newCarrierId
      *
      * @throws CartConstraintException
      */

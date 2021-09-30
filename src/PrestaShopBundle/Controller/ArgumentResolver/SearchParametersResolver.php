@@ -125,7 +125,7 @@ class SearchParametersResolver implements ArgumentValueResolverInterface
         }
 
         $filterSearchParametersEvent = new FilterSearchCriteriaEvent($filters);
-        $this->dispatcher->dispatch($filterSearchParametersEvent, FilterSearchCriteriaEvent::NAME);
+        $this->dispatcher->dispatch(FilterSearchCriteriaEvent::NAME, $filterSearchParametersEvent);
 
         yield $filterSearchParametersEvent->getSearchCriteria();
     }
@@ -139,6 +139,7 @@ class SearchParametersResolver implements ArgumentValueResolverInterface
      */
     private function overrideWithSavedFilters(Filters $filters, $controller, $action)
     {
+        /** @var Filters $savedFilters */
         $savedFilters = $this->searchParameters->getFiltersFromRepository(
             $this->employee->getId(),
             $this->shopId,

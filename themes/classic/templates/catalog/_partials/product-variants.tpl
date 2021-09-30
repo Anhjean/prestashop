@@ -22,20 +22,15 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-<div class="product-variants js-product-variants">
+<div class="product-variants">
   {foreach from=$groups key=id_attribute_group item=group}
     {if !empty($group.attributes)}
     <div class="clearfix product-variants-item">
-      <span class="control-label">{$group.name}{l s=': ' d='Shop.Theme.Catalog'}
-          {foreach from=$group.attributes key=id_attribute item=group_attribute}
-            {if $group_attribute.selected}{$group_attribute.name}{/if}
-          {/foreach}
-      </span>
+      <span class="control-label">{$group.name}</span>
       {if $group.group_type == 'select'}
         <select
           class="form-control form-control-select"
           id="group_{$id_attribute_group}"
-          aria-label="{$group.name}"
           data-product-attribute="{$id_attribute_group}"
           name="group[{$id_attribute_group}]">
           {foreach from=$group.attributes key=id_attribute item=group_attribute}
@@ -52,9 +47,9 @@
                   {if $group_attribute.texture}
                     class="color texture" style="background-image: url({$group_attribute.texture})"
                   {elseif $group_attribute.html_color_code}
-                    class="color" style="background-color: {$group_attribute.html_color_code}"
+                    class="color" style="background-color: {$group_attribute.html_color_code}" 
                   {/if}
-                ><span class="attribute-name sr-only">{$group_attribute.name}</span></span>
+                ><span class="sr-only">{$group_attribute.name}</span></span>
               </label>
             </li>
           {/foreach}

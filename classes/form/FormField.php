@@ -34,10 +34,6 @@ class FormFieldCore
     private $maxLength = null;
     private $errors = [];
     private $constraints = [];
-    /**
-     * @var string
-     */
-    private $autocomplete = '';
 
     public function toArray()
     {
@@ -50,7 +46,6 @@ class FormFieldCore
             'availableValues' => $this->getAvailableValues(),
             'maxLength' => $this->getMaxLength(),
             'errors' => $this->getErrors(),
-            'autocomplete' => $this->getAutocompleteAttribute(),
         ];
     }
 
@@ -185,25 +180,5 @@ class FormFieldCore
     public function getConstraints()
     {
         return $this->constraints;
-    }
-
-    /**
-     * @param string $autocomplete
-     *
-     * @return FormFieldCore
-     */
-    public function setAutocompleteAttribute(string $autocomplete): FormFieldCore
-    {
-        $this->autocomplete = $autocomplete;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAutocompleteAttribute(): string
-    {
-        return $this->autocomplete;
     }
 }

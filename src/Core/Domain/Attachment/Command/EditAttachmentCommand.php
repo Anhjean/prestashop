@@ -39,7 +39,7 @@ class EditAttachmentCommand
     private $attachmentId;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $pathName;
 
@@ -64,7 +64,7 @@ class EditAttachmentCommand
     private $localizedDescriptions;
 
     /**
-     * @var int|null
+     * @var string|null
      */
     private $fileSize;
 
@@ -85,7 +85,7 @@ class EditAttachmentCommand
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPathName(): ?string
     {
@@ -93,7 +93,7 @@ class EditAttachmentCommand
     }
 
     /**
-     * @param string $pathName
+     * @param string|null $pathName
      * @param string $mimeType
      * @param string $originalFileName
      * @param int $fileSize

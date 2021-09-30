@@ -29,22 +29,15 @@
  */
 class HTMLTemplateDeliverySlipCore extends HTMLTemplate
 {
-    /**
-     * @var Order
-     */
     public $order;
-
-    /** @var OrderInvoice Order invoice */
-    public $order_invoice;
 
     /**
      * @param OrderInvoice $order_invoice
-     * @param Smarty $smarty
-     * @param bool $bulk_mode
+     * @param $smarty
      *
      * @throws PrestaShopException
      */
-    public function __construct(OrderInvoice $order_invoice, Smarty $smarty, $bulk_mode = false)
+    public function __construct(OrderInvoice $order_invoice, $smarty, $bulk_mode = false)
     {
         $this->order_invoice = $order_invoice;
         $this->order = new Order($this->order_invoice->id_order);
@@ -163,6 +156,6 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      */
     public function getFilename()
     {
-        return Configuration::get('PS_DELIVERY_PREFIX', Context::getContext()->language->id, null, $this->order->id_shop) . sprintf('%06d', $this->order_invoice->delivery_number) . '.pdf';
+        return Configuration::get('PS_DELIVERY_PREFIX', Context::getContext()->language->id, null, $this->order->id_shop) . sprintf('%06d', $this->order->delivery_number) . '.pdf';
     }
 }

@@ -26,7 +26,7 @@
 
 namespace PrestaShop\PrestaShop\Core\Domain\ValueObject;
 
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Core\Domain\Currency\ValueObject\CurrencyId;
 use PrestaShop\PrestaShop\Core\Domain\Exception\DomainConstraintException;
 
@@ -36,7 +36,7 @@ use PrestaShop\PrestaShop\Core\Domain\Exception\DomainConstraintException;
 class Money
 {
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $amount;
 
@@ -46,15 +46,15 @@ class Money
     private $currencyId;
 
     /**
-     * @param DecimalNumber $amount
+     * @param Number $amount
      * @param CurrencyId $currencyId
      *
      * @throws DomainConstraintException
      */
-    public function __construct(DecimalNumber $amount, CurrencyId $currencyId)
+    public function __construct(Number $amount, CurrencyId $currencyId)
     {
         if (!$amount->isGreaterOrEqualThanZero()) {
-            throw new DomainConstraintException(sprintf('Money amount cannot be lower than zero, %f given', (string) $amount), DomainConstraintException::INVALID_MONEY_AMOUNT);
+            throw new DomainConstraintException(sprintf('Money amount cannot be lower than zero, %f given', $amount), DomainConstraintException::INVALID_MONEY_AMOUNT);
         }
 
         $this->amount = $amount;
@@ -62,9 +62,9 @@ class Money
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getAmount(): DecimalNumber
+    public function getAmount(): Number
     {
         return $this->amount;
     }

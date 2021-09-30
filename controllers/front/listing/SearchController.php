@@ -56,7 +56,6 @@ class SearchControllerCore extends ProductListingFrontController
             [
                 'search_string' => $this->search_string,
                 'search_tag' => $this->search_tag,
-                'subcategories' => [],
             ]
         );
     }

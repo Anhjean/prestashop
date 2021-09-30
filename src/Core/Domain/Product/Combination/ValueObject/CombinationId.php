@@ -27,21 +27,12 @@
 namespace PrestaShop\PrestaShop\Core\Domain\Product\Combination\ValueObject;
 
 use PrestaShop\PrestaShop\Core\Domain\Product\Combination\Exception\CombinationConstraintException;
-use PrestaShop\PrestaShop\Core\Domain\Product\Exception\ProductConstraintException;
 
 /**
  *  Holds product combination identification data
  */
-class CombinationId implements CombinationIdInterface
+class CombinationId
 {
-    /**
-     * Indicates that no combination is provided/selected
-     *
-     * @deprecated since 1.7.9.0 and will be removed in next major version.
-     * @see NoCombinationId instead
-     */
-    public const NO_COMBINATION = 0;
-
     /**
      * @var int
      */
@@ -49,6 +40,8 @@ class CombinationId implements CombinationIdInterface
 
     /**
      * @param int $combinationId
+     *
+     * @throws CombinationConstraintException
      */
     public function __construct(int $combinationId)
     {
@@ -67,7 +60,7 @@ class CombinationId implements CombinationIdInterface
     /**
      * @param int $value
      *
-     * @throws ProductConstraintException
+     * @throws CombinationConstraintException
      */
     private function assertValueIsPositive(int $value)
     {

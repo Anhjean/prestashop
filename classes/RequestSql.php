@@ -150,9 +150,9 @@ class RequestSqlCore extends ObjectModel
     /**
      * Cut the request for check each cutting.
      *
-     * @param array $tab
-     * @param bool $in
-     * @param string $sql
+     * @param $tab
+     * @param $in
+     * @param $sql
      *
      * @return bool
      */
@@ -239,20 +239,8 @@ class RequestSqlCore extends ObjectModel
             if (in_array($attr['expr_type'], ['operator', 'const'])) {
                 continue;
             }
-
-            if (!empty($attr['sub_tree'])) {
-                foreach ($attr['sub_tree'] as $treeItem) {
-                    if ($treeItem['expr_type'] !== 'colref') {
-                        continue;
-                    }
-                    if ($attribut = $this->cutAttribute($treeItem['base_expr'], $from)) {
-                        $tab[] = $attribut;
-                    }
-                }
-            } else {
-                if ($attribut = $this->cutAttribute($attr['base_expr'], $from)) {
-                    $tab[] = $attribut;
-                }
+            if ($attribut = $this->cutAttribute($attr['base_expr'], $from)) {
+                $tab[] = $attribut;
             }
         }
 
@@ -368,7 +356,7 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check if all required sentence existing.
      *
-     * @param array $tab
+     * @param $tab
      *
      * @return bool
      */
@@ -388,7 +376,7 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check if an unauthorized existing in an array.
      *
-     * @param array $tab
+     * @param string $tab
      *
      * @return bool
      */

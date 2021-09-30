@@ -28,7 +28,6 @@ namespace PrestaShop\PrestaShop\Core\Addon\Theme;
 
 use Context;
 use Db;
-use Employee;
 use PrestaShop\PrestaShop\Adapter\Configuration;
 use PrestaShop\PrestaShop\Adapter\Hook\HookInformationProvider;
 use PrestaShop\PrestaShop\Core\Image\ImageTypeRepository;
@@ -42,30 +41,22 @@ class ThemeManagerBuilder
 {
     private $context;
     private $db;
-    private $themeValidator;
 
-    public function __construct(Context $context, Db $db, ThemeValidator $themeValidator = null)
+    public function __construct(Context $context, Db $db)
     {
         $this->context = $context;
         $this->db = $db;
-        $this->themeValidator = $themeValidator;
     }
 
     public function build()
     {
         $configuration = new Configuration();
         $configuration->restrictUpdatesTo($this->context->shop);
-        if (null === $this->themeValidator) {
-            $this->themeValidator = new ThemeValidator($this->context->getTranslator(), new Configuration());
-        }
-        if (null === $this->context->employee) {
-            $this->context->employee = new Employee();
-        }
 
         return new ThemeManager(
             $this->context->shop,
             $configuration,
-            $this->themeValidator,
+            new ThemeValidator($this->context->getTranslator(), new Configuration()),
             $this->context->getTranslator(),
             $this->context->employee,
             new Filesystem(),

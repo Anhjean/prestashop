@@ -32,7 +32,6 @@ use PrestaShop\PrestaShop\Core\Domain\Product\AttributeGroup\Attribute\Command\D
 use PrestaShop\PrestaShop\Core\Domain\Product\AttributeGroup\Attribute\Exception\AttributeNotFoundException;
 use PrestaShop\PrestaShop\Core\Domain\Product\AttributeGroup\Attribute\Exception\DeleteAttributeException;
 use PrestaShop\PrestaShop\Core\Domain\Product\AttributeGroup\Exception\AttributeGroupNotFoundException;
-use PrestaShop\PrestaShop\Core\Exception\TranslatableCoreException;
 use PrestaShop\PrestaShop\Core\Search\Filters\AttributeFilters;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
@@ -54,7 +53,7 @@ class AttributeController extends FrameworkBundleAdminController
      * )
      *
      * @param Request $request
-     * @param int|string $attributeGroupId
+     * @param $attributeGroupId
      * @param AttributeFilters $attributeFilters
      *
      * @return Response
@@ -87,11 +86,10 @@ class AttributeController extends FrameworkBundleAdminController
      * )
      *
      * @param Request $request
-     * @param int $attributeGroupId
      *
      * @return RedirectResponse
      */
-    public function updatePositionAction(Request $request, int $attributeGroupId)
+    public function updatePositionAction(Request $request, $attributeGroupId)
     {
         $positionsData = [
             'positions' => $request->request->get('positions'),
@@ -106,11 +104,9 @@ class AttributeController extends FrameworkBundleAdminController
             $updater = $this->get('prestashop.core.grid.position.doctrine_grid_position_updater');
             $updater->update($positionUpdate);
             $this->addFlash('success', $this->trans('Successful update.', 'Admin.Notifications.Success'));
-        } catch (TranslatableCoreException $e) {
+        } catch (Exception $e) {
             $errors = [$e->toArray()];
             $this->flashErrors($errors);
-        } catch (Exception $e) {
-            $this->flashErrors([$e->getMessage()]);
         }
 
         return $this->redirectToRoute('admin_attributes_index', [
@@ -120,15 +116,15 @@ class AttributeController extends FrameworkBundleAdminController
 
     /**
      * @AdminSecurity(
-     *     "is_granted('create', request.get('_legacy_controller'))",
+     *     "is_granted(['create'], request.get('_legacy_controller'))",
      *     message="You do not have permission to create this."
      * )
      *
-     * @param int $attributeGroupId
+     * @param $attributeGroupId
      *
      * @return RedirectResponse
      */
-    public function createAction(int $attributeGroupId)
+    public function createAction($attributeGroupId)
     {
         // @todo: implement in another pr
         return $this->redirectToRoute('admin_attributes_index', [
@@ -138,16 +134,15 @@ class AttributeController extends FrameworkBundleAdminController
 
     /**
      * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller'))",
+     *     "is_granted(['update'], request.get('_legacy_controller'))",
      *     message="You do not have permission to update this."
      * )
      *
-     * @param int $attributeId
-     * @param int $attributeGroupId
+     * @param $attributeGroupId
      *
      * @return RedirectResponse
      */
-    public function editAction(int $attributeId, int $attributeGroupId)
+    public function editAction($attributeId, $attributeGroupId)
     {
         // @todo: implement in another pr
         return $this->redirectToRoute('admin_attributes_index', [
@@ -168,7 +163,7 @@ class AttributeController extends FrameworkBundleAdminController
      *
      * @return RedirectResponse
      */
-    public function deleteAction(int $attributeGroupId, int $attributeId)
+    public function deleteAction($attributeGroupId, $attributeId)
     {
         try {
             $this->getCommandBus()->handle(new DeleteAttributeCommand((int) $attributeId));
@@ -198,7 +193,7 @@ class AttributeController extends FrameworkBundleAdminController
      *
      * @return RedirectResponse
      */
-    public function bulkDeleteAction(int $attributeGroupId, Request $request)
+    public function bulkDeleteAction($attributeGroupId, Request $request)
     {
         try {
             $this->getCommandBus()->handle(new BulkDeleteAttributeCommand(

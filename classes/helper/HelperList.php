@@ -132,21 +132,6 @@ class HelperListCore extends Helper
     private $linkBuilderFactory;
 
     /**
-     * @var string
-     */
-    public $shopLinkType;
-
-    /**
-     * @var string Image type
-     */
-    public $imageType;
-
-    /**
-     * @var string
-     */
-    public $list_id;
-
-    /**
      * You can use $controllerMapping to add entity/controller mapping in order to have migrated links
      * in a legacy list (this requires to have correctly set the _legacy_link in the routing of course)
      *
@@ -717,11 +702,9 @@ class HelperListCore extends Helper
                     if (is_string($value)) {
                         $value = json_decode($value, true);
                     }
-
-                    if (!isset($value[0]) || !isset($value[1]) || !Validate::isCleanHtml($value[0]) || !Validate::isCleanHtml($value[1])) {
+                    if (!Validate::isCleanHtml($value[0]) || !Validate::isCleanHtml($value[1])) {
                         $value = '';
                     }
-
                     $name = $this->list_id . 'Filter_' . (isset($params['filter_key']) ? $params['filter_key'] : $key);
                     $name_id = str_replace('!', '__', $name);
 

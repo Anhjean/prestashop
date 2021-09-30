@@ -70,8 +70,10 @@ abstract class AbstractObjectModelHandler
             }
         }
 
-        $excludeShopsCondtion =
-            ' AND id_shop NOT IN (' . implode(', ', array_map('intval', $excludeIds)) . ')';
+        $excludeShopsCondtion = $excludeIds ?
+            ' AND id_shop NOT IN (' . implode(', ', array_map('intval', $excludeIds)) . ')' :
+            ''
+        ;
 
         Db::getInstance()->delete(
             $tableName . '_shop',

@@ -34,10 +34,10 @@ class DeleteTaxException extends TaxException
     /**
      * When fails to delete single tax
      */
-    public const FAILED_DELETE = 10;
+    const FAILED_DELETE = 10;
 
     /**
      * When fails to delete taxes on bulk action
      */
-    public const FAILED_BULK_DELETE = 20;
+    const FAILED_BULK_DELETE = 20;
 }

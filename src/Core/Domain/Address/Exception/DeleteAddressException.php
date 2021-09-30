@@ -34,10 +34,10 @@ class DeleteAddressException extends AddressException
     /**
      * When fails to delete single address
      */
-    public const FAILED_DELETE = 10;
+    const FAILED_DELETE = 10;
 
     /**
      * When fails to delete address in bulk action
      */
-    public const FAILED_BULK_DELETE = 20;
+    const FAILED_BULK_DELETE = 20;
 }

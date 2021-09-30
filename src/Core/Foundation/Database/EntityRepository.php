@@ -30,25 +30,10 @@ use PrestaShop\PrestaShop\Core\Foundation\Database\EntityManager\QueryBuilder;
 
 class EntityRepository
 {
-    /**
-     * @var EntityManager
-     */
     protected $entityManager;
-    /**
-     * @var DatabaseInterface
-     */
     protected $db;
-    /**
-     * @var string
-     */
     protected $tablesPrefix;
-    /**
-     * @var EntityMetaData
-     */
     protected $entityMetaData;
-    /**
-     * @var QueryBuilder
-     */
     protected $queryBuilder;
 
     public function __construct(
@@ -94,7 +79,7 @@ class EntityRepository
      * Convert a camelCase field name to a snakeCase one
      * e.g.: findAllByIdCMS => id_cms.
      *
-     * @param string $camel_case_field_name
+     * @param $camel_case_field_name
      *
      * @return string
      */
@@ -194,7 +179,7 @@ class EntityRepository
     /**
      * Constructs and performs 'SELECT' in DB.
      *
-     * @param bool $one
+     * @param $one
      * @param array $cumulativeConditions
      *
      * @return array|mixed|null
@@ -219,7 +204,7 @@ class EntityRepository
     /**
      * Find one entity in DB.
      *
-     * @param int $id
+     * @param $id
      *
      * @return array|mixed|null
      *

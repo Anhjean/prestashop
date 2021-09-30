@@ -26,18 +26,23 @@
 
 namespace PrestaShop\PrestaShop\Adapter\Shop;
 
-use PrestaShop\PrestaShop\Core\Configuration\AbstractMultistoreConfiguration;
-use PrestaShopBundle\Service\Form\MultistoreCheckboxEnabler;
+use PrestaShop\PrestaShop\Adapter\Configuration;
+use PrestaShop\PrestaShop\Core\Configuration\DataConfigurationInterface;
 
 /**
  * This class loads and saves data configuration for the Maintenance page.
  */
-class MaintenanceConfiguration extends AbstractMultistoreConfiguration
+class MaintenanceConfiguration implements DataConfigurationInterface
 {
     /**
-     * @var array<int, string>
+     * @var Configuration
      */
-    private $fields = ['enable_shop', 'maintenance_ip', 'maintenance_text'];
+    private $configuration;
+
+    public function __construct(Configuration $configuration)
+    {
+        $this->configuration = $configuration;
+    }
 
     /**
      * {@inheritdoc}
@@ -54,38 +59,26 @@ class MaintenanceConfiguration extends AbstractMultistoreConfiguration
     /**
      * {@inheritdoc}
      */
-    public function updateConfiguration(array $configurationInputValues)
+    public function updateConfiguration(array $configuration)
     {
-        if ($this->validateConfiguration($configurationInputValues)) {
-            $shopConstraint = $this->getShopConstraint();
-
-            $this->updateConfigurationValue('PS_SHOP_ENABLE', 'enable_shop', $configurationInputValues, $shopConstraint);
-            $this->updateConfigurationValue('PS_MAINTENANCE_IP', 'maintenance_ip', $configurationInputValues, $shopConstraint);
-            $this->updateConfigurationValue('PS_MAINTENANCE_TEXT', 'maintenance_text', $configurationInputValues, $shopConstraint, ['html' => true]);
+        if ($this->validateConfiguration($configuration)) {
+            $this->configuration->set('PS_SHOP_ENABLE', $configuration['enable_shop']);
+            $this->configuration->set('PS_MAINTENANCE_IP', $configuration['maintenance_ip']);
+            $this->configuration->set('PS_MAINTENANCE_TEXT', $configuration['maintenance_text'], null, ['html' => true]);
         }
 
         return [];
     }
 
     /**
-     * @param array $configurationInputValues
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    public function validateConfiguration(array $configurationInputValues)
+    public function validateConfiguration(array $configuration)
     {
-        // add multistore fields in list of expected fields
-        foreach ($this->fields as $value) {
-            $this->fields[] = MultistoreCheckboxEnabler::MULTISTORE_FIELD_PREFIX . $value;
-        }
-
-        // check all given fields are expected
-        foreach ($configurationInputValues as $key => $value) {
-            if (!in_array($key, $this->fields)) {
-                return false;
-            }
-        }
-
-        return true;
+        return isset(
+            $configuration['enable_shop'],
+            $configuration['maintenance_ip'],
+            $configuration['maintenance_text']
+        );
     }
 }

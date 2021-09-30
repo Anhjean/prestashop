@@ -35,12 +35,12 @@ class DefaultCurrencyInMultiShopException extends CurrencyException
     /**
      * When trying to remove default currency in multi-shop context
      */
-    public const CANNOT_REMOVE_CURRENCY = 1;
+    const CANNOT_REMOVE_CURRENCY = 1;
 
     /**
      * When trying to disable default currency in multi-shop context
      */
-    public const CANNOT_DISABLE_CURRENCY = 2;
+    const CANNOT_DISABLE_CURRENCY = 2;
 
     /**
      * @var string

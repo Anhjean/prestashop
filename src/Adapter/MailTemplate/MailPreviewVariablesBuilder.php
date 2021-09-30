@@ -46,13 +46,13 @@ use Tools;
  */
 final class MailPreviewVariablesBuilder
 {
-    public const ORDER_CONFIRMATION = 'order_conf';
+    const ORDER_CONFIRMATION = 'order_conf';
 
-    public const DOWNLOAD_PRODUCT = 'download_product';
+    const DOWNLOAD_PRODUCT = 'download_product';
 
-    public const EMAIL_ALERTS_MODULE = 'ps_emailalerts';
-    public const NEW_ORDER = 'new_order';
-    public const RETURN_SLIP = 'return_slip';
+    const EMAIL_ALERTS_MODULE = 'ps_emailalerts';
+    const NEW_ORDER = 'new_order';
+    const RETURN_SLIP = 'return_slip';
 
     /** @var ConfigurationInterface */
     private $configuration;
@@ -148,10 +148,10 @@ final class MailPreviewVariablesBuilder
     }
 
     /**
-     * @param string $id
+     * @param $id
      * @param array $parameters
-     * @param string|null $domain
-     * @param string|null $local
+     * @param null $domain
+     * @param null $local
      *
      * @return string
      */
@@ -227,11 +227,11 @@ final class MailPreviewVariablesBuilder
                 'firstname' => '<span style="font-weight:bold;">%s</span>',
                 'lastname' => '<span style="font-weight:bold;">%s</span>',
             ]),
-            '{date}' => Tools::displayDate($order->date_add, null, true),
+            '{date}' => Tools::displayDate($order->date_add, null, 1),
             '{order_name}' => $order->getUniqReference(),
             '{id_order}' => $order->id,
             '{payment}' => Tools::substr($order->payment, 0, 255),
-            '{total_products}' => $this->locale->formatPrice($order->total_products_wt, $this->context->currency->iso_code),
+            '{total_products}' => count($order->getProducts()),
             '{total_discounts}' => $this->locale->formatPrice($order->total_discounts, $this->context->currency->iso_code),
             '{total_wrapping}' => $this->locale->formatPrice($order->total_wrapping, $this->context->currency->iso_code),
             '{total_shipping}' => $this->locale->formatPrice($order->total_shipping, $this->context->currency->iso_code),
@@ -270,10 +270,7 @@ final class MailPreviewVariablesBuilder
                     }
 
                     if (isset($customization['datas'][Product::CUSTOMIZE_FILE])) {
-                        $customizationText .= count($customization['datas'][Product::CUSTOMIZE_FILE])
-                            . ' '
-                            . $this->trans('image(s)', [], 'Modules.Mailalerts.Admin')
-                            . '<br />';
+                        $customizationText .= count($customization['datas'][Product::CUSTOMIZE_FILE]) . ' ' . $this->trans('image(s)', [], 'Modules.Mailalerts.Admin') . '<br />';
                     }
 
                     $customizationText .= '---<br />';
@@ -362,7 +359,6 @@ final class MailPreviewVariablesBuilder
 
             $productTemplate = [
                 'id_product' => $product['id_product'],
-                'id_product_attribute' => $product['id_product_attribute'],
                 'reference' => $product['reference'],
                 'name' => $product['name'] . (isset($product['attributes']) ? ' - ' . $product['attributes'] : ''),
                 'price' => $this->locale->formatPrice($productPrice * $product['quantity'], $this->context->currency->iso_code),

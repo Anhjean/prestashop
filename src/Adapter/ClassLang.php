@@ -41,7 +41,7 @@ class ClassLang
     /**
      * ClassLang constructor.
      *
-     * @param string $locale
+     * @param $locale
      */
     public function __construct($locale)
     {
@@ -49,7 +49,7 @@ class ClassLang
     }
 
     /**
-     * @param string $className
+     * @param $className
      *
      * @return bool
      */

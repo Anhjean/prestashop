@@ -66,7 +66,7 @@ interface GridActionInterface
      *
      * @param string $icon
      *
-     * @return self
+     * @return string
      */
     public function setIcon($icon);
 

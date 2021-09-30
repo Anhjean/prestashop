@@ -62,7 +62,9 @@ final class InvoiceOptionsDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->invoiceOptionsConfiguration->getConfiguration();
+        return [
+            'invoice_options' => $this->invoiceOptionsConfiguration->getConfiguration(),
+        ];
     }
 
     /**
@@ -74,7 +76,7 @@ final class InvoiceOptionsDataProvider implements FormDataProviderInterface
             return $errors;
         }
 
-        return $this->invoiceOptionsConfiguration->updateConfiguration($data);
+        return $this->invoiceOptionsConfiguration->updateConfiguration($data['invoice_options']);
     }
 
     /**
@@ -87,7 +89,7 @@ final class InvoiceOptionsDataProvider implements FormDataProviderInterface
     private function validate(array $data)
     {
         $errors = [];
-        $invoiceNumber = $data['invoice_number'];
+        $invoiceNumber = $data['invoice_options']['invoice_number'];
 
         if ($invoiceNumber > 0 && $invoiceNumber <= $this->nextInvoiceNumber) {
             $errors[] = [

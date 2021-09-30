@@ -29,34 +29,21 @@
  */
 class HTMLTemplateInvoiceCore extends HTMLTemplate
 {
-    /**
-     * @var Order
-     */
     public $order;
-
-    /**
-     * @var OrderInvoice
-     */
     public $order_invoice;
-
-    /**
-     * @var bool
-     */
     public $available_in_your_account = false;
 
     /**
      * @param OrderInvoice $order_invoice
-     * @param Smarty $smarty
-     * @param bool $bulk_mode
+     * @param $smarty
      *
      * @throws PrestaShopException
      */
-    public function __construct(OrderInvoice $order_invoice, Smarty $smarty, $bulk_mode = false)
+    public function __construct(OrderInvoice $order_invoice, $smarty, $bulk_mode = false)
     {
         $this->order_invoice = $order_invoice;
         $this->order = new Order((int) $this->order_invoice->id_order);
         $this->smarty = $smarty;
-        $this->smarty->assign('isTaxEnabled', (bool) Configuration::get('PS_TAX'));
 
         // If shop_address is null, then update it with current one.
         // But no DB save required here to avoid massive updates for bulk PDF generation case.
@@ -72,8 +59,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         $this->date = Tools::displayDate($order_invoice->date_add);
 
         $id_lang = Context::getContext()->language->id;
-        $id_shop = Context::getContext()->shop->id;
-        $this->title = $order_invoice->getInvoiceNumberFormatted($id_lang, $id_shop);
+        $this->title = $order_invoice->getInvoiceNumberFormatted($id_lang);
 
         $this->shop = new Shop((int) $this->order->id_shop);
     }
@@ -94,11 +80,11 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
     /**
      * Compute layout elements size.
      *
-     * @param array $params Layout elements
+     * @param $params Array Layout elements
      *
      * @return array Layout elements columns size
      */
-    protected function computeLayout(array $params)
+    protected function computeLayout($params)
     {
         $layout = [
             'reference' => [
@@ -108,7 +94,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
                 'width' => 40,
             ],
             'quantity' => [
-                'width' => 12,
+                'width' => 8,
             ],
             'tax_code' => [
                 'width' => 8,
@@ -385,7 +371,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
     /**
      * Returns the tax tab content.
      *
-     * @return string|array Tax tab html content (Returns an array if debug params used in request)
+     * @return string Tax tab html content
      */
     public function getTaxTabContent()
     {
@@ -423,14 +409,14 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
     /**
      * Returns different tax breakdown elements.
      *
-     * @return array|bool Different tax breakdown elements
+     * @return array Different tax breakdown elements
      */
     protected function getTaxBreakdown()
     {
         $breakdowns = [
             'product_tax' => $this->order_invoice->getProductTaxesBreakdown($this->order),
             'shipping_tax' => $this->order_invoice->getShippingTaxesBreakdown($this->order),
-            'ecotax_tax' => Configuration::get('PS_USE_ECOTAX') ? $this->order_invoice->getEcoTaxTaxesBreakdown() : [],
+            'ecotax_tax' => $this->order_invoice->getEcoTaxTaxesBreakdown(),
             'wrapping_tax' => $this->order_invoice->getWrappingTaxesBreakdown(),
         ];
 
@@ -441,7 +427,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         }
 
         if (empty($breakdowns)) {
-            return false;
+            $breakdowns = false;
         }
 
         if (isset($breakdowns['product_tax'])) {
@@ -460,12 +446,32 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         return $breakdowns;
     }
 
+    /*
+    protected function getTaxLabel($tax_breakdowns)
+    {
+        $tax_label = '';
+        $all_taxes = array();
+
+        foreach ($tax_breakdowns as $type => $bd)
+            foreach ($bd as $line)
+                if(isset($line['id_tax']))
+                    $all_taxes[] = $line['id_tax'];
+
+        $taxes = array_unique($all_taxes);
+
+        foreach ($taxes as $id_tax) {
+            $tax = new Tax($id_tax);
+            $tax_label .= $tax->id.': '.$tax->name[$this->order->id_lang].' ('.$tax->rate.'%) ';
+        }
+
+        return $tax_label;
+    }
+    */
+
     /**
      * Returns the invoice template associated to the country iso_code.
      *
      * @param string $iso_country
-     *
-     * @return string
      */
     protected function getTemplateByCountry($iso_country)
     {

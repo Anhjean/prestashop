@@ -26,16 +26,11 @@
 
 namespace PrestaShopBundle\Form\Admin\Product;
 
-use Currency;
-use PrestaShop\PrestaShop\Adapter\Carrier\CarrierDataProvider;
-use PrestaShop\PrestaShop\Adapter\LegacyContext;
-use PrestaShop\PrestaShop\Adapter\Warehouse\WarehouseDataProvider;
 use PrestaShopBundle\Form\Admin\Type\CommonAbstractType;
 use PrestaShopBundle\Form\Admin\Type\TranslateType;
 use Symfony\Component\Form\Extension\Core\Type as FormType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -43,38 +38,17 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ProductShipping extends CommonAbstractType
 {
-    /**
-     * @var array<string, string>
-     */
+    private $translator;
     private $carriersChoices;
-    /**
-     * @var Currency
-     */
-    public $currency;
-    /**
-     * @var LegacyContext
-     */
-    public $legacyContext;
-    /**
-     * @var array<int|array>
-     */
-    public $locales;
-    /**
-     * @var TranslatorInterface
-     */
-    public $translator;
-    /**
-     * @var array
-     */
     private $warehouses;
 
     /**
      * Constructor.
      *
-     * @param TranslatorInterface $translator
-     * @param LegacyContext $legacyContext
-     * @param WarehouseDataProvider $warehouseDataProvider
-     * @param CarrierDataProvider $carrierDataProvider
+     * @param object $translator
+     * @param object $legacyContext
+     * @param object $warehouseDataProvider
+     * @param object $carrierDataProvider
      */
     public function __construct($translator, $legacyContext, $warehouseDataProvider, $carrierDataProvider)
     {
@@ -150,7 +124,6 @@ class ProductShipping extends CommonAbstractType
                 'weight',
                 FormType\NumberType::class,
                 [
-                    'scale' => static::PRESTASHOP_WEIGHT_DECIMALS,
                     'required' => false,
                     'label' => $this->translator->trans('Weight', [], 'Admin.Catalog.Feature'),
                     'constraints' => [

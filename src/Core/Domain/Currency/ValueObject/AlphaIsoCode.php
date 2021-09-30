@@ -36,7 +36,7 @@ class AlphaIsoCode
     /**
      * @var string ISO Code validation pattern
      */
-    public const PATTERN = '/^[a-zA-Z]{2,3}$/';
+    const PATTERN = '/^[a-zA-Z]{2,3}$/';
 
     /**
      * @var string

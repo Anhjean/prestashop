@@ -35,7 +35,7 @@ use Currency;
 use Customer;
 use Link;
 use Message;
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Adapter\Cart\AbstractCartHandler;
 use PrestaShop\PrestaShop\Adapter\ContextStateManager;
 use PrestaShop\PrestaShop\Core\Domain\Cart\Exception\CartNotFoundException;
@@ -55,7 +55,6 @@ use PrestaShopException;
 use Product;
 use Shop;
 use Symfony\Component\Translation\TranslatorInterface;
-use Tools;
 
 /**
  * Handles GetCartForOrderCreation query using legacy object models
@@ -228,21 +227,21 @@ final class GetCartForOrderCreationHandler extends AbstractCartHandler implement
                 (int) $discount['id_cart_rule'],
                 $discount['name'],
                 $discount['description'],
-                (new DecimalNumber((string) $discount['value_tax_exc']))->round($currency->precision)
+                (new Number((string) $discount['value_tax_exc']))->round($currency->precision)
             );
         }
 
         if ($hideDiscounts) {
             foreach ($cart->getCartRules(CartRule::FILTER_ACTION_GIFT) as $giftRule) {
                 $giftRuleId = (int) $giftRule['id_cart_rule'];
-                $finalValue = new DecimalNumber((string) $giftRule['value_tax_exc']);
+                $finalValue = new Number((string) $giftRule['value_tax_exc']);
 
                 if (isset($cartRules[$giftRuleId])) {
                     // it is possible that one cart rule can have a gift product, but also have other conditions,
                     //so we need to sum their reduction values
                     /** @var CartForOrderCreation\CartRule $cartRule */
                     $cartRule = $cartRules[$giftRuleId];
-                    $finalValue = $finalValue->plus(new DecimalNumber($cartRule->getValue()));
+                    $finalValue = $finalValue->plus(new Number($cartRule->getValue()));
                 }
 
                 $cartRules[$giftRuleId] = new CartForOrderCreation\CartRule(
@@ -531,6 +530,7 @@ final class GetCartForOrderCreationHandler extends AbstractCartHandler implement
      * @param Cart $cart
      * @param Currency $currency
      * @param array $product
+     * @param bool $isGift
      *
      * @return CartProduct
      */
@@ -545,9 +545,9 @@ final class GetCartForOrderCreationHandler extends AbstractCartHandler implement
             $product['name'],
             isset($product['attributes_small']) ? $product['attributes_small'] : '',
             $product['reference'],
-            (string) Tools::ps_round($product['price'], $currency->precision),
+            \Tools::ps_round($product['price'], $currency->precision),
             $product['quantity'],
-            (string) Tools::ps_round($product['total'], $currency->precision),
+            \Tools::ps_round($product['total'], $currency->precision),
             $this->contextLink->getImageLink($product['link_rewrite'], $product['id_image'], 'small_default'),
             $this->getProductCustomizedData($cart, $product),
             Product::getQuantity(

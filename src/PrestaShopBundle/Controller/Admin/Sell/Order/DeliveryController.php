@@ -43,10 +43,7 @@ class DeliveryController extends FrameworkBundleAdminController
      * Main page for Delivery slips.
      *
      * @Template("@PrestaShop/Admin/Sell/Order/Delivery/slip.html.twig")
-     * @AdminSecurity(
-     *     "is_granted('read', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="Access denied."
-     * )
+     * @AdminSecurity("is_granted(['read', 'update', 'create', 'delete'], request.get('_legacy_controller'))", message="Access denied.")
      *
      * @param Request $request
      *
@@ -54,9 +51,9 @@ class DeliveryController extends FrameworkBundleAdminController
      */
     public function slipAction(Request $request)
     {
-        /** @var FormHandlerInterface $formHandler */
+        /** @var $formHandler FormHandlerInterface */
         $formHandler = $this->get('prestashop.adapter.order.delivery.slip.options.form_handler');
-        /** @var Form $form */
+        /** @var $form Form */
         $form = $formHandler->getForm();
 
         $form->handleRequest($request);
@@ -89,10 +86,7 @@ class DeliveryController extends FrameworkBundleAdminController
     /**
      * Delivery slips PDF generator.
      *
-     * @AdminSecurity(
-     *     "is_granted('read', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="Access denied."
-     * )
+     * @AdminSecurity("is_granted(['read', 'update', 'create', 'delete'], request.get('_legacy_controller'))", message="Access denied.")
      *
      * @param Request $request
      *
@@ -100,16 +94,16 @@ class DeliveryController extends FrameworkBundleAdminController
      */
     public function generatePdfAction(Request $request)
     {
-        /** @var FormHandlerInterface $formHandler */
+        /** @var $formHandler FormHandlerInterface */
         $formHandler = $this->get('prestashop.adapter.order.delivery.slip.pdf.form_handler');
-        /** @var Form $form */
+        /** @var $form Form */
         $form = $formHandler->getForm();
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $errors = $formHandler->save($form->getData());
             if (empty($errors)) {
-                $pdf = $form->getData();
+                $pdf = $form->get('pdf')->getData();
 
                 return $this->redirect(
                     $this->get('prestashop.adapter.legacy.context')->getAdminLink(

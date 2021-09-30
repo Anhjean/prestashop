@@ -28,6 +28,7 @@ namespace PrestaShopBundle\Form\Admin\Improve\Design\Theme;
 
 use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
 use PrestaShop\PrestaShop\Core\Domain\Shop\Command\UploadLogosCommand;
+use PrestaShop\PrestaShop\Core\Domain\Shop\Exception\ShopException;
 use PrestaShop\PrestaShop\Core\Form\DTO\ShopRestriction;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 use PrestaShop\PrestaShop\Core\Form\MultiStoreSettingsFormDataProviderInterface;
@@ -64,13 +65,15 @@ final class ShopLogosFormDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->themeMultiStoreSettingsFormDataProvider->getData();
+        return [
+            'shop_logos' => $this->themeMultiStoreSettingsFormDataProvider->getData(),
+        ];
     }
 
     /**
-     * @param array $data
+     * {@inheritdoc}
      *
-     * @return array
+     * @throws ShopException
      */
     public function setData(array $data)
     {
@@ -95,8 +98,6 @@ final class ShopLogosFormDataProvider implements FormDataProviderInterface
         }
 
         $this->commandBus->handle($command);
-
-        return [];
     }
 
     /**

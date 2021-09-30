@@ -185,10 +185,7 @@ class ImportController extends FrameworkBundleAdminController
     /**
      * Download import file from history.
      *
-     * @AdminSecurity(
-     *     "is_granted('read', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="You do not have permission to update this.", redirectRoute="admin_import"
-     * )
+     * @AdminSecurity("is_granted(['read','update', 'create','delete'], request.get('_legacy_controller'))", message="You do not have permission to update this.", redirectRoute="admin_import")
      * @DemoRestricted(redirectRoute="admin_import")
      *
      * @param Request $request
@@ -212,9 +209,9 @@ class ImportController extends FrameworkBundleAdminController
     /**
      * Download import sample file.
      *
-     * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))", redirectRoute="admin_import")
+     * @AdminSecurity("is_granted(['read'], request.get('_legacy_controller'))", redirectRoute="admin_import")
      *
-     * @param string $sampleName
+     * @param $sampleName
      *
      * @return Response
      */
@@ -262,10 +259,7 @@ class ImportController extends FrameworkBundleAdminController
     /**
      * Process the import.
      *
-     * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     redirectRoute="admin_import"
-     * )
+     * @AdminSecurity("is_granted(['update', 'create', 'delete'], request.get('_legacy_controller'))", redirectRoute="admin_import")
      * @DemoRestricted(redirectRoute="admin_import")
      *
      * @param Request $request
@@ -332,7 +326,7 @@ class ImportController extends FrameworkBundleAdminController
     /**
      * Checks permissions of import form in step 1.
      *
-     * @param string $legacyController
+     * @param $legacyController
      *
      * @return bool
      */
@@ -374,7 +368,7 @@ class ImportController extends FrameworkBundleAdminController
      *
      * @param ImportDirectory $importDir
      *
-     * @return bool
+     * @return array|bool
      */
     private function checkImportDirectory(ImportDirectory $importDir)
     {

@@ -29,20 +29,24 @@ namespace PrestaShop\PrestaShop\Adapter;
 use Cache;
 use Db;
 use DbQuery;
-use ObjectModel;
 use Shop;
 
+/**
+ * Not used in PrestaShop core, only in tests.
+ *
+ * @deprecated since 1.7.5, to be removed in 1.8
+ */
 class EntityMapper
 {
     /**
      * Load ObjectModel.
      *
-     * @param int $id
-     * @param int $id_lang
-     * @param ObjectModel $entity
-     * @param array<string,string|array> $entity_defs
-     * @param int $id_shop
-     * @param bool $should_cache_objects
+     * @param $id
+     * @param $id_lang
+     * @param $entity \ObjectModel
+     * @param $entity_defs
+     * @param $id_shop
+     * @param $should_cache_objects
      *
      * @throws \PrestaShopDatabaseException
      */
@@ -50,7 +54,7 @@ class EntityMapper
     {
         // Load object from database if object id is present
         $cache_id = 'objectmodel_' . $entity_defs['classname'] . '_' . (int) $id . '_' . (int) $id_shop . '_' . (int) $id_lang;
-        if (!$should_cache_objects || !Cache::isStored($cache_id)) {
+        if (!$should_cache_objects || !\Cache::isStored($cache_id)) {
             $sql = new DbQuery();
             $sql->from($entity_defs['table'], 'a');
             $sql->where('a.`' . bqSQL($entity_defs['primary']) . '` = ' . (int) $id);
@@ -69,7 +73,6 @@ class EntityMapper
             }
 
             if ($object_datas = Db::getInstance()->getRow($sql)) {
-                $objectVars = get_object_vars($entity);
                 if (!$id_lang && isset($entity_defs['multilang']) && $entity_defs['multilang']) {
                     $sql = 'SELECT *
 							FROM `' . bqSQL(_DB_PREFIX_ . $entity_defs['table']) . '_lang`
@@ -79,7 +82,7 @@ class EntityMapper
                     if ($object_datas_lang = Db::getInstance()->executeS($sql)) {
                         foreach ($object_datas_lang as $row) {
                             foreach ($row as $key => $value) {
-                                if ($key != $entity_defs['primary'] && array_key_exists($key, $objectVars)) {
+                                if ($key != $entity_defs['primary'] && array_key_exists($key, $entity)) {
                                     if (!isset($object_datas[$key]) || !is_array($object_datas[$key])) {
                                         $object_datas[$key] = [];
                                     }
@@ -90,11 +93,10 @@ class EntityMapper
                         }
                     }
                 }
-
                 $entity->id = (int) $id;
                 foreach ($object_datas as $key => $value) {
                     if (array_key_exists($key, $entity_defs['fields'])
-                        || array_key_exists($key, $objectVars)) {
+                        || array_key_exists($key, $entity)) {
                         $entity->{$key} = $value;
                     } else {
                         unset($object_datas[$key]);

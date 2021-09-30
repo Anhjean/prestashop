@@ -82,7 +82,7 @@ final class AttributeGroupQueryBuilder extends AbstractDoctrineQueryBuilder
     /**
      * Get query that searches grid rows.
      *
-     * @param SearchCriteriaInterface $searchCriteria
+     * @param SearchCriteriaInterface|null $searchCriteria
      *
      * @return QueryBuilder
      */
@@ -101,7 +101,7 @@ final class AttributeGroupQueryBuilder extends AbstractDoctrineQueryBuilder
     /**
      * Get query that counts grid rows.
      *
-     * @param SearchCriteriaInterface $searchCriteria
+     * @param SearchCriteriaInterface|null $searchCriteria
      *
      * @return QueryBuilder
      */

@@ -42,19 +42,4 @@ final class StringModifier implements StringModifierInterface
 
         return implode(' ', $splitString);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function cutEnd(string $string, int $expectedLength): string
-    {
-        $length = strlen($string);
-
-        if ($length > $expectedLength) {
-            // cut symbols difference from the end of the string
-            $string = substr($string, 0, $expectedLength - $length);
-        }
-
-        return $string;
-    }
 }

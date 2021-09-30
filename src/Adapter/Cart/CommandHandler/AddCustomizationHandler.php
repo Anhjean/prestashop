@@ -37,7 +37,6 @@ use PrestaShop\PrestaShop\Core\Domain\Exception\FileUploadException;
 use PrestaShop\PrestaShop\Core\Domain\Product\Customization\CustomizationSettings;
 use PrestaShop\PrestaShop\Core\Domain\Product\Customization\Exception\CustomizationConstraintException;
 use PrestaShop\PrestaShop\Core\Domain\Product\Customization\Exception\CustomizationException;
-use PrestaShop\PrestaShop\Core\Domain\Product\Customization\ValueObject\CustomizationFieldType;
 use PrestaShop\PrestaShop\Core\Domain\Product\Customization\ValueObject\CustomizationId;
 use PrestaShopException;
 use Product;
@@ -55,7 +54,7 @@ final class AddCustomizationHandler extends AbstractCartHandler implements AddCu
      *
      * @param AddCustomizationCommand $command
      *
-     * @return CustomizationId|null
+     * @return int
      *
      * @throws CartNotFoundException
      * @throws CustomizationConstraintException
@@ -85,7 +84,7 @@ final class AddCustomizationHandler extends AbstractCartHandler implements AddCu
             }
 
             try {
-                if (CustomizationFieldType::TYPE_TEXT === (int) $customizationField['type']) {
+                if (Product::CUSTOMIZE_TEXTFIELD == $customizationField['type']) {
                     $this->assertCustomTextField($customizationFieldId, $customizationValues[$customizationFieldId]);
 
                     $customizationId = $cart->addTextFieldToProduct(
@@ -101,7 +100,7 @@ final class AddCustomizationHandler extends AbstractCartHandler implements AddCu
                     $customizationId = $cart->addPictureToProduct(
                         $productId,
                         $customizationFieldId,
-                        CustomizationFieldType::TYPE_FILE,
+                        Product::CUSTOMIZE_FILE,
                         $fileName,
                         true
                     );
@@ -119,7 +118,7 @@ final class AddCustomizationHandler extends AbstractCartHandler implements AddCu
             return null;
         }
 
-        return new CustomizationId((int) $customizationId);
+        return new CustomizationId($customizationId);
     }
 
     /**

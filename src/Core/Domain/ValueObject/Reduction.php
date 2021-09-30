@@ -26,7 +26,7 @@
 
 namespace PrestaShop\PrestaShop\Core\Domain\ValueObject;
 
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Core\Domain\Exception\DomainConstraintException;
 
 /**
@@ -37,17 +37,17 @@ class Reduction
     /**
      * For reducing concrete amount of money from price
      */
-    public const TYPE_AMOUNT = 'amount';
+    const TYPE_AMOUNT = 'amount';
 
     /**
      * For reducing certain percentage calculated from price
      */
-    public const TYPE_PERCENTAGE = 'percentage';
+    const TYPE_PERCENTAGE = 'percentage';
 
     /**
      * Allowed reduction types
      */
-    public const ALLOWED_TYPES = [
+    const ALLOWED_TYPES = [
         self::TYPE_AMOUNT,
         self::TYPE_PERCENTAGE,
     ];
@@ -55,7 +55,7 @@ class Reduction
     /**
      * Maximum allowed value for percentage type reduction
      */
-    public const MAX_ALLOWED_PERCENTAGE = 100;
+    const MAX_ALLOWED_PERCENTAGE = 100;
 
     /**
      * @var string
@@ -63,24 +63,22 @@ class Reduction
     private $type;
 
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $value;
 
     /**
      * @param string $type
-     * @param string $value
+     * @param float $value
      *
      * @throws DomainConstraintException
      */
-    public function __construct(string $type, string $value)
+    public function __construct(string $type, float $value)
     {
         $this->assertIsAllowedType($type);
-        $decimalValue = new DecimalNumber($value);
-        $this->assertIsValidValue($type, $decimalValue);
-
+        $this->assertIsValidValue($type, $value);
         $this->type = $type;
-        $this->value = $decimalValue;
+        $this->value = new Number((string) $value);
     }
 
     /**
@@ -92,9 +90,9 @@ class Reduction
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getValue(): DecimalNumber
+    public function getValue(): Number
     {
         return $this->value;
     }
@@ -112,21 +110,31 @@ class Reduction
     }
 
     /**
-     * @param string $type
-     * @param DecimalNumber $value
+     * @param $type
+     * @param $value
      *
      * @throws DomainConstraintException
      */
-    private function assertIsValidValue(string $type, DecimalNumber $value)
+    private function assertIsValidValue(string $type, float $value)
     {
         if (self::TYPE_PERCENTAGE === $type) {
-            if ($value->isLowerThanZero() || $value->isGreaterThan(new DecimalNumber((string) self::MAX_ALLOWED_PERCENTAGE))) {
-                throw new DomainConstraintException(sprintf('Invalid reduction percentage "%s". It must be from 0 to %s%%', (string) $value, self::MAX_ALLOWED_PERCENTAGE), DomainConstraintException::INVALID_REDUCTION_PERCENTAGE);
+            if (!$this->assertIsNotNegative($value) || self::MAX_ALLOWED_PERCENTAGE < $value) {
+                throw new DomainConstraintException(sprintf('Invalid reduction percentage "%s". It must be from 0 to %s%%', $value, self::MAX_ALLOWED_PERCENTAGE), DomainConstraintException::INVALID_REDUCTION_PERCENTAGE);
             }
         }
 
-        if ($value->isLowerThanZero()) {
-            throw new DomainConstraintException(sprintf('Invalid reduction amount "%s". It cannot be less than 0', (string) $value), DomainConstraintException::INVALID_REDUCTION_AMOUNT);
+        if (!$this->assertIsNotNegative($value)) {
+            throw new DomainConstraintException(sprintf('Invalid reduction amount "%s". It cannot be less than 0', $value), DomainConstraintException::INVALID_REDUCTION_AMOUNT);
         }
+    }
+
+    /**
+     * @param float $value
+     *
+     * @return bool
+     */
+    private function assertIsNotNegative(float $value)
+    {
+        return 0 <= $value;
     }
 }

@@ -48,7 +48,7 @@ final class LanguageFlagThumbnailProvider implements ImageProviderInterface
 
     /**
      * @param ImageTagSourceParserInterface $imageTagSourceParser
-     * @param int $contextShopId
+     * @param $contextShopId
      */
     public function __construct(
         ImageTagSourceParserInterface $imageTagSourceParser,

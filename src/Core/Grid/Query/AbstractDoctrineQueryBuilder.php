@@ -45,7 +45,7 @@ abstract class AbstractDoctrineQueryBuilder implements DoctrineQueryBuilderInter
 
     /**
      * @param Connection $connection
-     * @param string $dbPrefix
+     * @param $dbPrefix
      */
     public function __construct(Connection $connection, $dbPrefix)
     {

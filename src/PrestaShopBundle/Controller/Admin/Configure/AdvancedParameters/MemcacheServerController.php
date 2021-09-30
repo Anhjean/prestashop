@@ -40,7 +40,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class MemcacheServerController extends FrameworkBundleAdminController
 {
-    public const CONTROLLER_NAME = 'AdminPerformance';
+    const CONTROLLER_NAME = 'AdminPerformance';
 
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))", message="Access denied.")

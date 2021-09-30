@@ -41,12 +41,20 @@ final class EmailConfigurationFormDataProvider implements FormDataProviderInterf
     private $emailDataConfigurator;
 
     /**
+     * @var DataConfigurationInterface
+     */
+    private $smtpDataConfigurator;
+
+    /**
      * @param DataConfigurationInterface $emailDataConfigurator
+     * @param DataConfigurationInterface $smtpDataConfigurator
      */
     public function __construct(
-        DataConfigurationInterface $emailDataConfigurator
+        DataConfigurationInterface $emailDataConfigurator,
+        DataConfigurationInterface $smtpDataConfigurator
     ) {
         $this->emailDataConfigurator = $emailDataConfigurator;
+        $this->smtpDataConfigurator = $smtpDataConfigurator;
     }
 
     /**
@@ -54,7 +62,10 @@ final class EmailConfigurationFormDataProvider implements FormDataProviderInterf
      */
     public function getData()
     {
-        return $this->emailDataConfigurator->getConfiguration();
+        return [
+            'email_config' => $this->emailDataConfigurator->getConfiguration(),
+            'smtp_config' => $this->smtpDataConfigurator->getConfiguration(),
+        ];
     }
 
     /**
@@ -67,7 +78,10 @@ final class EmailConfigurationFormDataProvider implements FormDataProviderInterf
             return $errors;
         }
 
-        return $this->emailDataConfigurator->updateConfiguration($data);
+        return array_merge(
+            $this->emailDataConfigurator->updateConfiguration($data['email_config']),
+            $this->smtpDataConfigurator->updateConfiguration($data['smtp_config'])
+        );
     }
 
     /**
@@ -82,7 +96,7 @@ final class EmailConfigurationFormDataProvider implements FormDataProviderInterf
         $errors = [];
         $isSmtpNotConfigured = empty($config['smtp_config']['server']) || empty($config['smtp_config']['port']);
 
-        if (MailOption::METHOD_SMTP === $config['mail_method'] && $isSmtpNotConfigured) {
+        if (MailOption::METHOD_SMTP === $config['email_config']['mail_method'] && $isSmtpNotConfigured) {
             $errors[] = [
                 'key' => 'You must define an SMTP server and an SMTP port. If you do not know it, use the PHP mail() function instead.',
                 'parameters' => [],

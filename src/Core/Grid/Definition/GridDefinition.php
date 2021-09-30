@@ -28,10 +28,8 @@ namespace PrestaShop\PrestaShop\Core\Grid\Definition;
 
 use PrestaShop\PrestaShop\Core\Grid\Action\Bulk\BulkActionCollectionInterface;
 use PrestaShop\PrestaShop\Core\Grid\Action\GridActionCollectionInterface;
-use PrestaShop\PrestaShop\Core\Grid\Action\ViewOptionsCollectionInterface;
 use PrestaShop\PrestaShop\Core\Grid\Column\ColumnCollectionInterface;
 use PrestaShop\PrestaShop\Core\Grid\Column\ColumnInterface;
-use PrestaShop\PrestaShop\Core\Grid\Exception\ColumnNotFoundException;
 use PrestaShop\PrestaShop\Core\Grid\Exception\InvalidDataException;
 use PrestaShop\PrestaShop\Core\Grid\Filter\FilterCollectionInterface;
 
@@ -51,7 +49,7 @@ final class GridDefinition implements GridDefinitionInterface
     private $name;
 
     /**
-     * @var ColumnCollectionInterface
+     * @var ColumnInterface[]
      */
     private $columns;
 
@@ -66,11 +64,6 @@ final class GridDefinition implements GridDefinitionInterface
     private $bulkActions;
 
     /**
-     * @var ViewOptionsCollectionInterface
-     */
-    private $viewOptions;
-
-    /**
      * @var FilterCollectionInterface
      */
     private $filters;
@@ -82,7 +75,6 @@ final class GridDefinition implements GridDefinitionInterface
      * @param FilterCollectionInterface $filters
      * @param GridActionCollectionInterface $gridActions
      * @param BulkActionCollectionInterface $bulkActions
-     * @param ViewOptionsCollectionInterface $viewOptions
      */
     public function __construct(
         $id,
@@ -90,8 +82,7 @@ final class GridDefinition implements GridDefinitionInterface
         ColumnCollectionInterface $columns,
         FilterCollectionInterface $filters,
         GridActionCollectionInterface $gridActions,
-        BulkActionCollectionInterface $bulkActions,
-        ViewOptionsCollectionInterface $viewOptions
+        BulkActionCollectionInterface $bulkActions
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -99,7 +90,6 @@ final class GridDefinition implements GridDefinitionInterface
         $this->filters = $filters;
         $this->gridActions = $gridActions;
         $this->bulkActions = $bulkActions;
-        $this->viewOptions = $viewOptions;
     }
 
     /**
@@ -129,21 +119,6 @@ final class GridDefinition implements GridDefinitionInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnById(string $id): ColumnInterface
-    {
-        /** @var ColumnInterface $column */
-        foreach ($this->columns as $column) {
-            if ($id === $column->getId()) {
-                return $column;
-            }
-        }
-
-        throw new ColumnNotFoundException(sprintf('Column with id "%s" not found', $id));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getBulkActions()
     {
         return $this->bulkActions;
@@ -155,14 +130,6 @@ final class GridDefinition implements GridDefinitionInterface
     public function getGridActions()
     {
         return $this->gridActions;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getViewOptions()
-    {
-        return $this->viewOptions;
     }
 
     /**

@@ -389,7 +389,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Retrieve the first result.
      *
-     * @return ObjectModel|bool
+     * @return ObjectModel|false
      */
     public function getFirst()
     {

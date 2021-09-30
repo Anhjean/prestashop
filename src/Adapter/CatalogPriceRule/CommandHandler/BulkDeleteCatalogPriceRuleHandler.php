@@ -44,7 +44,7 @@ final class BulkDeleteCatalogPriceRuleHandler extends AbstractCatalogPriceRuleHa
         foreach ($catalogPriceRuleId = $command->getCatalogPriceRuleIds() as $catalogPriceRuleId) {
             $specificPriceRule = $this->getSpecificPriceRule($catalogPriceRuleId);
 
-            if (!$this->deleteSpecificPriceRule($specificPriceRule)) {
+            if (null === $this->deleteSpecificPriceRule($specificPriceRule)) {
                 throw new CannotDeleteCatalogPriceRuleException(sprintf('Cannot delete SpecificPriceRule object with id "%s".', $catalogPriceRuleId->getValue()), CannotDeleteCatalogPriceRuleException::FAILED_BULK_DELETE);
             }
         }

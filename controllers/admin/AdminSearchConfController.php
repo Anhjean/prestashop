@@ -364,7 +364,7 @@ class AdminSearchConfControllerCore extends AdminController
 
     public function initPageHeaderToolbar()
     {
-        if (empty($this->display) || $this->display == 'list') {
+        if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_alias'] = [
                 'href' => self::$currentIndex . '&addalias&token=' . $this->token,
                 'desc' => $this->trans('Add new alias', [], 'Admin.Shopparameters.Feature'),
@@ -472,11 +472,7 @@ class AdminSearchConfControllerCore extends AdminController
         }
 
         if (empty($this->errors)) {
-            if (Tools::getValue('id_alias')) {
-                $this->confirmations[] = $this->trans('Update successful', [], 'Admin.Notifications.Success');
-            } else {
-                $this->confirmations[] = $this->trans('Successful creation', [], 'Admin.Notifications.Success');
-            }
+            $this->confirmations[] = $this->trans('Creation successful', [], 'Admin.Shopparameters.Notification');
         }
     }
 

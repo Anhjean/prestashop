@@ -48,7 +48,7 @@ final class ManufacturerAddressFormDataProvider implements FormDataProviderInter
 
     /**
      * @param CommandBusInterface $queryBus
-     * @param int $defaultCountryId
+     * @param $defaultCountryId
      */
     public function __construct(
         CommandBusInterface $queryBus,

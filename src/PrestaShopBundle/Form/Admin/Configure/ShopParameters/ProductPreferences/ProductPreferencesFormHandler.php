@@ -27,13 +27,13 @@
 namespace PrestaShopBundle\Form\Admin\Configure\ShopParameters\ProductPreferences;
 
 use PrestaShop\PrestaShop\Adapter\Cache\CacheClearer;
-use PrestaShop\PrestaShop\Core\Form\Handler;
+use PrestaShop\PrestaShop\Core\Form\FormHandler;
 
 /**
  * Class manages the data manipulated using forms
  * in "Configure > Shop Parameters > Product Settings" page.
  */
-class ProductPreferencesFormHandler extends Handler
+class ProductPreferencesFormHandler extends FormHandler
 {
     /**
      * @var CacheClearer
@@ -51,8 +51,9 @@ class ProductPreferencesFormHandler extends Handler
             $this->cacheClearer->clearSmartyCache();
             $this->cacheClearer->clearMediaCache();
 
-            if (isset($data['stock_management']) && !$data['stock_management']) {
-                $data['allow_ordering_oos'] = 1;
+            if (!$data['stock']['stock_management']) {
+                $data['stock']['allow_ordering_oos'] = 1;
+                $data['page']['display_quantities'] = 0;
             }
         }
 

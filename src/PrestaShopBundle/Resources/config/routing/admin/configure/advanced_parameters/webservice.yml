@@ -2,17 +2,15 @@ admin_webservice_keys_index:
     path: /
     methods: GET
     defaults:
-        _controller: 'PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters\WebserviceController::indexAction'
+        _controller: 'PrestaShopBundle:Admin\Configure\AdvancedParameters\Webservice:index'
         _legacy_controller: AdminWebservice
         _legacy_link: AdminWebservice
 
 admin_webservice_keys_search:
-    path: /
-    methods: POST
-    defaults:
-        _controller: PrestaShopBundle\Controller\Admin\CommonController::searchGridAction
-        gridDefinitionFactoryServiceId: prestashop.core.grid.definition.factory.webservice_key
-        redirectRoute: admin_webservice_keys_index
+  path: /
+  methods: POST
+  defaults:
+        _controller: 'PrestaShopBundle:Admin\Configure\AdvancedParameters\Webservice:search'
         _legacy_controller: AdminWebservice
         _legacy_link: AdminWebservice:submitFilterwebservice_account
 
@@ -20,7 +18,7 @@ admin_webservice_save_settings:
     path: /settings
     methods: POST
     defaults:
-        _controller: 'PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters\WebserviceController::saveSettingsAction'
+        _controller: 'PrestaShopBundle:Admin\Configure\AdvancedParameters\Webservice:saveSettings'
         _legacy_controller: AdminWebservice
         _legacy_link: AdminWebservice:submitOptionswebservice_account
 
@@ -28,7 +26,7 @@ admin_webservice_keys_create:
     path: /new
     methods: [GET, POST]
     defaults:
-        _controller: 'PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters\WebserviceController::createAction'
+        _controller: 'PrestaShopBundle:Admin\Configure\AdvancedParameters\Webservice:create'
         _legacy_controller: AdminWebservice
         _legacy_link: AdminWebservice:addwebservice_account
 
@@ -36,7 +34,7 @@ admin_webservice_keys_edit:
     path: /{webserviceKeyId}/edit
     methods: [GET, POST]
     defaults:
-        _controller: 'PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters\WebserviceController::editAction'
+        _controller: 'PrestaShopBundle:Admin\Configure\AdvancedParameters\Webservice:edit'
         _legacy_controller: AdminWebservice
         _legacy_link: AdminWebservice:updatewebservice_account
         _legacy_parameters:
@@ -46,9 +44,9 @@ admin_webservice_keys_edit:
 
 admin_webservice_keys_delete:
     path: /{webserviceKeyId}/delete
-    methods: [DELETE, POST]
+    methods: DELETE
     defaults:
-        _controller: 'PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters\WebserviceController::deleteAction'
+        _controller: 'PrestaShopBundle:Admin\Configure\AdvancedParameters\Webservice:delete'
         _legacy_controller: AdminWebservice
         _legacy_link: AdminWebservice:deletewebservice_account
         _legacy_parameters:
@@ -60,7 +58,7 @@ admin_webservice_keys_bulk_delete:
     path: /bulk-delete
     methods: POST
     defaults:
-        _controller: 'PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters\WebserviceController::bulkDeleteAction'
+        _controller: 'PrestaShopBundle:Admin\Configure\AdvancedParameters\Webservice:bulkDelete'
         _legacy_controller: AdminWebservice
         _legacy_link: AdminWebservice:submitBulkdeletewebservice_account
 
@@ -68,7 +66,7 @@ admin_webservice_keys_toggle_status:
     path: /{webserviceKeyId}/toggle-status
     methods: POST
     defaults:
-        _controller: 'PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters\WebserviceController::toggleStatusAction'
+        _controller: 'PrestaShopBundle:Admin\Configure\AdvancedParameters\Webservice:toggleStatus'
         _legacy_controller: AdminWebservice
         _legacy_link: AdminWebservice:statuswebservice_account
         _legacy_parameters:
@@ -80,7 +78,7 @@ admin_webservice_keys_bulk_enable:
     path: /bulk-enable
     methods: POST
     defaults:
-        _controller: 'PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters\WebserviceController::bulkEnableAction'
+        _controller: 'PrestaShopBundle:Admin\Configure\AdvancedParameters\Webservice:bulkEnable'
         _legacy_controller: AdminWebservice
         _legacy_link: AdminWebservice:submitBulkenableSelectionwebservice_account
 
@@ -88,6 +86,6 @@ admin_webservice_keys_bulk_disable:
     path: /bulk-disable
     methods: POST
     defaults:
-        _controller: 'PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters\WebserviceController::bulkDisableAction'
+        _controller: 'PrestaShopBundle:Admin\Configure\AdvancedParameters\Webservice:bulkDisable'
         _legacy_controller: AdminWebservice
         _legacy_link: AdminWebservice:submitBulkdisableSelectionwebservice_account

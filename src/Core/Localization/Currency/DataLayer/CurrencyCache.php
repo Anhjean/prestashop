@@ -72,19 +72,23 @@ class CurrencyCache extends AbstractDataLayer implements CurrencyDataLayerInterf
      *
      * Might be a file access, cache read, DB select...
      *
-     * @param LocalizedCurrencyId $id The CurrencyData object identifier (currency code + locale code)
+     * @param LocalizedCurrencyId $currencyDataId
+     *                                            The CurrencyData object identifier (currency code + locale code)
      *
-     * @return CurrencyData|null The wanted CurrencyData object (null if not found)
+     * @return CurrencyData|null
+     *                           The wanted CurrencyData object (null if not found)
      *
-     * @throws LocalizationException When $currencyDataId is invalid
+     * @throws LocalizationException
+     *                               When $currencyDataId is invalid
+     * @throws \Psr\Cache\InvalidArgumentException
      */
-    protected function doRead($id)
+    protected function doRead($currencyDataId)
     {
-        if (!$id instanceof LocalizedCurrencyId) {
+        if (!$currencyDataId instanceof LocalizedCurrencyId) {
             throw new LocalizationException('$currencyDataId must be a CurrencyDataIdentifier object');
         }
 
-        $cacheItem = $this->cache->getItem((string) $id);
+        $cacheItem = $this->cache->getItem((string) $currencyDataId);
 
         return $cacheItem->isHit()
             ? $cacheItem->get()
@@ -96,11 +100,16 @@ class CurrencyCache extends AbstractDataLayer implements CurrencyDataLayerInterf
      *
      * Might be a file edit, cache update, DB insert/update...
      *
-     * @param LocalizedCurrencyId $currencyDataId The data object identifier
-     * @param CurrencyData $currencyData The data object to be written
+     * @param LocalizedCurrencyId $currencyDataId
+     *                                            The data object identifier
+     * @param CurrencyData $currencyData
+     *                                   The data object to be written
      *
-     * @throws DataLayerException When write fails
-     * @throws LocalizationException When $currencyDataId is invalid
+     * @throws DataLayerException
+     *                            When write fails
+     * @throws LocalizationException
+     *                               When $currencyDataId is invalid
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     protected function doWrite($currencyDataId, $currencyData)
     {

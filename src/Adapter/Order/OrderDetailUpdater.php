@@ -36,7 +36,7 @@ use Customer;
 use Db;
 use Order;
 use OrderDetail;
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Adapter\ContextStateManager;
 use PrestaShop\PrestaShop\Core\Domain\Configuration\ShopConfigurationInterface;
 use PrestaShop\PrestaShop\Core\Domain\Order\Exception\OrderException;
@@ -77,24 +77,24 @@ class OrderDetailUpdater
     /**
      * @param OrderDetail $orderDetail
      * @param Order $order
-     * @param DecimalNumber $priceTaxExcluded
-     * @param DecimalNumber $priceTaxIncluded
+     * @param Number $priceTaxExcluded
+     * @param Number $priceTaxIncluded
      *
      * @throws OrderException
      */
     public function updateOrderDetail(
         OrderDetail $orderDetail,
         Order $order,
-        DecimalNumber $priceTaxExcluded,
-        DecimalNumber $priceTaxIncluded
+        Number $priceTaxExcluded,
+        Number $priceTaxIncluded
     ): void {
         list($roundType, $computingPrecision, $taxAddress) = $this->prepareOrderContext($order);
 
         try {
-            $ecotax = new DecimalNumber((string) $orderDetail->ecotax);
+            $ecotax = new Number($orderDetail->ecotax);
 
             $ecotaxTaxCalculator = $this->getTaxCalculatorForEcotax($taxAddress);
-            $ecotaxTaxFactor = new DecimalNumber((string) (1 + ($ecotaxTaxCalculator->getTotalRate() / 100)));
+            $ecotaxTaxFactor = new Number((string) (1 + ($ecotaxTaxCalculator->getTotalRate() / 100)));
             $ecotaxTaxIncluded = $ecotax->times($ecotaxTaxFactor);
 
             // Prices coming from the backoffice : they are displayed with ecotax
@@ -124,8 +124,8 @@ class OrderDetailUpdater
      * @param Order $order
      * @param int $productId
      * @param int $combinationId
-     * @param DecimalNumber $priceTaxExcluded
-     * @param DecimalNumber $priceTaxIncluded
+     * @param Number $priceTaxExcluded
+     * @param Number $priceTaxIncluded
      *
      * @throws OrderException
      */
@@ -133,8 +133,8 @@ class OrderDetailUpdater
         Order $order,
         int $productId,
         int $combinationId,
-        DecimalNumber $priceTaxExcluded,
-        DecimalNumber $priceTaxIncluded
+        Number $priceTaxExcluded,
+        Number $priceTaxIncluded
     ): void {
         list($roundType, $computingPrecision, $taxAddress) = $this->prepareOrderContext($order);
 
@@ -224,7 +224,10 @@ class OrderDetailUpdater
      */
     private function prepareOrderContext(Order $order): array
     {
-        $shopConstraint = ShopConstraint::shop((int) $order->id_shop);
+        $shopConstraint = new ShopConstraint(
+            (int) $order->id_shop,
+            (int) $order->id_shop_group
+        );
         $roundType = (int) $this->shopConfiguration->get('PS_ROUND_TYPE', null, $shopConstraint);
         $taxAddressType = $this->shopConfiguration->get('PS_TAX_ADDRESS_TYPE', null, $shopConstraint);
         $taxAddress = new Address($order->{$taxAddressType});
@@ -248,8 +251,8 @@ class OrderDetailUpdater
 
     /**
      * @param OrderDetail $orderDetail
-     * @param DecimalNumber $priceTaxExcluded
-     * @param DecimalNumber $priceTaxIncluded
+     * @param Number $priceTaxExcluded
+     * @param Number $priceTaxIncluded
      * @param int $roundType
      * @param int $computingPrecision
      *
@@ -257,8 +260,8 @@ class OrderDetailUpdater
      */
     private function applyOrderDetailPriceUpdate(
         OrderDetail $orderDetail,
-        DecimalNumber $priceTaxExcluded,
-        DecimalNumber $priceTaxIncluded,
+        Number $priceTaxExcluded,
+        Number $priceTaxIncluded,
         int $roundType,
         int $computingPrecision
     ): void {
@@ -298,8 +301,8 @@ class OrderDetailUpdater
      * @param Order $order
      * @param int $productId
      * @param int $combinationId
-     * @param DecimalNumber $priceTaxExcluded
-     * @param DecimalNumber $priceTaxIncluded
+     * @param Number $priceTaxExcluded
+     * @param Number $priceTaxIncluded
      * @param int $roundType
      * @param int $computingPrecision
      * @param Address $taxAddress
@@ -310,8 +313,8 @@ class OrderDetailUpdater
         Order $order,
         int $productId,
         int $combinationId,
-        DecimalNumber $priceTaxExcluded,
-        DecimalNumber $priceTaxIncluded,
+        Number $priceTaxExcluded,
+        Number $priceTaxIncluded,
         int $roundType,
         int $computingPrecision,
         Address $taxAddress
@@ -323,10 +326,10 @@ class OrderDetailUpdater
 
         // Get precise prices thanks to first OrderDetail (they all have the same price anyway)
         $orderDetail = $identicalOrderDetails[0];
-        $ecotax = new DecimalNumber($orderDetail->ecotax);
+        $ecotax = new Number($orderDetail->ecotax);
 
         $ecotaxTaxCalculator = $this->getTaxCalculatorForEcotax($taxAddress);
-        $ecotaxTaxFactor = new DecimalNumber((string) (1 + ($ecotaxTaxCalculator->getTotalRate() / 100)));
+        $ecotaxTaxFactor = new Number((string) (1 + ($ecotaxTaxCalculator->getTotalRate() / 100)));
         $ecotaxTaxIncluded = $ecotax->times($ecotaxTaxFactor);
 
         // Prices coming from the backoffice : they are display with ecotax
@@ -380,21 +383,21 @@ class OrderDetailUpdater
      * if the price is different from catalog we use price included as a base and recompute the
      * price tax excluded with additional precision.
      *
-     * @param DecimalNumber $priceTaxIncluded
-     * @param DecimalNumber $priceTaxExcluded
+     * @param Number $priceTaxIncluded
+     * @param Number $priceTaxExcluded
      * @param Order $order
      * @param OrderDetail $orderDetail
      * @param Address $taxAddress
      *
-     * @return DecimalNumber
+     * @return Number
      */
     private function getPrecisePriceTaxExcluded(
-        DecimalNumber $priceTaxIncluded,
-        DecimalNumber $priceTaxExcluded,
+        Number $priceTaxIncluded,
+        Number $priceTaxExcluded,
         Order $order,
         OrderDetail $orderDetail,
         Address $taxAddress
-    ): DecimalNumber {
+    ): Number {
         $productOriginalPrice = $this->getProductRegularPrice($order, $orderDetail, $taxAddress);
 
         // If provided price is equal to catalog price no need to recompute
@@ -403,7 +406,7 @@ class OrderDetailUpdater
         }
 
         $productTaxCalculator = $this->getTaxCalculatorByAddress($taxAddress, $orderDetail);
-        $taxFactor = new DecimalNumber((string) (1 + ($productTaxCalculator->getTotalRate() / 100)));
+        $taxFactor = new Number((string) (1 + ($productTaxCalculator->getTotalRate() / 100)));
 
         $computedPriceTaxIncluded = $priceTaxExcluded->times($taxFactor);
         if ($computedPriceTaxIncluded->equals($priceTaxIncluded)) {
@@ -420,21 +423,21 @@ class OrderDetailUpdater
      * if the price is the same as the catalog we use price excluded as a base and recompute the
      * price tax included with additional precision.
      *
-     * @param DecimalNumber $priceTaxIncluded
-     * @param DecimalNumber $priceTaxExcluded
+     * @param Number $priceTaxIncluded
+     * @param Number $priceTaxExcluded
      * @param Order $order
      * @param OrderDetail $orderDetail
      * @param Address $taxAddress
      *
-     * @return DecimalNumber
+     * @return Number
      */
     private function getPrecisePriceTaxIncluded(
-        DecimalNumber $priceTaxIncluded,
-        DecimalNumber $priceTaxExcluded,
+        Number $priceTaxIncluded,
+        Number $priceTaxExcluded,
         Order $order,
         OrderDetail $orderDetail,
         Address $taxAddress
-    ): DecimalNumber {
+    ): Number {
         $productOriginalPrice = $this->getProductRegularPrice($order, $orderDetail, $taxAddress);
 
         // If provided price is different from the catalog price we use the input price tax included as a base
@@ -443,7 +446,7 @@ class OrderDetailUpdater
         }
 
         $productTaxCalculator = $this->getTaxCalculatorByAddress($taxAddress, $orderDetail);
-        $taxFactor = new DecimalNumber((string) (1 + ($productTaxCalculator->getTotalRate() / 100)));
+        $taxFactor = new Number((string) (1 + ($productTaxCalculator->getTotalRate() / 100)));
 
         return $priceTaxExcluded->times($taxFactor);
     }
@@ -453,17 +456,17 @@ class OrderDetailUpdater
      * @param OrderDetail $orderDetail
      * @param Address $taxAddress
      *
-     * @return DecimalNumber
+     * @return Number
      */
     private function getProductRegularPrice(
         Order $order,
         OrderDetail $orderDetail,
         Address $taxAddress
-    ): DecimalNumber {
+    ): Number {
         // Get price via getPriceStatic so that the catalog price rules are applied
         $null = null;
 
-        return new DecimalNumber((string) Product::getPriceStatic(
+        return new Number((string) Product::getPriceStatic(
             (int) $orderDetail->product_id,
             false,
             (int) $orderDetail->product_attribute_id,

@@ -43,7 +43,7 @@ class BestSalesControllerCore extends ProductListingFrontController
         if (Configuration::get('PS_DISPLAY_BEST_SELLERS')) {
             parent::init();
         } else {
-            Tools::redirect('pagenotfound');
+            Tools::redirect('index.php?controller=404');
         }
     }
 
@@ -54,7 +54,7 @@ class BestSalesControllerCore extends ProductListingFrontController
     {
         parent::initContent();
 
-        $this->doProductSearch('catalog/listing/best-sales', ['entity' => 'best-sales']);
+        $this->doProductSearch('catalog/listing/best-sales');
     }
 
     protected function getProductSearchQuery()

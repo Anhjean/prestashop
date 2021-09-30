@@ -52,7 +52,7 @@ final class CmsPageCategoryQueryBuilder extends AbstractDoctrineQueryBuilder
 
     /**
      * @param Connection $connection
-     * @param string $dbPrefix
+     * @param $dbPrefix
      * @param DoctrineSearchCriteriaApplicatorInterface $searchCriteriaApplicator
      * @param array $contextShopIds
      * @param int $contextIdLang
@@ -199,7 +199,7 @@ final class CmsPageCategoryQueryBuilder extends AbstractDoctrineQueryBuilder
      * Gets modified position filter value. This is required due to in database position filter index starts from 0 and
      * for the customer which wants to filter results the value starts from 1 instead.
      *
-     * @param string|int $positionFilterValue
+     * @param $positionFilterValue
      *
      * @return int|null - if null is returned then no results are found since position field does not hold null values
      */

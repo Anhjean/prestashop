@@ -27,7 +27,6 @@
 namespace PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters;
 
 use Exception;
-use GuzzleHttp\Client;
 use PrestaShop\PrestaShop\Core\Domain\Webservice\Exception\DuplicateWebserviceKeyException;
 use PrestaShop\PrestaShop\Core\Domain\Webservice\Exception\WebserviceConstraintException;
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
@@ -35,7 +34,6 @@ use PrestaShop\PrestaShop\Core\Search\Filters\WebserviceKeyFilters;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use PrestaShopBundle\Security\Annotation\DemoRestricted;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,8 +45,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class WebserviceController extends FrameworkBundleAdminController
 {
-    private const WEBSERVICE_ENTRY_ENDPOINT = '/api';
-
     /**
      * Displays the Webservice main page.
      *
@@ -61,7 +57,24 @@ class WebserviceController extends FrameworkBundleAdminController
      */
     public function indexAction(WebserviceKeyFilters $filters, Request $request)
     {
-        return $this->renderPage($request, $filters, $this->getFormHandler()->getForm());
+        $form = $this->getFormHandler()->getForm();
+        $gridWebserviceFactory = $this->get('prestashop.core.grid.factory.webservice_key');
+        $grid = $gridWebserviceFactory->getGrid($filters);
+
+        $gridPresenter = $this->get('prestashop.core.grid.presenter.grid_presenter');
+        $presentedGrid = $gridPresenter->present($grid);
+
+        $configurationWarnings = $this->lookForWarnings();
+
+        return $this->render(
+            '@PrestaShop/Admin/Configure/AdvancedParameters/Webservice/index.html.twig',
+            [
+                'help_link' => $this->generateSidebarLink($request->get('_legacy_controller')),
+                'form' => $form->createView(),
+                'grid' => $presentedGrid,
+                'configurationWarnings' => $configurationWarnings,
+            ]
+        );
     }
 
     /**
@@ -140,8 +153,6 @@ class WebserviceController extends FrameworkBundleAdminController
     }
 
     /**
-     * @deprecated since 1.7.8 and will be removed in next major. Use CommonController:searchGridAction instead
-     *
      * Searches for specific records.
      *
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
@@ -239,12 +250,7 @@ class WebserviceController extends FrameworkBundleAdminController
         $webserviceToEnable = $request->request->get('webservice_key_bulk_action');
         $statusModifier = $this->get('prestashop.adapter.webservice.webservice_key_status_modifier');
 
-        if ($statusModifier->setStatus($webserviceToEnable, true)) {
-            $this->addFlash(
-                'success',
-                $this->trans('The status has been successfully updated.', 'Admin.Notifications.Success')
-            );
-        }
+        $statusModifier->setStatus($webserviceToEnable, 1);
 
         return $this->redirectToRoute('admin_webservice_keys_index');
     }
@@ -261,15 +267,10 @@ class WebserviceController extends FrameworkBundleAdminController
      */
     public function bulkDisableAction(Request $request)
     {
-        $webserviceToDisable = $request->request->get('webservice_key_bulk_action');
+        $webserviceToEnable = $request->request->get('webservice_key_bulk_action');
         $statusModifier = $this->get('prestashop.adapter.webservice.webservice_key_status_modifier');
 
-        if ($statusModifier->setStatus($webserviceToDisable, false)) {
-            $this->addFlash(
-                'success',
-                $this->trans('The status has been successfully updated.', 'Admin.Notifications.Success')
-            );
-        }
+        $statusModifier->setStatus($webserviceToEnable, 0);
 
         return $this->redirectToRoute('admin_webservice_keys_index');
     }
@@ -305,71 +306,36 @@ class WebserviceController extends FrameworkBundleAdminController
      * Process the Webservice configuration form.
      *
      * @DemoRestricted(redirectRoute="admin_webservice_keys_index")
-     * @AdminSecurity(
-     *     "is_granted('create', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="You do not have permission to edit this."
-     * )
+     * @AdminSecurity("is_granted(['create', 'update', 'delete'], request.get('_legacy_controller'))", message="You do not have permission to edit this.")
      *
      * @param Request $request
-     * @param WebserviceKeyFilters $filters
      *
-     * @return Response|RedirectResponse
+     * @return RedirectResponse
      */
-    public function saveSettingsAction(Request $request, WebserviceKeyFilters $filters)
+    public function saveSettingsAction(Request $request)
     {
         $this->dispatchHook('actionAdminAdminWebserviceControllerPostProcessBefore', ['controller' => $this]);
 
         $form = $this->getFormHandler()->getForm();
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
             $saveErrors = $this->getFormHandler()->save($form->getData());
 
             if (0 === count($saveErrors)) {
                 $this->addFlash('success', $this->trans('Update successful', 'Admin.Notifications.Success'));
-
-                return $this->redirectToRoute('admin_webservice_keys_index');
             } else {
                 $this->flashErrors($saveErrors);
             }
         }
 
-        return $this->renderPage($request, $filters, $form);
-    }
-
-    /**
-     * @param Request $request
-     * @param WebserviceKeyFilters $filters
-     * @param FormInterface $form
-     *
-     * @return Response
-     */
-    protected function renderPage(Request $request, WebserviceKeyFilters $filters, FormInterface $form): Response
-    {
-        $gridWebserviceFactory = $this->get('prestashop.core.grid.factory.webservice_key');
-        $grid = $gridWebserviceFactory->getGrid($filters);
-
-        $gridPresenter = $this->get('prestashop.core.grid.presenter.grid_presenter');
-        $presentedGrid = $gridPresenter->present($grid);
-
-        $configurationWarnings = $this->lookForWarnings();
-
-        return $this->render(
-            '@PrestaShop/Admin/Configure/AdvancedParameters/Webservice/index.html.twig',
-            [
-                'help_link' => $this->generateSidebarLink($request->get('_legacy_controller')),
-                'webserviceConfigurationForm' => $form->createView(),
-                'grid' => $presentedGrid,
-                'configurationWarnings' => $configurationWarnings,
-                'webserviceStatus' => $this->getWebServiceStatus($request),
-            ]
-        );
+        return $this->redirectToRoute('admin_webservice_keys_index');
     }
 
     /**
      * @return FormHandlerInterface
      */
-    private function getFormHandler(): FormHandlerInterface
+    private function getFormHandler()
     {
         return $this->get('prestashop.adapter.webservice.form_handler');
     }
@@ -395,51 +361,5 @@ class WebserviceController extends FrameworkBundleAdminController
             ],
             DuplicateWebserviceKeyException::class => $this->trans('This key already exists.', 'Admin.Advparameters.Notification'),
         ];
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return array<string, bool|string|null>
-     */
-    private function getWebServiceStatus(Request $request): array
-    {
-        $webserviceConfiguration = $this->get('prestashop.admin.webservice.form_data_provider')->getData();
-        $webserviceStatus = [
-            'isEnabled' => (bool) $webserviceConfiguration['enable_webservice'],
-            'isFunctional' => false,
-            'endpoint' => null,
-        ];
-
-        if ($webserviceStatus['isEnabled']) {
-            $webserviceStatus['endpoint'] = rtrim($request->getSchemeAndHttpHost(), '/');
-            $webserviceStatus['endpoint'] .= rtrim($this->getContext()->shop->getBaseURI(), '/');
-            $webserviceStatus['endpoint'] .= self::WEBSERVICE_ENTRY_ENDPOINT;
-            $webserviceStatus['isFunctional'] = $this->checkWebserviceEndpoint($webserviceStatus['endpoint']);
-        }
-
-        return $webserviceStatus;
-    }
-
-    /**
-     * @param string $url
-     *
-     * @return bool
-     */
-    private function checkWebserviceEndpoint(string $url): bool
-    {
-        $client = new Client();
-        $response = $client->request('GET', $url, [
-            'http_errors' => false,
-            'allow_redirects' => true,
-        ]);
-
-        if ($response->getStatusCode() >= Response::HTTP_OK && $response->getStatusCode() < Response::HTTP_MULTIPLE_CHOICES) {
-            return true;
-        } elseif ($response->getStatusCode() == Response::HTTP_UNAUTHORIZED) {
-            return true;
-        }
-
-        return false;
     }
 }

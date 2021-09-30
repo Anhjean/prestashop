@@ -76,7 +76,7 @@ class ToggleManufacturerStatusCommand
     /**
      * Validates that value is of type boolean
      *
-     * @param bool $value
+     * @param $value
      *
      * @throws ManufacturerConstraintException
      */

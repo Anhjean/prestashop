@@ -27,11 +27,11 @@
 namespace PrestaShopBundle\Event;
 
 use PrestaShop\PrestaShop\Adapter\Module\ModuleZip;
-use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 
 class ModuleZipManagementEvent extends Event
 {
-    public const DOWNLOAD = 'module.download'; // Module download from addons or employee disk
+    const DOWNLOAD = 'module.download'; // Module download from addons or employee disk
 
     /**
      * @var ModuleZip Module Zip related to the triggered event

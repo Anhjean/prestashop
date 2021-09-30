@@ -31,8 +31,8 @@ namespace PrestaShop\PrestaShop\Core\Feature;
  */
 final class TokenInUrls
 {
-    public const DISABLED = 'disabled';
-    public const ENV_VAR = '_TOKEN_';
+    const DISABLED = 'disabled';
+    const ENV_VAR = '_TOKEN_';
 
     /**
      * @return bool

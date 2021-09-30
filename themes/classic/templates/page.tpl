@@ -37,12 +37,12 @@
     {/block}
 
     {block name='page_content_container'}
-      <div id="content" class="page-content card card-block">
+      <section id="content" class="page-content card card-block">
         {block name='page_content_top'}{/block}
         {block name='page_content'}
           <!-- Page content -->
         {/block}
-      </div>
+      </section>
     {/block}
 
     {block name='page_footer_container'}

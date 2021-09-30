@@ -64,8 +64,8 @@ class CachingConfiguration implements DataConfigurationInterface
      * @param MemcacheServerManager $memcacheServerManager
      * @param PhpParameters $phpParameters
      * @param CacheClearerInterface $symfonyCacheClearer
-     * @param bool $isCachingEnabled
-     * @param string $cachingSystem
+     * @param $isCachingEnabled
+     * @param $cachingSystem
      */
     public function __construct(
         MemcacheServerManager $memcacheServerManager,

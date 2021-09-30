@@ -56,7 +56,6 @@
             {$msg}
           </p>
         {/if}
-        {hook h='displayNewsletterRegistration'}
         {if isset($id_module)}
           {hook h='displayGDPRConsent' id_module=$id_module}
         {/if}

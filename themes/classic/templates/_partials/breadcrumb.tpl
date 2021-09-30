@@ -23,16 +23,17 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 <nav data-depth="{$breadcrumb.count}" class="breadcrumb hidden-sm-down">
-  <ol>
+  <ol itemscope itemtype="http://schema.org/BreadcrumbList">
     {block name='breadcrumb'}
       {foreach from=$breadcrumb.links item=path name=breadcrumb}
         {block name='breadcrumb_item'}
-          <li>
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
             {if not $smarty.foreach.breadcrumb.last}
-              <a href="{$path.url}"><span>{$path.title}</span></a>
+              <a itemprop="item" href="{$path.url}"><span itemprop="name">{$path.title}</span></a>
             {else}
-              <span>{$path.title}</span>
+              <span itemprop="name">{$path.title}</span>
             {/if}
+            <meta itemprop="position" content="{$smarty.foreach.breadcrumb.iteration}">
           </li>
         {/block}
       {/foreach}

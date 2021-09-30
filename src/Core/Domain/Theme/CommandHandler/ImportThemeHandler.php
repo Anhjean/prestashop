@@ -78,7 +78,6 @@ final class ImportThemeHandler implements ImportThemeHandlerInterface
         $type = $command->getImportSource()->getSourceType();
         $source = $command->getImportSource()->getSource();
 
-        $themePath = '';
         if (ThemeImportSource::FROM_ARCHIVE === $type) {
             $themePath = $this->themeUploader->upload($source);
         } elseif (ThemeImportSource::FROM_WEB === $type) {
@@ -90,12 +89,7 @@ final class ImportThemeHandler implements ImportThemeHandlerInterface
         try {
             $this->themeManager->install($themePath);
         } catch (ThemeAlreadyExistsException $e) {
-            throw new ImportedThemeAlreadyExistsException(
-                new ThemeName($e->getThemeName()),
-                sprintf('Imported theme "%s" already exists.', $e->getThemeName()),
-                0,
-                $e
-            );
+            throw new ImportedThemeAlreadyExistsException(new ThemeName($e->getThemeName()), sprintf('Imported theme "%s" already exists.', $e->getThemeName()), 0, $e);
         } finally {
             if (ThemeImportSource::FROM_ARCHIVE === $type) {
                 @unlink($themePath);

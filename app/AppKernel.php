@@ -24,19 +24,20 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-use PrestaShop\PrestaShop\Adapter\Module\Repository\ModuleRepository;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShopBundle\Kernel\ModuleRepositoryFactory;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
 {
-    const VERSION = '1.7.8.1';
+    const VERSION = '1.7.7.8';
     const MAJOR_VERSION_STRING = '1.7';
     const MAJOR_VERSION = 17;
-    const MINOR_VERSION = 8;
-    const RELEASE_VERSION = 1;
+    const MINOR_VERSION = 7;
+    const RELEASE_VERSION = 8;
+
 
     /**
      * {@inheritdoc}
@@ -56,7 +57,7 @@ class AppKernel extends Kernel
             // PrestaShop Translation parser
             new PrestaShop\TranslationToolsBundle\TranslationToolsBundle(),
             // REST API consumer
-            new EightPoints\Bundle\GuzzleBundle\EightPointsGuzzleBundle(),
+            new Csa\Bundle\GuzzleBundle\CsaGuzzleBundle(),
             new League\Tactician\Bundle\TacticianBundle(),
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
         );
@@ -64,6 +65,11 @@ class AppKernel extends Kernel
         if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+            $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
+        }
+
+        if ('dev' === $this->getEnvironment()) {
+            $bundles[] = new Symfony\Bundle\WebServerBundle\WebServerBundle();
         }
 
         /* Will not work until PrestaShop is installed */
@@ -143,18 +149,26 @@ class AppKernel extends Kernel
         });
 
         $loader->load($this->getRootDir() . '/config/config_' . $this->getEnvironment() . '.yml');
+    }
 
-        // Add translation paths to load into the translator. The paths are loaded by the Symfony's FrameworkExtension
-        $loader->load(function (ContainerBuilder $container) {
-            $moduleTranslationsPaths = $container->getParameter('modules_translation_paths');
-            foreach ($this->getActiveModules() as $activeModulePath) {
-                $translationsDir = _PS_MODULE_DIR_ . $activeModulePath . '/translations';
-                if (is_dir($translationsDir)) {
-                    $moduleTranslationsPaths[] = $translationsDir;
-                }
+    /**
+     * Return all active modules.
+     *
+     * @return array list of modules names
+     */
+    private function getActiveModules()
+    {
+        $activeModules = [];
+        try {
+            if ($modulesRepository = ModuleRepositoryFactory::getInstance()->getRepository()) {
+                $activeModules = $modulesRepository->getActiveModules();
             }
-            $container->setParameter('modules_translation_paths', $moduleTranslationsPaths);
-        });
+        } catch (\Exception $e) {
+            //Do nothing because the modules retrieval must not block the kernel, and it won't work
+            //during the installation process
+        }
+
+        return $activeModules;
     }
 
     /**
@@ -189,18 +203,5 @@ class AppKernel extends Kernel
     public function getProjectDir()
     {
         return realpath(__DIR__ . '/..');
-    }
-
-    private function getActiveModules(): array
-    {
-        $activeModules = [];
-        try {
-            $activeModules = (new ModuleRepository())->getActiveModules();
-        } catch (\Exception $e) {
-            //Do nothing because the modules retrieval must not block the kernel, and it won't work
-            //during the installation process
-        }
-
-        return $activeModules;
     }
 }

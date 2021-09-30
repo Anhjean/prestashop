@@ -32,7 +32,7 @@ use Symfony\Bundle\FrameworkBundle\Translation\Translator as BaseTranslator;
 /**
  * Replacement for the original Symfony FrameworkBundle translator
  */
-class Translator extends BaseTranslator implements TranslatorInterface
+class Translator extends BaseTranslator
 {
     use PrestaShopTranslatorTrait;
     use TranslatorLanguageTrait;

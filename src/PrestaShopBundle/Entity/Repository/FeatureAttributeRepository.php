@@ -62,7 +62,7 @@ class FeatureAttributeRepository
      *
      * @param Connection $connection
      * @param ContextAdapter $contextAdapter
-     * @param string $tablePrefix
+     * @param $tablePrefix
      *
      * @throws NotImplementedException
      */
@@ -200,7 +200,7 @@ class FeatureAttributeRepository
     }
 
     /**
-     * @param array $rows
+     * @param $rows
      *
      * @return array
      */

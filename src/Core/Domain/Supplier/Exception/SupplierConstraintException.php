@@ -34,5 +34,5 @@ class SupplierConstraintException extends SupplierException
     /**
      * When invalid data is provided for bulk action
      */
-    public const INVALID_BULK_DATA = 1;
+    const INVALID_BULK_DATA = 1;
 }

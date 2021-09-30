@@ -37,7 +37,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class SwitchType extends AbstractType
 {
-    public const TRANS_DOMAIN = 'Admin.Global';
+    const TRANS_DOMAIN = 'Admin.Global';
 
     /**
      * {@inheritdoc}

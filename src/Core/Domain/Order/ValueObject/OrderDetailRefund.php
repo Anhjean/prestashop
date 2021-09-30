@@ -27,7 +27,7 @@
 namespace PrestaShop\PrestaShop\Core\Domain\Order\ValueObject;
 
 use InvalidArgumentException;
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Core\Domain\Order\Exception\InvalidAmountException;
 use PrestaShop\PrestaShop\Core\Domain\Order\Exception\InvalidCancelProductException;
 use PrestaShop\PrestaShop\Core\Domain\Order\Exception\OrderException;
@@ -48,7 +48,7 @@ class OrderDetailRefund
     private $productQuantity;
 
     /**
-     * @var DecimalNumber|null
+     * @var float|null
      */
     private $refundedAmount;
 
@@ -65,7 +65,7 @@ class OrderDetailRefund
     public static function createPartialRefund(int $orderDetailId, int $productQuantity, string $refundedAmount): self
     {
         try {
-            $decimalRefundedAmount = new DecimalNumber($refundedAmount);
+            $decimalRefundedAmount = new Number($refundedAmount);
         } catch (InvalidArgumentException $e) {
             throw new InvalidAmountException();
         }
@@ -93,11 +93,11 @@ class OrderDetailRefund
     /**
      * @param int $orderDetailId
      * @param int $productQuantity
-     * @param DecimalNumber|null $refundedAmount
+     * @param Number|null $refundedAmount
      *
      * @throws OrderException
      */
-    private function __construct(int $orderDetailId, int $productQuantity, ?DecimalNumber $refundedAmount)
+    private function __construct(int $orderDetailId, int $productQuantity, ?Number $refundedAmount)
     {
         $this->assertOrderDetailIdIsGreaterThanZero($orderDetailId);
         if (0 >= $productQuantity) {
@@ -125,9 +125,9 @@ class OrderDetailRefund
     }
 
     /**
-     * @return DecimalNumber|null
+     * @return Number|null
      */
-    public function getRefundedAmount(): ?DecimalNumber
+    public function getRefundedAmount(): ?Number
     {
         return $this->refundedAmount;
     }

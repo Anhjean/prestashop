@@ -54,7 +54,7 @@ class ManufacturerRepository
     /**
      * @param Connection $connection
      * @param ContextAdapter $contextAdapter
-     * @param string $tablePrefix
+     * @param $tablePrefix
      *
      * @throws NotImplementedException
      */

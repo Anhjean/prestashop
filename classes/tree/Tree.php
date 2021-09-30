@@ -50,12 +50,8 @@ class TreeCore
     /** @var TreeToolbar|ITreeToolbar */
     private $_toolbar;
 
-    /** @var Translator */
-    public $translator;
-
     public function __construct($id, $data = null)
     {
-        $this->translator = Context::getContext()->getTranslator();
         $this->setId($id);
 
         if (isset($data)) {
@@ -101,7 +97,7 @@ class TreeCore
 
     public function getAttribute($name)
     {
-        return $this->_attributes[$name] ?? null;
+        return $this->hasAttribute($name) ? $this->_attributes[$name] : null;
     }
 
     public function setAttributes($value)

@@ -83,18 +83,13 @@ class BackupController extends FrameworkBundleAdminController
             'downloadFile' => $downloadFile,
             'enableSidebar' => true,
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
-            'multistoreInfoTip' => $this->trans(
-                'Note that this feature is available in all shops context only. It will be added to all your stores.',
-                'Admin.Notifications.Info'
-            ),
-            'multistoreIsUsed' => $this->get('prestashop.adapter.multistore_feature')->isUsed(),
         ]);
     }
 
     /**
      * Show file download view.
      *
-     * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     * @AdminSecurity("is_granted(['read'], request.get('_legacy_controller'))")
      * @DemoRestricted(redirectRoute="admin_backups_index")
      *
      * @param Request $request
@@ -120,7 +115,7 @@ class BackupController extends FrameworkBundleAdminController
     /**
      * Return a backup content as a download.
      *
-     * @AdminSecurity("is_granted('read', request.get('_legacy_controller')~'_')")
+     * @AdminSecurity("is_granted(['read'], request.get('_legacy_controller')~'_')")
      * @DemoRestricted(redirectRoute="admin_backup")
      *
      * @param string $downloadFileName
@@ -137,9 +132,7 @@ class BackupController extends FrameworkBundleAdminController
     /**
      * Process backup options saving.
      *
-     * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))"
-     * )
+     * @AdminSecurity("is_granted(['update', 'create', 'delete'], request.get('_legacy_controller'))")
      * @DemoRestricted(redirectRoute="admin_backups_index")
      *
      * @param Request $request
@@ -169,7 +162,7 @@ class BackupController extends FrameworkBundleAdminController
     /**
      * Create new backup.
      *
-     * @AdminSecurity("is_granted('create', request.get('_legacy_controller'))")
+     * @AdminSecurity("is_granted(['create'], request.get('_legacy_controller'))")
      * @DemoRestricted(redirectRoute="admin_backups_index")
      *
      * @return RedirectResponse
@@ -207,7 +200,7 @@ class BackupController extends FrameworkBundleAdminController
     /**
      * Process backup file deletion.
      *
-     * @AdminSecurity("is_granted('delete', request.get('_legacy_controller'))")
+     * @AdminSecurity("is_granted(['delete'], request.get('_legacy_controller'))")
      * @DemoRestricted(redirectRoute="admin_backups_index")
      *
      * @param string $deleteFileName
@@ -240,7 +233,7 @@ class BackupController extends FrameworkBundleAdminController
     /**
      * Process bulk backup deletion.
      *
-     * @AdminSecurity("is_granted('delete', request.get('_legacy_controller'))")
+     * @AdminSecurity("is_granted(['delete'], request.get('_legacy_controller'))")
      * @DemoRestricted(redirectRoute="admin_backups_index")
      *
      * @param Request $request
@@ -300,7 +293,7 @@ class BackupController extends FrameworkBundleAdminController
      *
      * @return FormHandlerInterface
      */
-    protected function getBackupFormHandler(): FormHandlerInterface
+    protected function getBackupFormHandler()
     {
         return $this->get('prestashop.admin.backup.form_handler');
     }

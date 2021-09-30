@@ -139,7 +139,7 @@ trait PrestaShopTranslatorTrait
      *
      * @return bool
      */
-    private function isSprintfString($string)
+    final private function isSprintfString($string)
     {
         return (bool) preg_match_all(static::$regexSprintfParams, $string)
             && !(bool) preg_match_all(static::$regexClassicParams, $string);

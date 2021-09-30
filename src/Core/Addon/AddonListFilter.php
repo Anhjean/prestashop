@@ -91,7 +91,7 @@ class AddonListFilter
      */
     public function hasOrigin($origin)
     {
-        return (bool) ($this->origin & $origin);
+        return $this->origin & $origin;
     }
 
     /**
@@ -101,7 +101,7 @@ class AddonListFilter
      */
     public function hasStatus($status)
     {
-        return (bool) ($this->status & $status);
+        return $this->status & $status;
     }
 
     /**
@@ -111,7 +111,7 @@ class AddonListFilter
      */
     public function hasType($type)
     {
-        return (bool) ($this->type & $type);
+        return $this->type & $type;
     }
 
     /**

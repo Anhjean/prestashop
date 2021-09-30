@@ -67,7 +67,7 @@ class ShopGroupId
         if (0 >= $shopGroupId) {
             throw new ShopException(
                 sprintf(
-                    'Shop group id %s is invalid. Shop group id must be a number that is greater than zero.',
+                    'Shop id %s is invalid. Shop id must be number that is greater than zero.',
                     var_export($shopGroupId, true)
                 )
             );

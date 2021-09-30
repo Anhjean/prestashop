@@ -35,7 +35,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 final class GridDefinitionServiceIdsCollectorPass implements CompilerPassInterface
 {
-    public const GRID_DEFINITION_SERVICE_PREFIX = 'prestashop.core.grid.definition';
+    const GRID_DEFINITION_SERVICE_PREFIX = 'prestashop.core.grid.definition';
 
     /**
      * {@inheritdoc}

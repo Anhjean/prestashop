@@ -29,7 +29,7 @@ namespace PrestaShop\PrestaShop\Core\Util;
 class BoolParser
 {
     /**
-     * @param string|int|bool $value
+     * @param string|int $value
      *
      * @return bool
      */

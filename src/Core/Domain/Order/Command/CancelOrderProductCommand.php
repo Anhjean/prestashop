@@ -45,7 +45,7 @@ class CancelOrderProductCommand
     /**
      * CancelOrderProductCommand constructor.
      *
-     * @param array $cancelledProducts
+     * @param array $toBeCanceledProducts
      * @param int $orderId
      */
     public function __construct(array $cancelledProducts, int $orderId)

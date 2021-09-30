@@ -45,10 +45,6 @@ abstract class AbstractCheckoutStepCore implements CheckoutStepInterface
     protected $template;
     protected $unreachableStepTemplate = 'checkout/_partials/steps/unreachable.tpl';
 
-    /**
-     * @param Context $context
-     * @param TranslatorInterface $translator
-     */
     public function __construct(Context $context, TranslatorInterface $translator)
     {
         $this->context = $context;

@@ -28,7 +28,6 @@ namespace PrestaShop\PrestaShop\Core\Grid\Definition\Factory\Monitoring;
 
 use PrestaShop\PrestaShop\Core\Grid\Column\ColumnCollection;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\ActionColumn;
-use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\BulkActionColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\IdentifierColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn;
 use PrestaShop\PrestaShop\Core\Grid\Filter\Filter;
@@ -41,7 +40,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
  */
 final class DisabledProductGridDefinitionFactory extends AbstractProductGridDefinitionFactory
 {
-    public const GRID_ID = 'disabled_product';
+    const GRID_ID = 'disabled_product';
 
     /**
      * {@inheritdoc}
@@ -57,12 +56,6 @@ final class DisabledProductGridDefinitionFactory extends AbstractProductGridDefi
     protected function getColumns()
     {
         return (new ColumnCollection())
-            ->add(
-                (new BulkActionColumn('monitoring_products_bulk'))
-                    ->setOptions([
-                        'bulk_field' => 'id_product',
-                    ])
-            )
             ->add(
                 (new IdentifierColumn('id_product'))
                     ->setName($this->trans('ID', [], 'Admin.Global'))

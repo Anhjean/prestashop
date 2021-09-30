@@ -26,8 +26,8 @@
 
 namespace PrestaShop\PrestaShop\Core\Image\Uploader\Exception;
 
-use PrestaShop\PrestaShop\Core\Image\Exception\ImageException;
+use PrestaShop\PrestaShop\Core\Exception\CoreException;
 
-class MemoryLimitException extends ImageException
+class MemoryLimitException extends CoreException
 {
 }

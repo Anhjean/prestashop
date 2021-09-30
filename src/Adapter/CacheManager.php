@@ -38,7 +38,7 @@ class CacheManager
     /**
      * Cleans the cache for specific cache key.
      *
-     * @param string $key
+     * @param $key
      */
     public function clean($key)
     {

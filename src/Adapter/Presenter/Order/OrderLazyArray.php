@@ -202,17 +202,14 @@ class OrderLazyArray extends AbstractLazyArray
 
             foreach ($cartProducts['products'] as $cartProduct) {
                 if (($cartProduct['id_product'] === $orderProduct['id_product'])
-                    && ($cartProduct['id_product_attribute'] === $orderProduct['id_product_attribute'])
-                ) {
+                    && ($cartProduct['id_product_attribute'] === $orderProduct['id_product_attribute'])) {
                     if (isset($cartProduct['attributes'])) {
                         $orderProduct['attributes'] = $cartProduct['attributes'];
                     } else {
                         $orderProduct['attributes'] = [];
                     }
                     $orderProduct['cover'] = $cartProduct['cover'];
-                    $orderProduct['default_image'] = $cartProduct['default_image'];
                     $orderProduct['unit_price_full'] = $cartProduct['unit_price_full'];
-                    break;
                 }
             }
 
@@ -301,9 +298,7 @@ class OrderLazyArray extends AbstractLazyArray
         $historyList = $order->getHistory($context->language->id, false, true);
 
         foreach ($historyList as $historyId => $history) {
-            // HistoryList only contains order states that are not hidden to customers, the last visible order state,
-            // that is to say the one we get in the first iteration
-            if ($historyId === array_key_first($historyList)) {
+            if ($history['id_order_state'] == $order->current_state) {
                 $historyId = 'current';
             }
             $orderHistory[$historyId] = $history;
@@ -447,7 +442,7 @@ class OrderLazyArray extends AbstractLazyArray
             'color' => '',
             'unremovable' => '',
             'hidden' => '',
-            'loggable' => '',
+            'logable' => '',
             'delivery' => '',
             'shipped' => '',
             'paid' => '',

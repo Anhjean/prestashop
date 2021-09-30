@@ -56,7 +56,7 @@ final class WebserviceKeyQueryBuilder extends AbstractDoctrineQueryBuilder
      * WebserviceKeyQueryBuilder constructor.
      *
      * @param Connection $connection
-     * @param string $dbPrefix
+     * @param $dbPrefix
      * @param DoctrineSearchCriteriaApplicatorInterface $searchCriteriaApplicator
      * @param array $contextShopIds
      * @param DoctrineFilterApplicatorInterface $doctrineFilterApplicator

@@ -78,7 +78,7 @@ class MemcacheServerManager
      * Test if a Memcache configuration is valid.
      *
      * @param string $serverIp
-     * @param int $serverPort
+     * @param string @serverPort
      *
      * @return bool
      */
@@ -86,21 +86,19 @@ class MemcacheServerManager
     {
         if (extension_loaded('memcached')) {
             $memcached = new Memcached();
-            $memcached->addServer($serverIp, (int) $serverPort);
+            $memcached->addServer($serverIp, $serverPort);
             $version = $memcached->getVersion();
 
             return is_array($version) && false === in_array('255.255.255', $version, true);
         }
 
-        $memcache = new Memcache();
-
-        return true === $memcache->connect($serverIp, (int) $serverPort);
+        return true === @memcache_connect($serverIp, $serverPort);
     }
 
     /**
      * Delete a memcache server (a deletion returns the number of rows deleted).
      *
-     * @param int $serverId Server ID (in database)
+     * @param int $serverId_server id (in database)
      *
      * @return bool
      */

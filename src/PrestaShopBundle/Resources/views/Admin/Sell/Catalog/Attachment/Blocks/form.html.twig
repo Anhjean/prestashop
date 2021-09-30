@@ -23,20 +23,38 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  *#}
 
-{% form_theme attachmentForm '@PrestaShop/Admin/TwigTemplateForm/prestashop_ui_kit.html.twig' %}
+{% import '@PrestaShop/Admin/macros.html.twig' as ps %}
 
 {% block attachment_form %}
-  {# Add data attribute to allow form iframe modal to easily get the data #}
-  {{ form_start(attachmentForm, {'attr': {'data-attachment-id': attachmentId|default('')}}) }}
+  {{ form_start(attachmentForm) }}
     <div class="card">
       <h3 class="card-header">
-        <i class="material-icons">attachment</i>
+        <i class="material-icons">person</i>
         {{ 'File'|trans({}, 'Admin.Global') }}
       </h3>
       <div class="card-block row">
         <div class="card-text">
           {{ form_errors(attachmentForm) }}
-          {{ form_widget(attachmentForm) }}
+
+          {{ ps.form_group_row(attachmentForm.name, {}, {
+            'label': 'File name'|trans({}, 'Admin.Global')
+          }) }}
+
+          {{ ps.form_group_row(attachmentForm.file_description, {}, {
+            'label': 'Description'|trans({}, 'Admin.Global')
+          }) }}
+
+          <div class="form-group row">
+            <label class="form-control-label">
+              <span class="text-danger">*</span>
+              {{ 'File'|trans({}, 'Admin.Global') }}
+            </label>
+            <div class="col-sm">
+              {{ form_widget(attachmentForm.file) }}
+              {{ form_errors(attachmentForm.file) }}
+            </div>
+            {% block attachment_download %}{% endblock %}
+          </div>
 
           {% if attachmentId is defined %}
             <div class="form-group row">
@@ -48,13 +66,17 @@
               </div>
             </div>
           {% endif %}
+
+          {% block attachment_form_rest %}
+            {{ form_rest(attachmentForm) }}
+          {% endblock %}
         </div>
       </div>
       <div class="card-footer">
-          <a href="{{ pathWithBackUrl('admin_attachments_index') }}" class="btn btn-outline-secondary cancel-btn">
+          <a href="{{ pathWithBackUrl('admin_attachments_index') }}" class="btn btn-outline-secondary">
           {{ 'Cancel'|trans({}, 'Admin.Actions') }}
         </a>
-        <button class="btn btn-primary float-right submit-btn">
+        <button class="btn btn-primary float-right">
           {{ 'Save'|trans({}, 'Admin.Actions') }}
         </button>
       </div>

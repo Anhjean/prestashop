@@ -36,7 +36,7 @@ class Password
     /**
      * @var string Minimum required password length for customer
      */
-    public const MIN_LENGTH = 5;
+    const MIN_LENGTH = 5;
 
     /**
      * @var string Maximum allowed password length for customer.
@@ -44,7 +44,7 @@ class Password
      * It's limited to 72 chars because of PASSWORD_BCRYPT algorithm
      * used in password_hash() function.
      */
-    public const MAX_LENGTH = 72;
+    const MAX_LENGTH = 72;
 
     /**
      * @var string

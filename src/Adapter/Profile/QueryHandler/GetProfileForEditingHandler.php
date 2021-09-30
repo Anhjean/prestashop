@@ -26,59 +26,28 @@
 
 namespace PrestaShop\PrestaShop\Adapter\Profile\QueryHandler;
 
-use PrestaShop\PrestaShop\Adapter\Domain\AbstractObjectModelHandler;
 use PrestaShop\PrestaShop\Core\Domain\Profile\Exception\ProfileNotFoundException;
 use PrestaShop\PrestaShop\Core\Domain\Profile\Query\GetProfileForEditing;
 use PrestaShop\PrestaShop\Core\Domain\Profile\QueryHandler\GetProfileForEditingHandlerInterface;
 use PrestaShop\PrestaShop\Core\Domain\Profile\QueryResult\EditableProfile;
 use PrestaShop\PrestaShop\Core\Domain\Profile\ValueObject\ProfileId;
-use PrestaShop\PrestaShop\Core\Image\Parser\ImageTagSourceParser;
-use PrestaShop\PrestaShop\Core\Image\Parser\ImageTagSourceParserInterface;
 use Profile;
 
 /**
  * Gets Profile for editing using legacy object model
  */
-final class GetProfileForEditingHandler extends AbstractObjectModelHandler implements GetProfileForEditingHandlerInterface
+final class GetProfileForEditingHandler implements GetProfileForEditingHandlerInterface
 {
-    /**
-     * @var ImageTagSourceParserInterface
-     */
-    private $imageTagSourceParser;
-    /**
-     * @var string
-     */
-    private $imgDir;
-
-    /**
-     * @param ImageTagSourceParserInterface|null $imageTagSourceParser
-     * @param string $imgDir
-     */
-    public function __construct(
-        ImageTagSourceParserInterface $imageTagSourceParser = null,
-        string $imgDir = _PS_PROFILE_IMG_DIR_
-    ) {
-        $this->imgDir = $imgDir;
-        if (null === $imageTagSourceParser) {
-            @trigger_error('The $imageTagSourceParser parameter should not be null, inject your main ImageTagSourceParserInterface service', E_USER_DEPRECATED);
-        }
-        $this->imageTagSourceParser = $imageTagSourceParser ?? new ImageTagSourceParser(__PS_BASE_URI__);
-    }
-
     /**
      * {@inheritdoc}
      */
     public function handle(GetProfileForEditing $query)
     {
-        $profileId = $query->getProfileId();
-        $profile = $this->getProfile($profileId);
-
-        $avatarUrl = $this->getAvatarUrl($profileId->getValue());
+        $profile = $this->getProfile($query->getProfileId());
 
         return new EditableProfile(
-            $profileId,
-            $profile->name,
-            $avatarUrl ? $avatarUrl['path'] : null
+            $query->getProfileId(),
+            $profile->name
         );
     }
 
@@ -98,26 +67,5 @@ final class GetProfileForEditingHandler extends AbstractObjectModelHandler imple
         }
 
         return $profile;
-    }
-
-    /**
-     * @param int $imageId
-     *
-     * @return array|null
-     */
-    private function getAvatarUrl(int $imageId): ?array
-    {
-        $imagePath = $this->imgDir . $imageId . '.jpg';
-        $imageTag = $this->getTmpImageTag($imagePath, $imageId, 'profile');
-        $imageSize = $this->getImageSize($imagePath);
-
-        if (empty($imageTag) || null === $imageSize) {
-            return null;
-        }
-
-        return [
-            'size' => sprintf('%skB', $imageSize),
-            'path' => $this->imageTagSourceParser->parse($imageTag),
-        ];
     }
 }

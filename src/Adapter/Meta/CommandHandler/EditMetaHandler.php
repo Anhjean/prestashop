@@ -148,7 +148,7 @@ final class EditMetaHandler implements EditMetaHandlerInterface
     }
 
     /**
-     * @param string $alreadyExistingPage
+     * @param $alreadyExistingPage
      * @param EditMetaCommand $command
      *
      * @throws MetaConstraintException

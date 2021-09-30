@@ -41,7 +41,7 @@ class GetCmsCategoryIdForRedirection
     private $cmsPageId;
 
     /**
-     * @param int $cmsPageId
+     * @param $cmsPageId
      *
      * @throws CmsPageException
      */

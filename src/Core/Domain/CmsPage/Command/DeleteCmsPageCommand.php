@@ -40,7 +40,7 @@ class DeleteCmsPageCommand
     private $cmsPageId;
 
     /**
-     * @param int $cmsPageId
+     * @param $cmsPageId
      *
      * @throws CmsPageException
      */

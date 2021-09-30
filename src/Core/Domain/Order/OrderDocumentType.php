@@ -31,9 +31,9 @@ namespace PrestaShop\PrestaShop\Core\Domain\Order;
  */
 class OrderDocumentType
 {
-    public const CREDIT_SLIP = 'credit_slip';
+    const CREDIT_SLIP = 'credit_slip';
 
-    public const DELIVERY_SLIP = 'delivery_slip';
+    const DELIVERY_SLIP = 'delivery_slip';
 
-    public const INVOICE = 'invoice';
+    const INVOICE = 'invoice';
 }

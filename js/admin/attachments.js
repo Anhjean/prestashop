@@ -22,10 +22,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-
-/**
- * /!\ This file is deprecated, it will be deleted in next major release /!\
- */
 'use strict';
 
 var attachments = {

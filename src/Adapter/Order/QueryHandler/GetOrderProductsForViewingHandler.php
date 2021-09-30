@@ -35,7 +35,7 @@ use OrderInvoice;
 use OrderReturn;
 use OrderSlip;
 use Pack;
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Adapter\Order\AbstractOrderHandler;
 use PrestaShop\PrestaShop\Core\Domain\Order\Query\GetOrderProductsForViewing;
 use PrestaShop\PrestaShop\Core\Domain\Order\QueryHandler\GetOrderProductsForViewingHandlerInterface;
@@ -111,15 +111,11 @@ final class GetOrderProductsForViewingHandler extends AbstractOrderHandler imple
             $customizations = [];
             if (is_array($product['customizedDatas'])) {
                 foreach ($product['customizedDatas'] as $customizationPerAddress) {
-                    foreach ($customizationPerAddress as $customization) {
+                    foreach ($customizationPerAddress as $customizationId => $customization) {
                         $customized_product_quantity += (int) $customization['quantity'];
                         foreach ($customization['datas'] as $datas) {
                             foreach ($datas as $data) {
-                                $customizations[] = new OrderProductCustomizationForViewing(
-                                    (int) $data['type'],
-                                    (string) $data['name'],
-                                    $data['value']
-                                );
+                                $customizations[] = new OrderProductCustomizationForViewing((int) $data['type'], $data['name'], $data['value']);
                             }
                         }
                     }
@@ -195,7 +191,7 @@ final class GetOrderProductsForViewingHandler extends AbstractOrderHandler imple
             // if rounding type is set to "per item" we must round the unit price now, otherwise values won't match
             // the totals in the order summary
             if ((int) $order->round_type === Order::ROUND_ITEM) {
-                $unitPrice = (new DecimalNumber((string) $unitPrice))->round($precision, $this->getNumberRoundMode());
+                $unitPrice = (new Number((string) $unitPrice))->round($precision, $this->getNumberRoundMode());
             }
 
             $totalPrice = $unitPrice *
@@ -229,17 +225,17 @@ final class GetOrderProductsForViewingHandler extends AbstractOrderHandler imple
                     $pack_item['reference'],
                     $pack_item['supplier_reference'],
                     $pack_item['pack_quantity'],
-                    '0',
-                    '0',
+                    0,
+                    0,
                     $pack_item['current_stock'],
                     $packItemImagePath,
                     '0',
                     '0',
-                    '0',
+                        '0',
                     $this->locale->formatPrice(0, $currency->iso_code),
                     0,
                     $this->locale->formatPrice(0, $currency->iso_code),
-                    '0',
+                        '0',
                     $pack_item['location'],
                     null,
                     '',
@@ -260,8 +256,8 @@ final class GetOrderProductsForViewingHandler extends AbstractOrderHandler imple
                 $totalPriceFormatted,
                 $product['current_stock'],
                 $imagePath,
-                (new DecimalNumber((string) $product['unit_price_tax_excl']))->round($precision, $this->getNumberRoundMode()),
-                (new DecimalNumber((string) $product['unit_price_tax_incl']))->round($precision, $this->getNumberRoundMode()),
+                (new Number((string) $product['unit_price_tax_excl']))->round($precision, $this->getNumberRoundMode()),
+                (new Number((string) $product['unit_price_tax_incl']))->round($precision, $this->getNumberRoundMode()),
                 (string) $product['tax_rate'],
                 $this->locale->formatPrice($product['amount_refunded'], $currency->iso_code),
                 $product['product_quantity_refunded'] + $product['product_quantity_return'],
@@ -291,7 +287,7 @@ final class GetOrderProductsForViewingHandler extends AbstractOrderHandler imple
     }
 
     /**
-     * @param array $pack_item
+     * @param $pack_item
      */
     private function setProductImageInformation(&$pack_item): void
     {
@@ -304,7 +300,8 @@ final class GetOrderProductsForViewingHandler extends AbstractOrderHandler imple
         }
 
         if (!isset($id_image) || !$id_image) {
-            $id_image = Db::getInstance()->getValue('
+            $id_image = Db::getInstance()->getValue(
+                '
                 SELECT `image_shop`.id_image
                 FROM `' . _DB_PREFIX_ . 'image` i' .
                 Shop::addSqlAssociation('image', 'i', true, 'image_shop.cover=1') . '
@@ -312,7 +309,11 @@ final class GetOrderProductsForViewingHandler extends AbstractOrderHandler imple
             );
         }
 
-        $pack_item['image'] = $id_image ? new Image((int) $id_image) : null;
+        $pack_item['image'] = null;
         $pack_item['image_size'] = null;
+
+        if ($id_image) {
+            $pack_item['image'] = new Image($id_image);
+        }
     }
 }

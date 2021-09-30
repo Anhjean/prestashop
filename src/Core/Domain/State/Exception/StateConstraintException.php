@@ -31,5 +31,5 @@ namespace PrestaShop\PrestaShop\Core\Domain\State\Exception;
  */
 class StateConstraintException extends StateException
 {
-    public const INVALID_ID = 1;
+    const INVALID_ID = 1;
 }

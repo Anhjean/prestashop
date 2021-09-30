@@ -46,17 +46,17 @@ class StylesheetGenerator
     /**
      * Default file type to look up.
      */
-    public const DEFAULT_FILE_TYPE = 'css';
+    const DEFAULT_FILE_TYPE = 'css';
 
     /**
      * Default suffix to use for RTL transformed files.
      */
-    public const DEFAULT_RTL_SUFFIX = '_rtl';
+    const DEFAULT_RTL_SUFFIX = '_rtl';
 
     /**
      * Extension of RTL fix files.
      */
-    public const RTLFIX_EXTENSION = 'rtlfix';
+    const RTLFIX_EXTENSION = 'rtlfix';
 
     /**
      * @var string

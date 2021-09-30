@@ -26,6 +26,8 @@
 
 namespace PrestaShop\PrestaShop\Core\Domain\Order\QueryResult;
 
+use DateTimeImmutable;
+
 class OrderMessageForViewing
 {
     /**
@@ -39,7 +41,7 @@ class OrderMessageForViewing
     private $message;
 
     /**
-     * @var OrderMessageDateForViewing
+     * @var DateTimeImmutable
      */
     private $messageDate;
 
@@ -79,7 +81,7 @@ class OrderMessageForViewing
     /**
      * @param int $messageId
      * @param string $message
-     * @param OrderMessageDateForViewing $messageDate
+     * @param DateTimeImmutable $messageDate
      * @param int $employeeId
      * @param bool $isCurrentEmployeesMessage
      * @param string $employeeFirstName

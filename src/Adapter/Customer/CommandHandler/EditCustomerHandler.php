@@ -238,7 +238,16 @@ final class EditCustomerHandler extends AbstractCustomerHandler implements EditC
             return;
         }
 
-        if (!in_array($command->getDefaultGroupId(), $command->getGroupIds())) {
+        $defaultGroupId = null !== $command->getDefaultGroupId() ?
+            $command->getDefaultGroupId() :
+            $customer->id_default_group
+        ;
+        $groupIds = null !== $command->getGroupIds() ?
+            $command->getGroupIds() :
+            $customer->getGroups()
+         ;
+
+        if (!in_array($defaultGroupId, $groupIds)) {
             throw new CustomerDefaultGroupAccessException(sprintf('Customer default group with id "%s" must be in access groups', $command->getDefaultGroupId()));
         }
     }

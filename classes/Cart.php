@@ -267,7 +267,7 @@ class CartCore extends ObjectModel
         }
 
         $return = parent::add($autoDate, $nullValues);
-        Hook::exec('actionCartSave', ['cart' => $this]);
+        Hook::exec('actionCartSave');
 
         return $return;
     }
@@ -294,7 +294,7 @@ class CartCore extends ObjectModel
 
         $this->_products = null;
         $return = parent::update($nullValues);
-        Hook::exec('actionCartSave', ['cart' => $this]);
+        Hook::exec('actionCartSave');
 
         return $return;
     }
@@ -735,10 +735,9 @@ class CartCore extends ObjectModel
 
         if (Combination::isFeatureActive()) {
             $sql->select('
-                product_attribute_shop.`price` AS price_attribute,
-                product_attribute_shop.`ecotax` AS ecotax_attr,
+                product_attribute_shop.`price` AS price_attribute, product_attribute_shop.`ecotax` AS ecotax_attr,
                 IF (IFNULL(pa.`reference`, \'\') = \'\', p.`reference`, pa.`reference`) AS reference,
-                (p.`weight`+ IFNULL(product_attribute_shop.`weight`, pa.`weight`)) weight_attribute,
+                (p.`weight`+ pa.`weight`) weight_attribute,
                 IF (IFNULL(pa.`ean13`, \'\') = \'\', p.`ean13`, pa.`ean13`) AS ean13,
                 IF (IFNULL(pa.`isbn`, \'\') = \'\', p.`isbn`, pa.`isbn`) AS isbn,
                 IF (IFNULL(pa.`upc`, \'\') = \'\', p.`upc`, pa.`upc`) AS upc,
@@ -1190,11 +1189,6 @@ class CartCore extends ObjectModel
         $pa_implode = [];
         $separator = Configuration::get('PS_ATTRIBUTE_ANCHOR_SEPARATOR');
 
-        if ($separator === '-') {
-            // Add a space before the dash between attributes
-            $separator = ' -';
-        }
-
         foreach ($ipa_list as $id_product_attribute) {
             if ((int) $id_product_attribute && !array_key_exists($id_product_attribute . '-' . $id_lang, self::$_attributesLists)) {
                 $pa_implode[] = (int) $id_product_attribute;
@@ -1223,11 +1217,9 @@ class CartCore extends ObjectModel
             ORDER BY ag.`position` ASC, a.`position` ASC'
         );
 
-        $colon = Context::getContext()->getTranslator()->trans(': ', [], 'Shop.Pdf');
         foreach ($result as $row) {
-            $key = $row['id_product_attribute'] . '-' . $id_lang;
-            self::$_attributesLists[$key]['attributes'] .= $row['public_group_name'] . $colon . $row['attribute_name'] . $separator . ' ';
-            self::$_attributesLists[$key]['attributes_small'] .= $row['attribute_name'] . $separator . ' ';
+            self::$_attributesLists[$row['id_product_attribute'] . '-' . $id_lang]['attributes'] .= $row['public_group_name'] . ' : ' . $row['attribute_name'] . $separator . ' ';
+            self::$_attributesLists[$row['id_product_attribute'] . '-' . $id_lang]['attributes_small'] .= $row['attribute_name'] . $separator . ' ';
         }
 
         foreach ($pa_implode as $id_product_attribute) {
@@ -1472,7 +1464,7 @@ class CartCore extends ObjectModel
      * @param bool $preserveGiftRemoval
      * @param bool $useOrderPrices
      *
-     * @return bool|int Whether the quantity has been successfully updated
+     * @return bool Whether the quantity has been successfully updated
      */
     public function updateQty(
         $quantity,
@@ -1522,7 +1514,7 @@ class CartCore extends ObjectModel
 
         /* If we have a product combination, the minimal quantity is set with the one of this combination */
         if (!empty($id_product_attribute)) {
-            $minimal_quantity = (int) ProductAttribute::getAttributeMinimalQty($id_product_attribute);
+            $minimal_quantity = (int) Attribute::getAttributeMinimalQty($id_product_attribute);
         } else {
             $minimal_quantity = (int) $product->minimal_quantity;
         }
@@ -1551,6 +1543,8 @@ class CartCore extends ObjectModel
             'auto_add_cart_rule' => $auto_add_cart_rule,
         ];
 
+        /* @deprecated deprecated since 1.6.1.1 */
+        // Hook::exec('actionBeforeCartUpdateQty', $data);
         Hook::exec('actionCartUpdateQuantityBefore', $data);
 
         if ((int) $quantity <= 0) {
@@ -1756,7 +1750,7 @@ class CartCore extends ObjectModel
      * @param int $quantity Quantity value
      * @param bool $returnId if true - returns the customization record id
      *
-     * @return bool|int
+     * @return bool Success
      */
     public function _addCustomization($id_product, $id_product_attribute, $index, $type, $value, $quantity, $returnId = false)
     {
@@ -3117,14 +3111,23 @@ class CartCore extends ObjectModel
             $order_by_price = !Configuration::get('PS_CARRIER_DEFAULT_SORT');
         }
         if (null === $order_way) {
-            $order_way = Configuration::get('PS_CARRIER_DEFAULT_ORDER') ? 1 : -1;
+            $order_way = Configuration::get('PS_CARRIER_DEFAULT_ORDER');
         }
 
         if ($order_by_price) {
-            return $option1['total_price_with_tax'] < $option2['total_price_with_tax'] ? $order_way : -$order_way;
+            if ($order_way) {
+                return ($option1['total_price_with_tax'] < $option2['total_price_with_tax']) * 2 - 1;
+            } else {
+                // return -1 or 1
+                return ($option1['total_price_with_tax'] >= $option2['total_price_with_tax']) * 2 - 1;
+            }
+        } elseif ($order_way) {
+            // return -1 or 1
+            return ($option1['position'] < $option2['position']) * 2 - 1;
+        } else {
+            // return -1 or 1
+            return ($option1['position'] >= $option2['position']) * 2 - 1;
         }
-
-        return $option1['position'] < $option2['position'] ? $order_way : -$order_way;
     }
 
     /**
@@ -4162,7 +4165,6 @@ class CartCore extends ObjectModel
                 WHERE NOT EXISTS (SELECT 1 FROM ' . _DB_PREFIX_ . 'orders o WHERE o.`id_cart` = c.`id_cart`
                                     AND o.`id_customer` = ' . (int) $id_customer . ')
                 AND c.`id_customer` = ' . (int) $id_customer . '
-                AND c.`id_cart` = (SELECT `id_cart` FROM `' . _DB_PREFIX_ . 'cart` c2 WHERE c2.`id_customer` = ' . (int) $id_customer . ' ORDER BY `id_cart` DESC LIMIT 1)
                 AND c.`id_guest` != 0
                     ' . Shop::addSqlRestriction(Shop::SHARE_ORDER, 'c') . '
                 ORDER BY c.`date_upd` DESC';
@@ -4222,25 +4224,14 @@ class CartCore extends ObjectModel
      */
     public function hasRealProducts()
     {
-        // Check for non-virtual products which are not packs
-        $sql = 'SELECT 1 FROM %scart_product cp
-            INNER JOIN %sproduct p ON (p.id_product = cp.id_product AND cache_is_pack = 0 and p.is_virtual = 0)
-            INNER JOIN %sproduct_shop ps ON (ps.id_shop = cp.id_shop AND ps.id_product = p.id_product)
-            WHERE cp.id_cart=%d';
-        $sql = sprintf($sql, _DB_PREFIX_, _DB_PREFIX_, _DB_PREFIX_, $this->id);
-        if ((bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql)) {
-            return true;
-        }
-
-        // Check for non-virtual products which are in packs
-        $sql = 'SELECT 1 FROM %scart_product cp
-            INNER JOIN %spack pa ON (pa.id_product_pack = cp.id_product)
-            INNER JOIN %sproduct p ON (p.id_product = pa.id_product_item AND p.is_virtual = 0)
-            INNER JOIN %sproduct_shop ps ON (ps.id_shop = cp.id_shop AND ps.id_product = p.id_product)
-            WHERE cp.id_cart=%d';
-        $sql = sprintf($sql, _DB_PREFIX_, _DB_PREFIX_, _DB_PREFIX_, _DB_PREFIX_, $this->id);
-
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            'SELECT 1 FROM ' . _DB_PREFIX_ . 'cart_product cp ' .
+            'INNER JOIN ' . _DB_PREFIX_ . 'product p
+                ON (p.is_virtual = 0 AND p.id_product = cp.id_product) ' .
+            'INNER JOIN ' . _DB_PREFIX_ . 'product_shop ps
+                ON (ps.id_shop = cp.id_shop AND ps.id_product = p.id_product) ' .
+            'WHERE cp.id_cart=' . (int) $this->id
+        );
     }
 
     /**
@@ -4452,7 +4443,7 @@ class CartCore extends ObjectModel
     /**
      * Duplicate this Cart in the database.
      *
-     * @return array|bool Duplicated cart, with success bool
+     * @return array Duplicated cart, with success bool
      */
     public function duplicate()
     {

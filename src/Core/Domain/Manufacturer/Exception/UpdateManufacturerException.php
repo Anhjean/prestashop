@@ -34,10 +34,10 @@ class UpdateManufacturerException extends ManufacturerException
     /**
      * When fails to update single manufacturer status
      */
-    public const FAILED_UPDATE_STATUS = 10;
+    const FAILED_UPDATE_STATUS = 10;
 
     /**
      * When fails to update manufacturers status in bulk action
      */
-    public const FAILED_BULK_UPDATE_STATUS = 20;
+    const FAILED_BULK_UPDATE_STATUS = 20;
 }

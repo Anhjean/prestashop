@@ -26,7 +26,6 @@
 
 namespace PrestaShop\PrestaShop\Core\Grid\Factory;
 
-use PrestaShop\PrestaShop\Core\Grid\Filter\FilterCollection;
 use PrestaShop\PrestaShop\Core\Grid\Filter\FilterInterface;
 use PrestaShop\PrestaShop\Core\Grid\Filter\GridFilterFormFactoryInterface;
 use PrestaShop\PrestaShop\Core\Grid\Grid;
@@ -126,10 +125,9 @@ final class CategoryGridFactoryDecorator implements GridFactoryInterface
      */
     private function injectCategoryIdIntoSearchTypeOptions($categoryGrid, array $filters)
     {
-        /** @var FilterCollection $filtersCollection */
-        $filtersCollection = $categoryGrid->getDefinition()->getFilters();
         /** @var FilterInterface $actionsFilter */
-        $actionsFilter = $filtersCollection->get('actions');
+        $actionsFilter = $categoryGrid->getDefinition()
+            ->getFilters()->get('actions');
 
         $typeOptions = $actionsFilter->getTypeOptions();
         $typeOptions['redirect_route_params'] = ['categoryId' => $filters['id_category_parent']];

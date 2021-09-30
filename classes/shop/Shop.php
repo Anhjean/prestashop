@@ -42,9 +42,6 @@ class ShopCore extends ObjectModel
     /** @var string Shop name */
     public $name;
 
-    /** @var string Shop color */
-    public $color;
-
     public $active = true;
     public $deleted;
 
@@ -73,7 +70,6 @@ class ShopCore extends ObjectModel
             'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'deleted' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'name' => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'color' => ['type' => self::TYPE_STRING, 'validate' => 'isColor'],
             'id_category' => ['type' => self::TYPE_INT, 'required' => true],
             'theme_name' => ['type' => self::TYPE_STRING, 'validate' => 'isThemeName'],
             'id_shop_group' => ['type' => self::TYPE_INT, 'required' => true],
@@ -520,30 +516,26 @@ class ShopCore extends ObjectModel
     /**
      * Get shop URL.
      *
-     * @param bool $auto_secure_mode if set to true, secure mode will be checked
-     * @param bool $add_base_uri if set to true, shop base uri will be added
+     * @param string $auto_secure_mode if set to true, secure mode will be checked
+     * @param string $add_base_uri if set to true, shop base uri will be added
      *
-     * @return string|bool complete base url of current shop
+     * @return string complete base url of current shop
      */
     public function getBaseURL($auto_secure_mode = false, $add_base_uri = true)
     {
-        if ($auto_secure_mode && Tools::usingSecureMode()) {
-            if (!$this->domain_ssl) {
-                return false;
-            }
-            $url = 'https://' . $this->domain_ssl;
-        } else {
-            if (!$this->domain) {
-                return false;
-            }
-            $url = 'http://' . $this->domain;
+        if (($auto_secure_mode && Tools::usingSecureMode() && !$this->domain_ssl) || !$this->domain) {
+            return false;
         }
+
+        $url = [];
+        $url['protocol'] = $auto_secure_mode && Tools::usingSecureMode() ? 'https://' : 'http://';
+        $url['domain'] = $auto_secure_mode && Tools::usingSecureMode() ? $this->domain_ssl : $this->domain;
 
         if ($add_base_uri) {
-            $url .= $this->getBaseURI();
+            $url['base_uri'] = $this->getBaseURI();
         }
 
-        return $url;
+        return implode('', $url);
     }
 
     /**
@@ -811,7 +803,7 @@ class ShopCore extends ObjectModel
      * @param bool $active
      * @param int $id_shop_group
      *
-     * @return PrestaShopCollection<Shop> Collection of Shop
+     * @return PrestaShopCollection Collection of Shop
      */
     public static function getShopsCollection($active = true, $id_shop_group = null)
     {
@@ -832,7 +824,7 @@ class ShopCore extends ObjectModel
      *
      * @param int $shop_id
      *
-     * @return array|bool
+     * @return array
      */
     public static function getShop($shop_id)
     {
@@ -882,9 +874,8 @@ class ShopCore extends ObjectModel
      * Retrieve group ID of a shop.
      *
      * @param int $shop_id Shop ID
-     * @param bool $as_id
      *
-     * @return int|array|bool Group ID
+     * @return int Group ID
      */
     public static function getGroupFromShop($shop_id, $as_id = true)
     {
@@ -908,7 +899,7 @@ class ShopCore extends ObjectModel
      */
     public static function getSharedShops($shop_id, $type)
     {
-        if (!in_array($type, [Shop::SHARE_CUSTOMER, Shop::SHARE_ORDER, Shop::SHARE_STOCK])) {
+        if (!in_array($type, [Shop::SHARE_CUSTOMER, Shop::SHARE_ORDER, SHOP::SHARE_STOCK])) {
             die('Wrong argument ($type) in Shop::getSharedShops() method');
         }
 

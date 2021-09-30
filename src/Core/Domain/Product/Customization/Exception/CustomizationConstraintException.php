@@ -34,15 +34,15 @@ class CustomizationConstraintException extends CustomizationException
     /**
      * When customization field is required to be filled
      */
-    public const FIELD_IS_REQUIRED = 1;
+    const FIELD_IS_REQUIRED = 1;
 
     /**
      * When customization field value length is exceeded
      */
-    public const FIELD_IS_TOO_LONG = 2;
+    const FIELD_IS_TOO_LONG = 2;
 
     /**
      * When customization id is invalid
      */
-    public const INVALID_ID = 3;
+    const INVALID_ID = 3;
 }

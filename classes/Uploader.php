@@ -31,26 +31,23 @@ class UploaderCore
 {
     const DEFAULT_MAX_SIZE = 10485760;
 
-    /** @var bool */
     private $_check_file_size;
     private $_accept_types;
-    /** @var array */
     private $_files;
     private $_max_size;
-    /** @var string|null */
     private $_name;
     private $_save_path;
 
     /**
      * UploaderCore constructor.
      *
-     * @param string|null $name
+     * @param null $name
      */
     public function __construct($name = null)
     {
         $this->setName($name);
         $this->setCheckFileSize(true);
-        $this->_files = [];
+        $this->files = [];
     }
 
     /**
@@ -74,7 +71,7 @@ class UploaderCore
     }
 
     /**
-     * @param bool $value
+     * @param $value
      *
      * @return $this
      */
@@ -249,13 +246,13 @@ class UploaderCore
                     'error' => $upload['error'][$index],
                 ];
 
-                $this->_files[] = $this->upload($tmp[$index], $dest);
+                $this->files[] = $this->upload($tmp[$index], $dest);
             }
         } elseif ($upload) {
-            $this->_files[] = $this->upload($upload, $dest);
+            $this->files[] = $this->upload($upload, $dest);
         }
 
-        return $this->_files;
+        return $this->files;
     }
 
     /**
@@ -280,7 +277,7 @@ class UploaderCore
                 file_put_contents($filePath, fopen('php://input', 'rb'));
             }
 
-            $fileSize = $this->getFileSize($filePath, true);
+            $fileSize = $this->_getFileSize($filePath, true);
 
             if ($fileSize === $file['size']) {
                 $file['save_path'] = $filePath;
@@ -349,7 +346,7 @@ class UploaderCore
 
         $postMaxSize = $this->getPostMaxSizeBytes();
 
-        if ($postMaxSize && ($this->getServerVars('CONTENT_LENGTH') > $postMaxSize)) {
+        if ($postMaxSize && ($this->_getServerVars('CONTENT_LENGTH') > $postMaxSize)) {
             $file['error'] = Context::getContext()->getTranslator()->trans('The uploaded file exceeds the post_max_size directive in php.ini', [], 'Admin.Notifications.Error');
 
             return false;

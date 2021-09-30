@@ -30,14 +30,13 @@ use Exception;
 use Hook;
 use ObjectModel;
 use PrestaShop\PrestaShop\Adapter\Presenter\PresenterInterface;
-use Product;
 
 class ObjectPresenter implements PresenterInterface
 {
     /**
      * @param ObjectModel $object
      *
-     * @return array<string, mixed>
+     * @return array
      *
      * @throws Exception
      */
@@ -53,11 +52,6 @@ class ObjectPresenter implements PresenterInterface
         foreach ($fields as $fieldName => $null) {
             $presentedObject[$fieldName] = $object->{$fieldName};
         }
-
-        if ($object instanceof Product) {
-            $presentedObject['ecotax_tax_inc'] = $object->getEcotax(null, true, true);
-        }
-
         $presentedObject['id'] = $object->id;
 
         $mustRemove = ['deleted', 'active'];
@@ -75,9 +69,9 @@ class ObjectPresenter implements PresenterInterface
     /**
      * Execute filterHtml hook for html Content for objectPresenter.
      *
-     * @param string $type
-     * @param ObjectModel $presentedObject
-     * @param array $htmlFields
+     * @param $type
+     * @param $presentedObject
+     * @param $htmlFields
      */
     private function filterHtmlContent($type, &$presentedObject, $htmlFields)
     {

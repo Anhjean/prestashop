@@ -2,17 +2,17 @@ services:
     _defaults:
         public: true
 
-    doctrine.cache.adapter:
-        class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+    doctrine.cache.provider:
+        class: Doctrine\Common\Cache\FilesystemCache
         arguments:
-            - ''
-            - 0
             - "%kernel.cache_dir%/doctrine"
 
-    doctrine.cache.provider:
-        class: Symfony\Component\Cache\DoctrineProvider
+    guzzle.cache:
+        class: Csa\Bundle\GuzzleBundle\GuzzleHttp\Cache\DoctrineAdapter
         arguments:
-            - "@doctrine.cache.adapter"
+            - "@doctrine.cache.provider"
+            - "%prestashop.addons.api_client.ttl%"
+        shared: false
 
     main.warmer.cache_warmer:
         class: PrestaShopBundle\Cache\CacheWarmer

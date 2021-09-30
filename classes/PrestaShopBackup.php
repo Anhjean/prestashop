@@ -29,7 +29,7 @@
  */
 class PrestaShopBackupCore
 {
-    /** @var string Object id */
+    /** @var int Object id */
     public $id;
 
     /** @var string Last error messages */
@@ -41,9 +41,7 @@ class PrestaShopBackupCore
     /** @var string custom backup directory. */
     public $customBackupDir = null;
 
-    /** @var bool|string */
     public $psBackupAll = true;
-    /** @var bool|string */
     public $psBackupDropTable = true;
 
     /**
@@ -70,18 +68,18 @@ class PrestaShopBackupCore
      *
      * @param string $dir
      *
-     * @return bool
+     * @return bool bo
      */
     public function setCustomBackupPath($dir)
     {
         $customDir = DIRECTORY_SEPARATOR . trim($dir, '/') . DIRECTORY_SEPARATOR;
         if (is_dir((defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_) . $customDir)) {
             $this->customBackupDir = $customDir;
-
-            return true;
+        } else {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**

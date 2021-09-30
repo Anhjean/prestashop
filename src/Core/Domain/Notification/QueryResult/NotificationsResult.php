@@ -26,7 +26,7 @@
 
 namespace PrestaShop\PrestaShop\Core\Domain\Notification\QueryResult;
 
-use PrestaShop\PrestaShop\Core\Domain\Notification\Exception\NotificationException;
+use PrestaShop\PrestaShop\Core\Domain\Notification\Exception\TypeException;
 use PrestaShop\PrestaShop\Core\Domain\Notification\ValueObject\Type;
 
 /**
@@ -56,7 +56,7 @@ class NotificationsResult
      * @param int $total
      * @param NotificationResult[] $notifications
      *
-     * @throws NotificationException
+     * @throws TypeException
      */
     public function __construct(string $type, int $total, array $notifications)
     {

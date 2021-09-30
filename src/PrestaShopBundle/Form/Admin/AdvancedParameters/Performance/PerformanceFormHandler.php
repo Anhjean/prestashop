@@ -33,8 +33,6 @@ use Symfony\Component\Form\FormFactoryInterface;
 /**
  * This class manages the data manipulated using forms
  * in "Configure > Advanced Parameters > Performance" page.
- *
- * @deprecated since 1.7.4.0, to be removed in the next major
  */
 final class PerformanceFormHandler
 {
@@ -44,7 +42,7 @@ final class PerformanceFormHandler
     private $formFactory;
 
     /**
-     * @var CombinationFeature
+     * @param CombinationFeature
      */
     private $combinationFeature;
 
@@ -77,11 +75,19 @@ final class PerformanceFormHandler
             ->add('add_memcache_server', MemcacheServerType::class)
             ->setData($this->formDataProvider->getData());
 
+        $this->hookDispatcher->dispatchWithParameters('displayPerformancePageForm', ['form_builder' => &$formBuilder]);
+
         return $formBuilder->setData($formBuilder->getData())->getForm();
     }
 
     public function save(array $data)
     {
-        return $this->formDataProvider->setData($data);
+        $errors = $this->formDataProvider->setData($data);
+        $this->hookDispatcher->dispatchWithParameters(
+            'actionPerformancePageFormSave',
+            ['errors' => &$errors, 'form_data' => &$data]
+        );
+
+        return $errors;
     }
 }

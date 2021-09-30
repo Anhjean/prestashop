@@ -27,10 +27,9 @@
 namespace PrestaShop\PrestaShop\Core\Addon\Theme;
 
 use AbstractAssetManager;
-use Configuration;
 use PrestaShop\PrestaShop\Core\Addon\AddonInterface;
-use PrestaShop\PrestaShop\Core\Util\File\YamlParser;
 use Shudrum\Component\ArrayFinder\ArrayFinder;
+use Symfony\Component\Yaml\Yaml;
 
 class Theme implements AddonInterface
 {
@@ -39,8 +38,7 @@ class Theme implements AddonInterface
     public function __construct(array $attributes)
     {
         if (isset($attributes['parent'])) {
-            $yamlParser = new YamlParser((new Configuration())->get('_PS_CACHE_DIR_'));
-            $parentAttributes = $yamlParser->parse(_PS_ALL_THEMES_DIR_ . '/' . $attributes['parent'] . '/config/theme.yml');
+            $parentAttributes = Yaml::parse(file_get_contents(_PS_ALL_THEMES_DIR_ . '/' . $attributes['parent'] . '/config/theme.yml'));
             $parentAttributes['preview'] = 'themes/' . $attributes['parent'] . '/preview.png';
             $parentAttributes['parent_directory'] = rtrim($attributes['directory'], '/') . '/';
             $attributes = array_merge($parentAttributes, $attributes);

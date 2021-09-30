@@ -27,7 +27,6 @@
 namespace PrestaShopBundle\Service\DataProvider\Admin;
 
 use PrestaShop\PrestaShop\Adapter\Module\Module as ApiModule;
-use PrestaShop\PrestaShop\Core\Addon\AddonsCollection;
 use stdClass;
 
 /**
@@ -35,11 +34,11 @@ use stdClass;
  */
 class CategoriesProvider
 {
-    public const CATEGORY_OTHER = 'other';
-    public const CATEGORY_OTHER_NAME = 'Other';
+    const CATEGORY_OTHER = 'other';
+    const CATEGORY_OTHER_NAME = 'Other';
 
-    public const CATEGORY_THEME = 'theme_modules';
-    public const CATEGORY_THEME_NAME = 'Theme modules';
+    const CATEGORY_THEME = 'theme_modules';
+    const CATEGORY_THEME_NAME = 'Theme modules';
 
     /**
      * @var array
@@ -52,7 +51,7 @@ class CategoriesProvider
     private $categories;
 
     /**
-     * @var object
+     * @var array
      */
     private $categoriesFromSource;
 
@@ -66,7 +65,7 @@ class CategoriesProvider
     /**
      * Return the list of categories with the associated modules.
      *
-     * @param array|AddonsCollection $modules
+     * @param array|AddonsCollection the list of modules
      *
      * @return array the list of categories
      */
@@ -96,9 +95,9 @@ class CategoriesProvider
      * Initialize categories from API or if this one is empty,
      * use theme and my modules categories.
      *
-     * @param object $categoriesListing Category listing
+     * @param array|stdClass $categoriesListing Category listing
      *
-     * @return array<string, stdClass>
+     * @return array
      */
     private function initializeCategories($categoriesListing)
     {
@@ -134,9 +133,9 @@ class CategoriesProvider
     /**
      * Considering a category name, return his category parent name.
      *
-     * @param string $categoryName
+     * @param string the category
      *
-     * @return string
+     * @return string the category
      */
     public function getParentCategory(string $categoryName): string
     {
@@ -220,7 +219,9 @@ class CategoriesProvider
         );
 
         // Convert array to object to be consistent with current API call
-        return json_decode(json_encode($categories));
+        $categories = json_decode(json_encode($categories));
+
+        return $categories;
     }
 
     /**

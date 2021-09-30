@@ -34,20 +34,20 @@ class SqlRequestConstraintException extends SqlRequestException
     /**
      * When provided name is not valid
      */
-    public const INVALID_NAME = 10;
+    const INVALID_NAME = 10;
 
     /**
      * When provided sql query is not valid
      */
-    public const INVALID_SQL_QUERY = 20;
+    const INVALID_SQL_QUERY = 20;
 
     /**
      * When provided sql query format is invalid
      */
-    public const MALFORMED_SQL_QUERY = 30;
+    const MALFORMED_SQL_QUERY = 30;
 
     /**
      * When empty data is provided for bulk action
      */
-    public const MISSING_BULK_DATA = 40;
+    const MISSING_BULK_DATA = 40;
 }

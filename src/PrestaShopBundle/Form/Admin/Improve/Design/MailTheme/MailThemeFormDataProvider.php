@@ -48,7 +48,9 @@ class MailThemeFormDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->mailThemeConfiguration->getConfiguration();
+        return [
+            'configuration' => $this->mailThemeConfiguration->getConfiguration(),
+        ];
     }
 
     /**
@@ -56,6 +58,6 @@ class MailThemeFormDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        return $this->mailThemeConfiguration->updateConfiguration($data);
+        return $this->mailThemeConfiguration->updateConfiguration($data['configuration']);
     }
 }

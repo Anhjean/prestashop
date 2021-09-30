@@ -86,9 +86,8 @@ final class GridPresenter implements GridPresenterInterface
             ],
             'filters' => $searchCriteria->getFilters(),
             'attributes' => [
-                'is_empty_state' => $this->isEmptyState($grid),
+                'is_empty_state' => empty($filterForm->getData()) && $data->getRecords()->count() === 0,
             ],
-            'view_options' => $definition->getViewOptions()->all(),
         ];
 
         if ($searchCriteria instanceof Filters) {
@@ -114,7 +113,6 @@ final class GridPresenter implements GridPresenterInterface
     {
         $columns = $grid->getDefinition()->getColumns()->toArray();
 
-        /** @var ColumnInterface $positionColumn */
         $positionColumn = $this->getOrderingPosition($grid);
         if (null !== $positionColumn) {
             array_unshift($columns, [
@@ -139,7 +137,8 @@ final class GridPresenter implements GridPresenterInterface
         /** @var ColumnInterface $column */
         foreach ($grid->getDefinition()->getColumns() as $column) {
             if ($column instanceof PositionColumn &&
-                strtolower($column->getId()) == strtolower($searchCriteria->getOrderBy())
+                strtolower($column->getId()) == strtolower($searchCriteria->getOrderBy()) &&
+                'asc' == strtolower($searchCriteria->getOrderWay())
             ) {
                 return $column;
             }
@@ -167,28 +166,5 @@ final class GridPresenter implements GridPresenterInterface
         }
 
         return $columnFiltersMapping;
-    }
-
-    /**
-     * @param GridInterface $grid
-     *
-     * @return bool
-     */
-    private function isEmptyState(GridInterface $grid)
-    {
-        $filterFormData = $grid->getFilterForm()->getData();
-        $dataRecordsTotal = $grid->getData()->getRecordsTotal();
-        if (empty($filterFormData) && 0 === $dataRecordsTotal) {
-            return true;
-        }
-
-        $definitionFiltersKeys = array_keys($grid->getDefinition()->getFilters()->all());
-        foreach ($filterFormData as $key => $value) {
-            if (in_array($key, $definitionFiltersKeys, true)) {
-                return false;
-            }
-        }
-
-        return 0 === $dataRecordsTotal;
     }
 }

@@ -52,7 +52,9 @@ final class BackupDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->backupOptionsConfigurator->getConfiguration();
+        return [
+            'backup_options' => $this->backupOptionsConfigurator->getConfiguration(),
+        ];
     }
 
     /**
@@ -60,6 +62,6 @@ final class BackupDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        return $this->backupOptionsConfigurator->updateConfiguration($data);
+        return $this->backupOptionsConfigurator->updateConfiguration($data['backup_options']);
     }
 }

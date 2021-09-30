@@ -29,38 +29,19 @@
  */
 class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 {
-    /**
-     * @var SupplyOrder
-     */
     public $supply_order;
-
-    /**
-     * @var Warehouse
-     */
     public $warehouse;
-
-    /**
-     * @var Address
-     */
     public $address_warehouse;
-
-    /**
-     * @var Address
-     */
     public $address_supplier;
-
-    /**
-     * @var Context
-     */
     public $context;
 
     /**
      * @param SupplyOrder $supply_order
-     * @param Smarty $smarty
+     * @param $smarty
      *
      * @throws PrestaShopException
      */
-    public function __construct(SupplyOrder $supply_order, Smarty $smarty)
+    public function __construct(SupplyOrder $supply_order, $smarty)
     {
         $this->supply_order = $supply_order;
         $this->smarty = $smarty;
@@ -74,11 +55,11 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 
         $this->title = Context::getContext()->getTranslator()->trans('Supply order form', [], 'Shop.Pdf');
 
-        $this->shop = Context::getContext()->shop;
+        $this->shop = new Shop((int) $this->order->id_shop);
     }
 
     /**
-     * {@inheritdoc}
+     * @see HTMLTemplate::getContent()
      */
     public function getContent()
     {
@@ -131,7 +112,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     }
 
     /**
-     * {@inheritdoc}
+     * @see HTMLTemplate::getBulkFilename()
      */
     public function getBulkFilename()
     {
@@ -139,7 +120,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     }
 
     /**
-     * {@inheritdoc}
+     * @see HTMLTemplate::getFileName()
      */
     public function getFilename()
     {
@@ -149,7 +130,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     /**
      * Get order taxes summary.
      *
-     * @return array
+     * @return array|false|mysqli_result|PDOStatement|resource|null
      *
      * @throws PrestaShopDatabaseException
      */
@@ -172,13 +153,14 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
             $result['tax_rate'] = Tools::ps_round($result['tax_rate'], 2);
             $result['total_tax_value'] = Tools::ps_round($result['total_tax_value'], 2);
         }
-        unset($result);
+
+        unset($result); // remove reference
 
         return $results;
     }
 
     /**
-     * {@inheritdoc}
+     * @see HTMLTemplate::getHeader()
      */
     public function getHeader()
     {
@@ -206,10 +188,11 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     }
 
     /**
-     * {@inheritdoc}
+     * @see HTMLTemplate::getFooter()
      */
     public function getFooter()
     {
+        $this->address = $this->address_warehouse;
         $free_text = [];
         $free_text[] = Context::getContext()->getTranslator()->trans('TE: Tax excluded', [], 'Shop.Pdf');
         $free_text[] = Context::getContext()->getTranslator()->trans('TI: Tax included', [], 'Shop.Pdf');

@@ -33,23 +33,23 @@ class ProductSearchResult
      */
     private $products = [];
     /**
-     * @var int
+     * @var
      */
     private $totalProductsCount;
     /**
-     * @var FacetCollection
+     * @var
      */
     private $facetCollection;
     /**
-     * @var string
+     * @var
      */
     private $encodedFacets;
     /**
-     * @var SortOrder[]
+     * @var array
      */
     private $availableSortOrders = [];
     /**
-     * @var SortOrder
+     * @var
      */
     private $currentSortOrder;
 
@@ -74,7 +74,7 @@ class ProductSearchResult
     }
 
     /**
-     * @param int $totalProductsCount
+     * @param $totalProductsCount
      *
      * @return $this
      */
@@ -86,7 +86,7 @@ class ProductSearchResult
     }
 
     /**
-     * @return int
+     * @return mixed
      */
     public function getTotalProductsCount()
     {
@@ -114,7 +114,7 @@ class ProductSearchResult
     }
 
     /**
-     * @param string $encodedFacets
+     * @param $encodedFacets
      *
      * @return $this
      */
@@ -126,7 +126,7 @@ class ProductSearchResult
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getEncodedFacets()
     {

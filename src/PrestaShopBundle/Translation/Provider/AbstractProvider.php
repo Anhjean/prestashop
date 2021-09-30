@@ -28,14 +28,13 @@ namespace PrestaShopBundle\Translation\Provider;
 
 use PrestaShop\PrestaShop\Core\Exception\FileNotFoundException;
 use PrestaShop\PrestaShop\Core\Translation\Locale\Converter;
-use PrestaShopBundle\Translation\Loader\DatabaseTranslationLoader;
 use Symfony\Component\Translation\Loader\LoaderInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
 abstract class AbstractProvider implements ProviderInterface, XliffCatalogueInterface, DatabaseCatalogueInterface
 {
-    public const DEFAULT_LOCALE = 'en-US';
+    const DEFAULT_LOCALE = 'en-US';
 
     /**
      * @var LoaderInterface the loader interface
@@ -97,7 +96,7 @@ abstract class AbstractProvider implements ProviderInterface, XliffCatalogueInte
     }
 
     /**
-     * @param string $locale
+     * {@inheritdoc}
      */
     public function setLocale($locale)
     {
@@ -200,7 +199,7 @@ abstract class AbstractProvider implements ProviderInterface, XliffCatalogueInte
     /**
      * Get the Catalogue from database only.
      *
-     * @param string|null $theme
+     * @param null $theme
      *
      * @return MessageCatalogue A MessageCatalogue instance
      */
@@ -209,9 +208,6 @@ abstract class AbstractProvider implements ProviderInterface, XliffCatalogueInte
         $databaseCatalogue = new MessageCatalogue($this->locale);
 
         foreach ($this->getTranslationDomains() as $translationDomain) {
-            if (!($this->getDatabaseLoader() instanceof DatabaseTranslationLoader)) {
-                continue;
-            }
             $domainCatalogue = $this->getDatabaseLoader()->load(null, $this->locale, $translationDomain, $theme);
 
             if ($domainCatalogue instanceof MessageCatalogue) {
@@ -231,7 +227,7 @@ abstract class AbstractProvider implements ProviderInterface, XliffCatalogueInte
     }
 
     /**
-     * @return LoaderInterface
+     * @return LoaderInterface The database loader
      */
     public function getDatabaseLoader()
     {
@@ -257,7 +253,7 @@ abstract class AbstractProvider implements ProviderInterface, XliffCatalogueInte
     }
 
     /**
-     * @param string|array<string> $paths a list of paths when we can look for translations
+     * @param array $paths a list of paths when we can look for translations
      * @param string $locale the Symfony (not the PrestaShop one) locale
      * @param string|null $pattern a regular expression
      *

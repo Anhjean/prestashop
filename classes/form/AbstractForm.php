@@ -133,34 +133,14 @@ abstract class AbstractFormCore implements FormInterface
     public function validate()
     {
         foreach ($this->formFields as $field) {
-            if ($field->isRequired()) {
-                if (!$field->getValue()) {
-                    $field->addError(
-                        $this->constraintTranslator->translate('required')
-                    );
-                } elseif (!$this->checkFieldLength($field)) {
-                    $field->addError(
-                        $this->translator->trans(
-                            'The %1$s field is too long (%2$d chars max).',
-                            [$field->getLabel(), $field->getMaxLength()],
-                            'Shop.Notifications.Error'
-                        )
-                    );
-                }
+            if ($field->isRequired() && !$field->getValue()) {
+                $field->addError(
+                    $this->constraintTranslator->translate('required')
+                );
 
                 continue;
-            } elseif (!$field->isRequired()) {
-                if (!$field->getValue()) {
-                    continue;
-                } elseif (!$this->checkFieldLength($field)) {
-                    $field->addError(
-                        $this->translator->trans(
-                            'The %1$s field is too long (%2$d chars max).',
-                            [$field->getLabel(), $field->getMaxLength()],
-                            'Shop.Notifications.Error'
-                        )
-                    );
-                }
+            } elseif (!$field->isRequired() && !$field->getValue()) {
+                continue;
             }
 
             foreach ($field->getConstraints() as $constraint) {
@@ -191,9 +171,7 @@ abstract class AbstractFormCore implements FormInterface
             } elseif ($field->getType() === 'checkbox') {
                 // checkboxes that are not submitted
                 // are interpreted as booleans switched off
-                if (empty($field->getValue())) {
-                    $field->setValue(false);
-                }
+                $field->setValue(false);
             }
         }
 
@@ -225,19 +203,5 @@ abstract class AbstractFormCore implements FormInterface
         $this->getField($field_name)->setValue($value);
 
         return $this;
-    }
-
-    /**
-     * Validate field length
-     *
-     * @param $field the field to check
-     *
-     * @return bool
-     */
-    protected function checkFieldLength($field)
-    {
-        $error = $field->getMaxLength() != null && strlen($field->getValue()) > (int) $field->getMaxLength();
-
-        return !$error;
     }
 }

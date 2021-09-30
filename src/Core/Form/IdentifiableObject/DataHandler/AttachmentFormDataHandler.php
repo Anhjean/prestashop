@@ -69,9 +69,9 @@ final class AttachmentFormDataHandler implements FormDataHandlerInterface
      *
      * @throws AttachmentConstraintException
      */
-    public function update($id, array $data)
+    public function update($attachmentId, array $data)
     {
-        $attachmentIdObject = new AttachmentId((int) $id);
+        $attachmentIdObject = new AttachmentId((int) $attachmentId);
 
         $command = $this->createEditAttachmentCommand($attachmentIdObject, $data);
 
@@ -81,7 +81,7 @@ final class AttachmentFormDataHandler implements FormDataHandlerInterface
     /**
      * Creates edit attachment command from
      *
-     * @param AttachmentId $attachmentId
+     * @param $attachmentId
      * @param array $data
      *
      * @return EditAttachmentCommand

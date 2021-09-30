@@ -53,7 +53,7 @@ final class CurrencyQueryBuilder extends AbstractDoctrineQueryBuilder
 
     /**
      * @param Connection $connection
-     * @param string $dbPrefix
+     * @param $dbPrefix
      * @param DoctrineSearchCriteriaApplicatorInterface $searchCriteriaApplicator
      * @param array $contextShopIds
      */
@@ -113,9 +113,6 @@ final class CurrencyQueryBuilder extends AbstractDoctrineQueryBuilder
     private function getQueryBuilder(array $filters)
     {
         $allowedFilters = [
-            'id_currency',
-            'name',
-            'symbol',
             'iso_code',
             'active',
         ];
@@ -151,13 +148,6 @@ final class CurrencyQueryBuilder extends AbstractDoctrineQueryBuilder
             if ('active' === $filterName) {
                 $qb->andWhere('c.`active` = :active');
                 $qb->setParameter('active', $value);
-
-                continue;
-            }
-
-            if ('name' === $filterName || 'symbol' === $filterName) {
-                $qb->andWhere('cl.`' . $filterName . '` LIKE :' . $filterName);
-                $qb->setParameter($filterName, '%' . $value . '%');
 
                 continue;
             }

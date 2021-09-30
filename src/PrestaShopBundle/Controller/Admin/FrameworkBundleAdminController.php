@@ -29,13 +29,14 @@ namespace PrestaShopBundle\Controller\Admin;
 use Exception;
 use PrestaShop\PrestaShop\Adapter\Configuration;
 use PrestaShop\PrestaShop\Adapter\Shop\Context;
+use PrestaShop\PrestaShop\Core\ConfigurationInterface;
 use PrestaShop\PrestaShop\Core\Grid\GridInterface;
 use PrestaShop\PrestaShop\Core\Localization\Locale;
 use PrestaShop\PrestaShop\Core\Localization\Locale\Repository as LocaleRepository;
 use PrestaShop\PrestaShop\Core\Module\Exception\ModuleErrorInterface;
 use PrestaShopBundle\Security\Voter\PageVoter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
@@ -46,12 +47,12 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Extends The Symfony framework bundle controller to add common functions for PrestaShop needs.
  */
-class FrameworkBundleAdminController extends AbstractController
+class FrameworkBundleAdminController extends Controller
 {
-    public const PRESTASHOP_CORE_CONTROLLERS_TAG = 'prestashop.core.controllers';
+    const PRESTASHOP_CORE_CONTROLLERS_TAG = 'prestashop.core.controllers';
 
     /**
-     * @var Configuration
+     * @var ConfigurationInterface|Configuration
      */
     protected $configuration;
 
@@ -71,14 +72,10 @@ class FrameworkBundleAdminController extends AbstractController
     /**
      * @Template
      *
-     * @deprecated Since 8.0, to be removed in the next major version
-     *
      * @return array Template vars
      */
     public function overviewAction()
     {
-        @trigger_error(__FUNCTION__ . 'is deprecated since version 8.0 and will be removed in the next major version.', E_USER_DEPRECATED);
-
         return [
             'is_shop_context' => (new Context())->isShopContext(),
             'layoutTitle' => empty($this->layoutTitle) ? '' : $this->trans($this->layoutTitle, 'Admin.Navigation.Menu'),
@@ -90,13 +87,13 @@ class FrameworkBundleAdminController extends AbstractController
      *
      * Parse all errors mapped by id html field
      *
-     * @param FormInterface $form
+     * @param Form $form The form
      *
-     * @return array<array<string>> Errors
+     * @return array[array[string]] Errors
      *
      * @throws \Symfony\Component\Translation\Exception\InvalidArgumentException
      */
-    public function getFormErrorsForJS(FormInterface $form)
+    public function getFormErrorsForJS(Form $form)
     {
         $errors = [];
 
@@ -224,7 +221,7 @@ class FrameworkBundleAdminController extends AbstractController
     }
 
     /**
-     * @param string $lang
+     * @param $lang
      *
      * @return mixed
      */
@@ -252,7 +249,7 @@ class FrameworkBundleAdminController extends AbstractController
     /**
      * Checks if the attributes are granted against the current authentication token and optionally supplied object.
      *
-     * @param string $controller name of the controller that token is tested against
+     * @param string $controller name of the controller to valide access
      *
      * @return int
      *
@@ -324,8 +321,8 @@ class FrameworkBundleAdminController extends AbstractController
     /**
      * Check if the connected user is granted to actions on a specific object.
      *
-     * @param string $action
-     * @param string $object
+     * @param $action
+     * @param $object
      * @param string $suffix
      *
      * @return bool
@@ -348,7 +345,7 @@ class FrameworkBundleAdminController extends AbstractController
     /**
      * Display a message about permissions failure according to an action.
      *
-     * @param string $action
+     * @param $action
      * @param string $suffix
      *
      * @return string

@@ -65,28 +65,18 @@ class CopyLanguageType extends TranslatorAwareType
 
         $builder
             ->add('from_language', ChoiceType::class, [
-                'label' => $this->trans(
-                    'From',
-                    'Admin.Global'
-                ),
                 'choices' => $localeChoices,
                 'choice_translation_domain' => false,
             ])
             ->add('from_theme', ChoiceType::class, [
-                'label' => false,
                 'choices' => $this->themeChoices,
                 'choice_translation_domain' => false,
             ])
             ->add('to_language', ChoiceType::class, [
-                'label' => $this->trans(
-                    'To',
-                    'Admin.Global'
-                ),
                 'choices' => $localeChoices,
                 'choice_translation_domain' => false,
             ])
             ->add('to_theme', ChoiceType::class, [
-                'label' => false,
                 'choices' => $this->themeChoices,
                 'choice_translation_domain' => false,
             ]);

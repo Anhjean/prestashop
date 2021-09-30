@@ -195,15 +195,14 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $combinations_groups = $this->product->getAttributesGroups($this->context->language->id);
         $attributes = [];
         $impacts = Product::getAttributesImpacts($this->product->id);
-        foreach ($combinations_groups as $combination) {
+        foreach ($combinations_groups as &$combination) {
+            $target = &$attributes[$combination['id_attribute_group']][$combination['id_attribute']];
+            $target = $combination;
             if (isset($impacts[$combination['id_attribute']])) {
-                $combination['price'] = $impacts[$combination['id_attribute']]['price'];
-                $combination['weight'] = $impacts[$combination['id_attribute']]['weight'];
+                $target['price'] = $impacts[$combination['id_attribute']]['price'];
+                $target['weight'] = $impacts[$combination['id_attribute']]['weight'];
             }
-
-            $attributes[$combination['id_attribute_group']][$combination['id_attribute']] = $combination;
         }
-
         $this->context->smarty->assign([
             'currency_sign' => $this->context->currency->sign,
             'weight_unit' => Configuration::get('PS_WEIGHT_UNIT'),
@@ -245,7 +244,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $this->initPageHeaderToolbar();
         $this->initGroupTable();
 
-        $attributes = ProductAttribute::getAttributes(Context::getContext()->language->id, true);
+        $attributes = Attribute::getAttributes(Context::getContext()->language->id, true);
         $attribute_js = [];
 
         foreach ($attributes as $k => $attribute) {

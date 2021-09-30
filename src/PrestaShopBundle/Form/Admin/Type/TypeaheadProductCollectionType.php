@@ -138,7 +138,7 @@ class TypeaheadProductCollectionType extends CommonAbstractType
             'mapping_name' => 'name',
             'mapping_type' => 'product',
             'placeholder' => '',
-            'template_collection' => '%s',
+            'template_collection' => '',
             'limit' => 0,
         ]);
     }

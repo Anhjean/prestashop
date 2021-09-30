@@ -70,7 +70,7 @@ final class EmptyCategoryQueryBuilder extends AbstractDoctrineQueryBuilder
      * @param int $contextLangId
      * @param int $contextShopId
      * @param MultistoreContextCheckerInterface $multistoreContextChecker
-     * @param int $rootCategoryId
+     * @param $rootCategoryId
      */
     public function __construct(
         Connection $connection,

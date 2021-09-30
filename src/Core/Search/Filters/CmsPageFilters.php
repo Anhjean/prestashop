@@ -31,7 +31,6 @@ use PrestaShop\PrestaShop\Core\Search\Filters;
 
 final class CmsPageFilters extends Filters
 {
-    /** @var string */
     protected $filterId = CmsPageDefinitionFactory::GRID_ID;
 
     /**

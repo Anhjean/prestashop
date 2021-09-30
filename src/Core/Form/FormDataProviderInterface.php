@@ -26,8 +26,6 @@
 
 namespace PrestaShop\PrestaShop\Core\Form;
 
-use Symfony\Component\OptionsResolver\Exception\UndefinedOptionsException;
-
 /**
  * Symfony forms data provider.
  */

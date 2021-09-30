@@ -31,7 +31,6 @@ use PrestaShop\TranslationToolsBundle\Translation\Extractor\Util\Flattenizer;
 use PrestaShopBundle\Translation\Extractor\ThemeExtractor;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
 class ThemeProvider extends AbstractProvider
@@ -180,7 +179,7 @@ class ThemeProvider extends AbstractProvider
     /**
      * @param string|null $themeName
      *
-     * @return MessageCatalogue
+     * @return MessageCatalogueInterface
      */
     public function getDatabaseCatalogue($themeName = null)
     {
@@ -228,7 +227,7 @@ class ThemeProvider extends AbstractProvider
     {
         $path = $this->resourceDirectory . DIRECTORY_SEPARATOR . $this->themeName . DIRECTORY_SEPARATOR . 'translations';
 
-        return $this->getCatalogueFromPaths([$path], $this->locale, current($this->getFilters()));
+        return $this->getCatalogueFromPaths($path, $this->locale, current($this->getFilters()));
     }
 
     /**

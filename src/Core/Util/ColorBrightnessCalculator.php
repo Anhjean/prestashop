@@ -47,7 +47,7 @@ final class ColorBrightnessCalculator
     }
 
     /**
-     * @param string $hexColor
+     * @param $hexColor
      *
      * @return float|int
      */

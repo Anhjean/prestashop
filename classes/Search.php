@@ -286,65 +286,55 @@ class SearchCore
 
         $scoreArray = [];
         $fuzzyLoop = 0;
-        $wordCnt = 0;
-        $eligibleProducts2Full = [];
-        $expressions = explode(';', $expr);
+        $eligibleProducts2 = null;
+        $words = Search::extractKeyWords($expr, $id_lang, false, $context->language->iso_code);
         $fuzzyMaxLoop = (int) Configuration::get('PS_SEARCH_FUZZY_MAX_LOOP');
         $psFuzzySearch = (int) Configuration::get('PS_SEARCH_FUZZY');
         $psSearchMinWordLength = (int) Configuration::get('PS_SEARCH_MINWORDLEN');
-        foreach ($expressions as $expression) {
-            $eligibleProducts2 = null;
-            $words = Search::extractKeyWords($expression, $id_lang, false, $context->language->iso_code);
-            foreach ($words as $key => $word) {
-                if (empty($word) || strlen($word) < $psSearchMinWordLength) {
-                    unset($words[$key]);
-                    continue;
-                }
 
-                $sql_param_search = self::getSearchParamFromWord($word);
-                $sql = 'SELECT DISTINCT si.id_product ' .
-                    'FROM ' . _DB_PREFIX_ . 'search_word sw ' .
-                    'LEFT JOIN ' . _DB_PREFIX_ . 'search_index si ON sw.id_word = si.id_word ' .
-                    'LEFT JOIN ' . _DB_PREFIX_ . 'product_shop product_shop ON (product_shop.`id_product` = si.`id_product`) ' .
-                    'WHERE sw.id_lang = ' . (int) $id_lang . ' ' .
-                    'AND sw.id_shop = ' . $context->shop->id . ' ' .
-                    'AND product_shop.`active` = 1 ' .
-                    'AND product_shop.`visibility` IN ("both", "search") ' .
-                    'AND product_shop.indexed = 1 ' .
-                    'AND sw.word LIKE ';
-
-                while (!($result = $db->executeS($sql . "'" . $sql_param_search . "';", true, false))) {
-                    if (!$psFuzzySearch
-                        || $fuzzyLoop++ > $fuzzyMaxLoop
-                        || !($sql_param_search = static::findClosestWeightestWord($context, $word))
-                    ) {
-                        break;
-                    }
-                }
-
-                if (!$result) {
-                    unset($words[$key]);
-                    continue;
-                }
-
-                $productIds = array_column($result, 'id_product');
-                if ($eligibleProducts2 === null) {
-                    $eligibleProducts2 = $productIds;
-                } else {
-                    $eligibleProducts2 = array_intersect($eligibleProducts2, $productIds);
-                }
-
-                $scoreArray[] = 'sw.word LIKE \'' . $sql_param_search . '\'';
+        foreach ($words as $key => $word) {
+            if (empty($word) || strlen($word) < $psSearchMinWordLength) {
+                unset($words[$key]);
+                continue;
             }
-            $wordCnt += count($words);
-            if ($eligibleProducts2) {
-                $eligibleProducts2Full = array_merge($eligibleProducts2Full, $eligibleProducts2);
+
+            $sql_param_search = self::getSearchParamFromWord($word);
+            $sql = 'SELECT DISTINCT si.id_product ' .
+                 'FROM ' . _DB_PREFIX_ . 'search_word sw ' .
+                 'LEFT JOIN ' . _DB_PREFIX_ . 'search_index si ON sw.id_word = si.id_word ' .
+                 'LEFT JOIN ' . _DB_PREFIX_ . 'product_shop product_shop ON (product_shop.`id_product` = si.`id_product`) ' .
+                 'WHERE sw.id_lang = ' . (int) $id_lang . ' ' .
+                 'AND sw.id_shop = ' . $context->shop->id . ' ' .
+                 'AND product_shop.`active` = 1 ' .
+                 'AND product_shop.`visibility` IN ("both", "search") ' .
+                 'AND product_shop.indexed = 1 ' .
+                 'AND sw.word LIKE ';
+
+            while (!($result = $db->executeS($sql . "'" . $sql_param_search . "';", true, false))) {
+                if (!$psFuzzySearch
+                    || $fuzzyLoop++ > $fuzzyMaxLoop
+                    || !($sql_param_search = static::findClosestWeightestWord($context, $word))
+                ) {
+                    break;
+                }
             }
+
+            if (!$result) {
+                unset($words[$key]);
+                continue;
+            }
+
+            $productIds = array_column($result, 'id_product');
+            if ($eligibleProducts2 === null) {
+                $eligibleProducts2 = $productIds;
+            } else {
+                $eligibleProducts2 = array_intersect($eligibleProducts2, $productIds);
+            }
+
+            $scoreArray[] = 'sw.word LIKE \'' . $sql_param_search . '\'';
         }
 
-        $eligibleProducts2Full = array_unique($eligibleProducts2Full);
-
-        if (!$wordCnt || !count($eligibleProducts2Full)) {
+        if (!count($words)) {
             return $ajax ? [] : ['total' => 0, 'result' => []];
         }
 
@@ -377,8 +367,7 @@ class SearchCore
             'WHERE c.`active` = 1 ' .
             'AND product_shop.`active` = 1 ' .
             'AND product_shop.`visibility` IN ("both", "search") ' .
-            'AND product_shop.indexed = 1 ' .
-            'AND cp.id_product IN (' . implode(',', $eligibleProducts2Full) . ')' . $sqlGroups,
+            'AND product_shop.indexed = 1 ' . $sqlGroups,
             true,
             false
         );
@@ -388,11 +377,22 @@ class SearchCore
             $eligibleProducts[] = $row['id_product'];
         }
 
+        $eligibleProducts = array_unique(array_intersect($eligibleProducts, array_unique($eligibleProducts2)));
         if (!count($eligibleProducts)) {
             return $ajax ? [] : ['total' => 0, 'result' => []];
         }
 
-        $product_pool = ' IN (' . implode(',', $eligibleProducts) . ') ';
+        $product_pool = '';
+        foreach ($eligibleProducts as $id_product) {
+            if ($id_product) {
+                $product_pool .= (int) $id_product . ',';
+            }
+        }
+
+        if (empty($product_pool)) {
+            return $ajax ? [] : ['total' => 0, 'result' => []];
+        }
+        $product_pool = ((strpos($product_pool, ',') === false) ? (' = ' . (int) $product_pool . ' ') : (' IN (' . rtrim($product_pool, ',') . ') '));
 
         if ($ajax) {
             $sql = 'SELECT DISTINCT p.id_product, pl.name pname, cl.name cname,
@@ -448,19 +448,10 @@ class SearchCore
 					ON (image_shop.`id_product` = p.`id_product` AND image_shop.cover=1 AND image_shop.id_shop=' . (int) $context->shop->id . ')
 				LEFT JOIN `' . _DB_PREFIX_ . 'image_lang` il ON (image_shop.`id_image` = il.`id_image` AND il.`id_lang` = ' . (int) $id_lang . ')
 				WHERE p.`id_product` ' . $product_pool . '
-				GROUP BY product_shop.id_product';
-
-        if ($order_by !== 'price') {
-            $sql .= ($order_by ? ' ORDER BY  ' . $alias . $order_by : '') . ($order_way ? ' ' . $order_way : '') . '
+				GROUP BY product_shop.id_product
+				' . ($order_by ? 'ORDER BY  ' . $alias . $order_by : '') . ($order_way ? ' ' . $order_way : '') . '
 				LIMIT ' . (int) (($page_number - 1) * $page_size) . ',' . (int) $page_size;
-        }
-
         $result = $db->executeS($sql, true, false);
-
-        if ($order_by === 'price') {
-            Tools::orderbyPrice($result, $order_way);
-            $result = array_slice($result, (int) (($page_number - 1) * $page_size), (int) $page_size);
-        }
 
         $sql = 'SELECT COUNT(*)
 				FROM ' . _DB_PREFIX_ . 'product p
@@ -579,10 +570,6 @@ class SearchCore
                             $sql .= ', pa.ean13 AS pa_ean13';
 
                             break;
-                        case 'pa_isbn':
-                            $sql .= ', pa.isbn AS pa_isbn';
-
-                            break;
                         case 'pa_upc':
                             $sql .= ', pa.upc AS pa_upc';
 
@@ -639,10 +626,6 @@ class SearchCore
                             break;
                         case 'ean13':
                             $sql .= ', p.ean13';
-
-                            break;
-                        case 'isbn':
-                            $sql .= ', p.isbn';
 
                             break;
                         case 'upc':
@@ -782,8 +765,6 @@ class SearchCore
             'pa_supplier_reference' => Configuration::get('PS_SEARCH_WEIGHT_REF'),
             'ean13' => Configuration::get('PS_SEARCH_WEIGHT_REF'),
             'pa_ean13' => Configuration::get('PS_SEARCH_WEIGHT_REF'),
-            'isbn' => Configuration::get('PS_SEARCH_WEIGHT_REF'),
-            'pa_isbn' => Configuration::get('PS_SEARCH_WEIGHT_REF'),
             'upc' => Configuration::get('PS_SEARCH_WEIGHT_REF'),
             'pa_upc' => Configuration::get('PS_SEARCH_WEIGHT_REF'),
             'mpn' => Configuration::get('PS_SEARCH_WEIGHT_REF'),
@@ -808,7 +789,7 @@ class SearchCore
         // Products are processed 50 by 50 in order to avoid overloading MySQL
         while (($products = Search::getProductsToIndex($total_languages, $id_product, 50, $weight_array)) && (count($products) > 0)) {
             $products_array = [];
-            // Now each non-indexed product is processed one by one, language by language
+            // Now each non-indexed product is processed one by one, langage by langage
             foreach ($products as $product) {
                 if ((int) $weight_array['tags']) {
                     $product['tags'] = Search::getTags($db, (int) $product['id_product'], (int) $product['id_lang']);
@@ -917,7 +898,7 @@ class SearchCore
         }
     }
 
-    /** $queryArray3 is automatically emptied in order to be reused immediately */
+    /** $queryArray3 is automatically emptied in order to be reused immediatly */
     protected static function saveIndex(&$queryArray3)
     {
         if (is_array($queryArray3) && !empty($queryArray3)) {
@@ -1067,7 +1048,7 @@ class SearchCore
     {
         $distance = []; // cache levenshtein distance
         $searchMinWordLength = (int) Configuration::get('PS_SEARCH_MINWORDLEN');
-        $psSearchMaxWordLength = (int) Configuration::get('PS_SEARCH_MAX_WORD_LENGTH');
+        $psSearchMawWordLenth = (int) Configuration::get('PS_SEARCH_MAX_WORD_LENGTH');
 
         if (!self::$totalWordInSearchWordTable) {
             $sql = 'SELECT count(*) FROM `' . _DB_PREFIX_ . 'search_word`;';
@@ -1082,13 +1063,13 @@ class SearchCore
         if (self::$totalWordInSearchWordTable > static::PS_SEARCH_MAX_WORDS_IN_TABLE) {
             self::$targetLengthMin = self::$targetLengthMax = (int) (strlen($queryString));
         } else {
-            /* This part of code can be considered like an auto-scale mechanism.
-            *  The table ps_search_word can grow huge, and exceed server resources.
-            *  So, we need a mechanism to reduce the server load depending the DB size.
+            /* This part of code could be see like an auto-scale.
+            *  Of course, more words in ps_search_word table is elevate, more server resource is needed.
+            *  So, we need an algorythm to reduce the server load depending the DB size.
             *  Here will be calculated ranges of target length depending the ps_search_word table size.
             *  If ps_search_word table size tends to PS_SEARCH_MAX_WORDS_IN_TABLE, $coefMax and $coefMin will tend to 1.
             *  If ps_search_word table size tends to 0, $coefMax will tends to 2, and $coefMin will tends to 0.5.
-            *  Computations are made with the linear function y = ax + b.
+            *  Calculating is made with the linear function y = ax + b.
             *  With actual constant values, we have :
             *  Linear function for $coefMin : a = 0.5 / 100000, b = 0.5
             *  Linear function for $coefMax : a = -1 / 100000, b = 2
@@ -1100,7 +1081,7 @@ class SearchCore
             *  80,000 words id DB give $coefMin : 0.9, $coefMax : 1.2
             *  100,000 words id DB give $coefMin : 1, $coefMax : 1*/
             if (!self::$coefMin) {
-                //self::$coefMin && self::$coefMax depend on the number of total words in ps_search_word table, need to calculate only for every search
+                //self::$coefMin && self::$coefMax depend of the number of total words in ps_search_word table, need to calculate only for every search
                 self::$coefMin = (
                     (static::PS_SEARCH_ORDINATE_MIN / static::PS_SEARCH_MAX_WORDS_IN_TABLE)
                     * self::$totalWordInSearchWordTable
@@ -1118,10 +1099,10 @@ class SearchCore
             if (self::$targetLengthMin < $searchMinWordLength) {
                 self::$targetLengthMin = $searchMinWordLength;
             }
-            if (self::$targetLengthMax > $psSearchMaxWordLength) {
-                self::$targetLengthMax = $psSearchMaxWordLength;
+            if (self::$targetLengthMax > $psSearchMawWordLenth) {
+                self::$targetLengthMax = $psSearchMawWordLenth;
             }
-            // Could happen when $queryString length * $coefMin > $psSearchMaxWordLength
+            // Could happen when $queryString length * $coefMin > $psSearchMawWordLenth
             if (self::$targetLengthMax < self::$targetLengthMin) {
                 return '';
             }
@@ -1145,12 +1126,12 @@ class SearchCore
         $closestWord = array_reduce(
             $selectedWords,
             static function ($a, $b) use ($queryString) {
-                /* The 'null as levenshtein' column is used as cache
+                /* The 'null as levenshtein' column is use as cache
                  *  if $b win, next loop, it will be $a. So, no need to assign $a['levenshtein']*/
                 $b['levenshtein'] = levenshtein($b['word'], $queryString);
 
-                /* The array comparison will follow the order keys as follow: levenshtein, weight, word
-                 * So, were looking for the smaller levenshtein distance, then the smallest weight (-SUM(weight))*/
+                /* The array comparaison will follow the order keys as follow: levenshtein, weight, word
+                 *  So, were looking for the smaller levenshtein distance, then the smallest weight (-SUM(weight))*/
                 return $a < $b ? $a : $b;
             },
             ['word' => 'initial', 'weight' => 0, 'levenshtein' => 100]

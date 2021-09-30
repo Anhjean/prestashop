@@ -52,7 +52,7 @@ final class MerchandiseReturnQueryBuilder extends AbstractDoctrineQueryBuilder
 
     /**
      * @param Connection $connection
-     * @param string $dbPrefix
+     * @param $dbPrefix
      * @param DoctrineSearchCriteriaApplicatorInterface $searchCriteriaApplicator
      * @param int $contextLanguageId
      * @param array $contextShopIds

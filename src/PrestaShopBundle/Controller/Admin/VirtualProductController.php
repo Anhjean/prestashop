@@ -26,7 +26,6 @@
 
 namespace PrestaShopBundle\Controller\Admin;
 
-use PrestaShopBundle\Entity\ProductDownload;
 use PrestaShopBundle\Form\Admin\Product\ProductVirtual;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -41,7 +40,7 @@ class VirtualProductController extends FrameworkBundleAdminController
     /**
      * Process Ajax Form to create/update virtual product.
      *
-     * @param string|int $idProduct
+     * @param $idProduct
      * @param Request $request
      *
      * @return JsonResponse
@@ -55,7 +54,7 @@ class VirtualProductController extends FrameworkBundleAdminController
         $router = $this->get('router');
 
         //get product
-        $product = $productAdapter->getProduct((int) $idProduct);
+        $product = $productAdapter->getProduct((int) $idProduct, true);
 
         if (!$product || !$request->isXmlHttpRequest()) {
             return $response;
@@ -102,7 +101,7 @@ class VirtualProductController extends FrameworkBundleAdminController
     {
         $configuration = $this->get('prestashop.adapter.legacy.configuration');
         $download = $this->getDoctrine()
-            ->getRepository(ProductDownload::class)
+            ->getRepository('PrestaShopBundle:ProductDownload')
             ->findOneBy([
                 'idProduct' => $idProduct,
             ]);
@@ -122,7 +121,7 @@ class VirtualProductController extends FrameworkBundleAdminController
     /**
      * Process Ajax Form to remove attached file.
      *
-     * @param string|int $idProduct
+     * @param $idProduct
      * @param Request $request
      *
      * @return JsonResponse
@@ -148,7 +147,7 @@ class VirtualProductController extends FrameworkBundleAdminController
     /**
      * Process Ajax remove action.
      *
-     * @param string|int $idProduct
+     * @param $idProduct
      * @param Request $request
      *
      * @return JsonResponse

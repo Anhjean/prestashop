@@ -46,10 +46,6 @@ class ModuleDataUpdater
      */
     private $adminModuleDataProvider;
 
-    /**
-     * @param AddonsInterface $addonsDataProvider
-     * @param AdminModuleDataProvider $adminModuleDataProvider
-     */
     public function __construct(AddonsInterface $addonsDataProvider, AdminModuleDataProvider $adminModuleDataProvider)
     {
         $this->addonsDataProvider = $addonsDataProvider;
@@ -57,7 +53,7 @@ class ModuleDataUpdater
     }
 
     /**
-     * @param string $name
+     * @param $name
      *
      * @return bool
      */
@@ -75,7 +71,7 @@ class ModuleDataUpdater
     }
 
     /**
-     * @param string $name
+     * @param $name
      *
      * @return bool
      */
@@ -93,7 +89,7 @@ class ModuleDataUpdater
     }
 
     /**
-     * @param string $name
+     * @param $name
      *
      * @return bool
      */

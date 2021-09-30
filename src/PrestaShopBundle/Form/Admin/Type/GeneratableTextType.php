@@ -37,7 +37,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class GeneratableTextType extends AbstractType
 {
-    public const DEFAULT_GENERATED_VALUE_LENGTH = 32;
+    const DEFAULT_GENERATED_VALUE_LENGTH = 32;
 
     /**
      * {@inheritdoc}

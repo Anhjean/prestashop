@@ -155,7 +155,7 @@ class ModuleSelfConfigurator
         $files = Finder::create()
             ->files()
             ->in(_PS_MODULE_DIR_ . $this->module)
-            ->name($this->defaultConfigFile);
+            ->name($this->defaultConfigFile, null, true);
 
         foreach ($files as $file) {
             $this->configFile = $file->getRealPath();
@@ -285,7 +285,7 @@ class ModuleSelfConfigurator
      * Finds and returns filepath from a config key in the YML config file.
      * Can be a string of a value of "file" key.
      *
-     * @param array|string $data
+     * @param array $data
      *
      * @return string
      *
@@ -309,7 +309,7 @@ class ModuleSelfConfigurator
      *
      * @param string $file
      *
-     * @return object
+     * @return stdClass
      */
     protected function loadPhpFile($file)
     {

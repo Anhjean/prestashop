@@ -1,11 +1,8 @@
 #!/bin/sh
 
-if [ "${DISABLE_MAKE}" != "1" ]; then
-  echo "\n* Running composer ...";
-  runuser -g www-data -u www-data -- /usr/local/bin/composer install --no-interaction
-
-  echo "\n* Build assets ...";
-  runuser -g www-data -u www-data -- /usr/bin/make assets
+if [ ! -f ./vendor/autoload.php  ]; then
+	echo "\n* Vendor autoloader not found, running composer ...";
+	runuser -g www-data -u www-data -- /usr/local/bin/composer install --no-interaction
 fi
 
 if [ "$DB_SERVER" = "<to be defined>" -a $PS_INSTALL_AUTO = 1 ]; then
@@ -66,7 +63,7 @@ if [ ! -f ./config/settings.inc.php ]; then
         fi
     fi
 else
-    echo "\n* PrestaShop Core already installed...";
+    echo "\n* Pretashop Core already installed...";
 fi
 
 if [ $PS_DEMO_MODE -ne 0 ]; then

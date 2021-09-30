@@ -73,9 +73,7 @@ final class PaymentRestrictionsConfigurator implements PaymentRestrictionsConfig
     }
 
     /**
-     * @param array $currencyRestrictions
-     *
-     * @return bool|void
+     * {@inheritdoc}
      */
     public function configureCurrencyRestrictions(array $currencyRestrictions)
     {
@@ -83,9 +81,7 @@ final class PaymentRestrictionsConfigurator implements PaymentRestrictionsConfig
     }
 
     /**
-     * @param array $countryRestrictions
-     *
-     * @return bool|void
+     * {@inheritdoc}
      */
     public function configureCountryRestrictions(array $countryRestrictions)
     {
@@ -93,9 +89,7 @@ final class PaymentRestrictionsConfigurator implements PaymentRestrictionsConfig
     }
 
     /**
-     * @param array $groupRestrictions
-     *
-     * @return bool|void
+     * {@inheritdoc}
      */
     public function configureGroupRestrictions(array $groupRestrictions)
     {
@@ -103,9 +97,7 @@ final class PaymentRestrictionsConfigurator implements PaymentRestrictionsConfig
     }
 
     /**
-     * @param array $carrierRestrictions
-     *
-     * @return bool|void
+     * {@inheritdoc}
      */
     public function configureCarrierRestrictions(array $carrierRestrictions)
     {

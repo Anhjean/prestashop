@@ -34,25 +34,25 @@ class Permission
     /**
      * @var string Permission to view resource
      */
-    public const VIEW = 'GET';
+    const VIEW = 'GET';
 
     /**
      * @var string Permission to view resource
      */
-    public const FAST_VIEW = 'HEAD';
+    const FAST_VIEW = 'HEAD';
 
     /**
      * @var string Permission to modify existing resource
      */
-    public const MODIFY = 'PUT';
+    const MODIFY = 'PUT';
 
     /**
      * @var string Permission to add new resource
      */
-    public const ADD = 'POST';
+    const ADD = 'POST';
 
     /**
      * @var string Permission to delete existing resource
      */
-    public const DELETE = 'DELETE';
+    const DELETE = 'DELETE';
 }

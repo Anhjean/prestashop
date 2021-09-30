@@ -30,11 +30,9 @@ use PrestaShop\PrestaShop\Core\Addon\AddonInterface;
 
 interface ModuleInterface extends AddonInterface
 {
-    public function onInstall(): bool;
+    public function onInstall();
 
-    public function onPostInstall(): bool;
-
-    public function onUninstall(): bool;
+    public function onUninstall();
 
     /**
      * Called when switching the current theme of the selected shop.
@@ -42,7 +40,7 @@ interface ModuleInterface extends AddonInterface
      *
      * @return bool true for success
      */
-    public function onEnable(): bool;
+    public function onEnable();
 
     /**
      * Not necessarily the opposite of enable. Use this method if
@@ -51,22 +49,22 @@ interface ModuleInterface extends AddonInterface
      *
      * @return bool true for success
      */
-    public function onDisable(): bool;
+    public function onDisable();
 
     /**
      * @return bool
      */
-    public function onMobileEnable(): bool;
+    public function onMobileEnable();
 
     /**
      * @return bool
      */
-    public function onMobileDisable(): bool;
+    public function onMobileDisable();
 
     /**
      * @return bool
      */
-    public function onReset(): bool;
+    public function onReset();
 
     /**
      * Execute up files. You can update configuration, update sql schema.
@@ -74,5 +72,5 @@ interface ModuleInterface extends AddonInterface
      *
      * @return bool true for success
      */
-    public function onUpgrade($version): bool;
+    public function onUpgrade($version);
 }

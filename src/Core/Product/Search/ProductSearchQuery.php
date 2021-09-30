@@ -62,7 +62,7 @@ class ProductSearchQuery
     private $searchTag;
 
     /**
-     * @var array|string
+     * @var array
      */
     private $encodedFacets;
 
@@ -113,7 +113,7 @@ class ProductSearchQuery
     }
 
     /**
-     * @param int $idCategory
+     * @param $idCategory
      *
      * @return $this
      */
@@ -133,7 +133,7 @@ class ProductSearchQuery
     }
 
     /**
-     * @param int $idManufacturer
+     * @param $idManufacturer
      *
      * @return $this
      */
@@ -153,7 +153,7 @@ class ProductSearchQuery
     }
 
     /**
-     * @param int $idSupplier
+     * @param $idSupplier
      *
      * @return $this
      */
@@ -173,7 +173,7 @@ class ProductSearchQuery
     }
 
     /**
-     * @param int $resultsPerPage
+     * @param $resultsPerPage
      *
      * @return $this
      */
@@ -193,7 +193,7 @@ class ProductSearchQuery
     }
 
     /**
-     * @param int $page
+     * @param $page
      *
      * @return $this
      */
@@ -233,7 +233,7 @@ class ProductSearchQuery
     }
 
     /**
-     * @param string $searchString
+     * @param $searchString
      *
      * @return $this
      */
@@ -253,7 +253,7 @@ class ProductSearchQuery
     }
 
     /**
-     * @param string $searchTag
+     * @param $searchTag
      *
      * @return $this
      */
@@ -273,7 +273,7 @@ class ProductSearchQuery
     }
 
     /**
-     * @param array|string $encodedFacets
+     * @param array $encodedFacets
      *
      * @return $this
      */
@@ -285,7 +285,7 @@ class ProductSearchQuery
     }
 
     /**
-     * @return array|string
+     * @return array
      */
     public function getEncodedFacets()
     {

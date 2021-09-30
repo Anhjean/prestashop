@@ -49,11 +49,6 @@ class DebugModeConfiguration implements DataConfigurationInterface
      */
     private $configDefinesPath;
 
-    /**
-     * @param DebugMode $debugMode
-     * @param Configuration $configuration
-     * @param string $configDefinesPath
-     */
     public function __construct(DebugMode $debugMode, Configuration $configuration, $configDefinesPath)
     {
         $this->debugMode = $debugMode;
@@ -146,9 +141,9 @@ class DebugModeConfiguration implements DataConfigurationInterface
     /**
      * Change Debug mode value if needed.
      *
-     * @param bool $enableStatus
+     * @param $enableStatus
      *
-     * @return int|null Status of update
+     * @return int the status of update
      */
     private function updateDebugMode($enableStatus)
     {
@@ -157,7 +152,5 @@ class DebugModeConfiguration implements DataConfigurationInterface
         if ($enableStatus !== $currentDebugMode) {
             return (true === $enableStatus) ? $this->debugMode->enable() : $this->debugMode->disable();
         }
-
-        return null;
     }
 }

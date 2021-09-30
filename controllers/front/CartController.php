@@ -133,7 +133,7 @@ class CartControllerCore extends FrontController
         $productsInCart = $this->context->cart->getProducts();
         $updatedProducts = array_filter($productsInCart, [$this, 'productInCartMatchesCriteria']);
         $updatedProduct = reset($updatedProducts);
-        $productQuantity = $updatedProduct['quantity'] ?? 0;
+        $productQuantity = $updatedProduct['quantity'];
 
         if (!$this->errors) {
             $cartPresenter = new CartPresenter();
@@ -177,12 +177,10 @@ class CartControllerCore extends FrontController
             'cart_detailed' => $this->render('checkout/_partials/cart-detailed'),
             'cart_detailed_totals' => $this->render('checkout/_partials/cart-detailed-totals'),
             'cart_summary_items_subtotal' => $this->render('checkout/_partials/cart-summary-items-subtotal'),
-            'cart_summary_products' => $this->render('checkout/_partials/cart-summary-products'),
             'cart_summary_subtotals_container' => $this->render('checkout/_partials/cart-summary-subtotals'),
             'cart_summary_totals' => $this->render('checkout/_partials/cart-summary-totals'),
             'cart_detailed_actions' => $this->render('checkout/_partials/cart-detailed-actions'),
             'cart_voucher' => $this->render('checkout/_partials/cart-voucher'),
-            'cart_summary_top' => $this->render('checkout/_partials/cart-summary-top'),
         ]));
     }
 
@@ -306,7 +304,7 @@ class CartControllerCore extends FrontController
         if (count($customization_product)) {
             $product = new Product((int) $this->id_product);
             if ($this->id_product_attribute > 0) {
-                $minimal_quantity = (int) ProductAttribute::getAttributeMinimalQty($this->id_product_attribute);
+                $minimal_quantity = (int) Attribute::getAttributeMinimalQty($this->id_product_attribute);
             } else {
                 $minimal_quantity = (int) $product->minimal_quantity;
             }
@@ -490,6 +488,17 @@ class CartControllerCore extends FrontController
             }
 
             if (!$this->errors) {
+                $cart_rules = $this->context->cart->getCartRules();
+                $available_cart_rules = CartRule::getCustomerCartRules(
+                    $this->context->language->id,
+                    (isset($this->context->customer->id) ? $this->context->customer->id : 0),
+                    true,
+                    true,
+                    true,
+                    $this->context->cart,
+                    false,
+                    true
+                );
                 $update_quantity = $this->context->cart->updateQty(
                     $this->qty,
                     $this->id_product,
@@ -504,7 +513,7 @@ class CartControllerCore extends FrontController
                 if ($update_quantity < 0) {
                     // If product has attribute, minimal quantity is set with minimal quantity of attribute
                     $minimal_quantity = ($this->id_product_attribute)
-                        ? ProductAttribute::getAttributeMinimalQty($this->id_product_attribute)
+                        ? Attribute::getAttributeMinimalQty($this->id_product_attribute)
                         : $product->minimal_quantity;
                     $this->{$ErrorKey}[] = $this->trans(
                         'You must add %quantity% minimum quantity',
@@ -579,7 +588,7 @@ class CartControllerCore extends FrontController
     {
         if (($this->id_product_attribute)) {
             return !Product::isAvailableWhenOutOfStock($product->out_of_stock)
-                && !ProductAttribute::checkAttributeQty($this->id_product_attribute, $qtyToCheck);
+                && !Attribute::checkAttributeQty($this->id_product_attribute, $qtyToCheck);
         } elseif (Product::isAvailableWhenOutOfStock($product->out_of_stock)) {
             return false;
         }

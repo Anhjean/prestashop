@@ -238,7 +238,7 @@ class AbstractEditAddressCommand
     }
 
     /**
-     * @param int $countryId
+     * @param int|null $countryId
      *
      * @return self
      *
@@ -362,7 +362,7 @@ class AbstractEditAddressCommand
     }
 
     /**
-     * @param string $homePhone
+     * @param string|null $homePhone
      *
      * @return self
      */

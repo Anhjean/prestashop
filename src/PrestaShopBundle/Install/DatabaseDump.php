@@ -27,7 +27,6 @@
 
 namespace PrestaShopBundle\Install;
 
-use AppKernel;
 use Exception;
 
 class DatabaseDump
@@ -58,7 +57,7 @@ class DatabaseDump
         }
 
         if ($dumpFile === null) {
-            $this->dumpFile = sprintf('%s/ps_dump_%s.sql', sys_get_temp_dir(), AppKernel::VERSION);
+            $this->dumpFile = sys_get_temp_dir() . '/' . 'ps_dump.sql';
         } else {
             $this->dumpFile = $dumpFile;
         }

@@ -47,9 +47,9 @@ class CartDeliveryOption
     private $carrierDelay;
 
     /**
-     * @param int $carrierId
-     * @param string $carrierName
-     * @param string $carrierDelay
+     * @param $carrierId
+     * @param $carrierName
+     * @param $carrierDelay
      */
     public function __construct(int $carrierId, string $carrierName, string $carrierDelay)
     {

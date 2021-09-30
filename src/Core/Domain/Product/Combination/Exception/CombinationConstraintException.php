@@ -24,17 +24,12 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-declare(strict_types=1);
-
 namespace PrestaShop\PrestaShop\Core\Domain\Product\Combination\Exception;
 
 /**
- * Thrown when constraints specific to Combination are violated
+ * Thrown when combination constraints are violated
  */
 class CombinationConstraintException extends CombinationException
 {
-    /**
-     * When combination id is invalid
-     */
-    public const INVALID_ID = 1;
+    const INVALID_ID = 1;
 }

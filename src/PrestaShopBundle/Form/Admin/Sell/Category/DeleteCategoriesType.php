@@ -67,9 +67,6 @@ class DeleteCategoriesType extends AbstractType
                 'entry_type' => HiddenType::class,
                 'label' => false,
                 'allow_add' => true,
-            ])
-            ->add('categories_to_delete_parent', HiddenType::class, [
-                'label' => false,
             ]);
     }
 }

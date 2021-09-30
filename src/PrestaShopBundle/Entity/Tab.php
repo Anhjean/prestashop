@@ -109,21 +109,7 @@ class Tab
     private $icon;
 
     /**
-     * @var string|null
-     *
-     * @ORM\Column(name="wording", type="string", length=255, nullable=true)
-     */
-    private $wording;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="wording_domain", type="string", length=255, nullable=true)
-     */
-    private $wordingDomain;
-
-    /**
-     * @ORM\OneToMany(targetEntity="PrestaShopBundle\Entity\TabLang", mappedBy="id")
+     * @ORM\OneToMany(targetEntity="PrestaShopBundle\Entity\TabLang", mappedBy="tab")
      */
     private $tabLangs;
 
@@ -170,22 +156,6 @@ class Tab
     public function getTabLangs()
     {
         return $this->tabLangs;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getWording(): ?string
-    {
-        return $this->wording;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getWordingDomain(): ?string
-    {
-        return $this->wordingDomain;
     }
 
     /**

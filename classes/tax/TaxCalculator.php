@@ -120,10 +120,8 @@ class TaxCalculatorCore
     public function getTaxesName()
     {
         $name = '';
-        $languageId = (int) Context::getContext()->language->id;
-
         foreach ($this->taxes as $tax) {
-            $name .= ($tax->name[$languageId] ?? '') . ' - ';
+            $name .= $tax->name[(int) Context::getContext()->language->id] . ' - ';
         }
 
         $name = rtrim($name, ' - ');

@@ -34,8 +34,6 @@ use Symfony\Component\Translation\TranslatorInterface;
 /**
  * Class is responsible of managing the data manipulated using forms
  * in "Improve > Shipping > Preferences" page.
- *
- * @deprecated since 1.7.8, will be removed in the next major version
  */
 class PreferencesFormDataProvider implements FormDataProviderInterface
 {

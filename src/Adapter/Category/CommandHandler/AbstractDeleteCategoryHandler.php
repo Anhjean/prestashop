@@ -63,7 +63,7 @@ abstract class AbstractDeleteCategoryHandler
                 }
 
                 if ($mode->shouldDisableProducts()) {
-                    $product->active = false;
+                    $product->active = 0;
                 }
 
                 $product->id_category_default = $parentCategoryId;

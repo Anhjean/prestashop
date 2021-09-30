@@ -37,7 +37,6 @@ use Employee;
 use Exception;
 use Message;
 use Module;
-use PaymentModule;
 use PrestaShop\PrestaShop\Adapter\ContextStateManager;
 use PrestaShop\PrestaShop\Core\Domain\Order\Command\AddOrderFromBackOfficeCommand;
 use PrestaShop\PrestaShop\Core\Domain\Order\CommandHandler\AddOrderFromBackOfficeHandlerInterface;
@@ -76,7 +75,7 @@ final class AddOrderFromBackOfficeHandler extends AbstractOrderCommandHandler im
         if (false === $paymentModule) {
             throw new OrderException(sprintf('Payment method "%s" does not exist.', $paymentModule));
         }
-        /** @var PaymentModule $paymentModule */
+
         $cart = new Cart($command->getCartId()->getValue());
 
         $this->assertAddressesAreNotDisabled($cart);

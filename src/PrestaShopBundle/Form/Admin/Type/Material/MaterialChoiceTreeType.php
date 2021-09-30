@@ -142,6 +142,7 @@ class MaterialChoiceTreeType extends AbstractType
                     $isChildrenSelected = true;
                 }
             }
+
             unset($child);
         }
 

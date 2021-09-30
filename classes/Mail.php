@@ -113,8 +113,8 @@ class MailCore extends ObjectModel
      * @param string $template Template: the name of template not be a var but a string !
      * @param string $subject Subject of the email
      * @param array $templateVars Template variables for the email
-     * @param string|array<string> $to To email
-     * @param string|array<string> $toName To name
+     * @param string $to To email
+     * @param string $toName To name
      * @param string $from From email
      * @param string $fromName To email
      * @param array $fileAttachment array with three parameters (content, mime and name).
@@ -205,10 +205,6 @@ class MailCore extends ObjectModel
                 'PS_MAIL_SMTP_ENCRYPTION',
                 'PS_MAIL_SMTP_PORT',
                 'PS_MAIL_TYPE',
-                'PS_MAIL_DKIM_ENABLE',
-                'PS_MAIL_DKIM_DOMAIN',
-                'PS_MAIL_DKIM_SELECTOR',
-                'PS_MAIL_DKIM_KEY',
             ],
             null,
             null,
@@ -270,7 +266,7 @@ class MailCore extends ObjectModel
             return false;
         }
 
-        // if bcc is not null, make sure it's a valid e-mail
+        // if bcc is not null, make sure it's a vaild e-mail
         if (null !== $bcc && !is_array($bcc) && !Validate::isEmail($bcc)) {
             self::dieOrLog($die, 'Error: parameter "bcc" is corrupted');
             $bcc = null;
@@ -297,23 +293,9 @@ class MailCore extends ObjectModel
             return false;
         }
 
+        /* Construct multiple recipients list if needed */
         $message = new Swift_Message();
 
-        /* Create new message and DKIM sign it, if enabled and all data for signature are provided */
-        if ((bool) $configuration['PS_MAIL_DKIM_ENABLE'] === true
-            && !empty($configuration['PS_MAIL_DKIM_DOMAIN'])
-            && !empty($configuration['PS_MAIL_DKIM_SELECTOR'])
-            && !empty($configuration['PS_MAIL_DKIM_KEY'])
-        ) {
-            $signer = new Swift_Signers_DKIMSigner(
-                $configuration['PS_MAIL_DKIM_KEY'],
-                $configuration['PS_MAIL_DKIM_DOMAIN'],
-                $configuration['PS_MAIL_DKIM_SELECTOR']
-            );
-            $message->attachSigner($signer);
-        }
-
-        /* Construct multiple recipients list if needed */
         if (is_array($to) && isset($to)) {
             foreach ($to as $key => $addr) {
                 $addr = trim($addr);
@@ -561,14 +543,6 @@ class MailCore extends ObjectModel
                 false,
                 $idShop
             );
-            $templateVars['{order_slip_url}'] = Context::getContext()->link->getPageLink(
-                'order-slip',
-                true,
-                $idLang,
-                null,
-                false,
-                $idShop
-            );
             $templateVars['{color}'] = Tools::safeOutput(Configuration::get('PS_MAIL_COLOR', null, null, $idShop));
             // Get extra template_vars
             $extraTemplateVars = [];
@@ -608,7 +582,7 @@ class MailCore extends ObjectModel
                             (new Swift_Attachment())->setFilename(
                                 $attachment['name']
                             )->setContentType($attachment['mime'])
-                                ->setBody($attachment['content'])
+                            ->setBody($attachment['content'])
                         );
                     }
                 }
@@ -628,7 +602,7 @@ class MailCore extends ObjectModel
             if ($send && Configuration::get('PS_LOG_EMAILS')) {
                 $mail = new Mail();
                 $mail->template = Tools::substr($template, 0, 62);
-                $mail->subject = Tools::substr($message->getSubject(), 0, 255);
+                $mail->subject = Tools::substr($subject, 0, 255);
                 $mail->id_lang = (int) $idLang;
                 $recipientsTo = $message->getTo();
                 $recipientsCc = $message->getCc();
@@ -733,11 +707,7 @@ class MailCore extends ObjectModel
         $smtpLogin,
         $smtpPassword,
         $smtpPort,
-        $smtpEncryption,
-        bool $dkimEnable = false,
-        string $dkimKey = '',
-        string $dkimDomain = '',
-        string $dkimSelector = ''
+        $smtpEncryption
     ) {
         $result = false;
 
@@ -766,20 +736,6 @@ class MailCore extends ObjectModel
 
             $swift = new Swift_Mailer($connection);
             $message = new Swift_Message();
-
-            /* Create new message and DKIM sign it, if enabled and all data for signature are provided */
-            if ($dkimEnable === true
-                && !empty($dkimKey)
-                && !empty($dkimDomain)
-                && !empty($dkimSelector)
-            ) {
-                $signer = new Swift_Signers_DKIMSigner(
-                    $dkimKey,
-                    $dkimDomain,
-                    $dkimSelector
-                );
-                $message->attachSigner($signer);
-            }
 
             $message
                 ->setFrom($from)

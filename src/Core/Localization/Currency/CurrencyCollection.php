@@ -31,7 +31,6 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use PrestaShop\PrestaShop\Core\Localization\Currency;
-use Traversable;
 
 class CurrencyCollection implements IteratorAggregate, Countable
 {
@@ -40,7 +39,10 @@ class CurrencyCollection implements IteratorAggregate, Countable
     /**
      * Gets the current CurrencyCollection as an Iterator that includes all currencies.
      *
-     * @return iterable<Currency>|Traversable
+     * It implements \IteratorAggregate.
+     *
+     * @return Currency[] (needed for auto-completion)
+     *                    An ArrayIterator object for iterating over currencies
      */
     public function getIterator()
     {

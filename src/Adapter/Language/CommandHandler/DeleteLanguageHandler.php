@@ -26,6 +26,7 @@
 
 namespace PrestaShop\PrestaShop\Adapter\Language\CommandHandler;
 
+use Configuration;
 use Context;
 use Language;
 use PrestaShop\PrestaShop\Core\Domain\Language\Command\DeleteLanguageCommand;
@@ -48,25 +49,34 @@ final class DeleteLanguageHandler extends AbstractLanguageHandler implements Del
     {
         $language = $this->getLegacyLanguageObject($command->getLanguageId());
 
-        try {
-            $this->assertLanguageIsNotDefault($language);
-        } catch (DefaultLanguageException $e) {
-            throw new DefaultLanguageException(
-                sprintf(
-                    'Default language "%s" cannot be deleted',
-                    $language->iso_code
-                ),
-                DefaultLanguageException::CANNOT_DELETE_DEFAULT_ERROR
-            );
-        }
-
+        $this->assertLanguageIsNotDefault($language);
         $this->assertLanguageIsNotInUse($language);
 
         // language must be deleted in "ALL SHOPS" context
         Shop::setContext(Shop::CONTEXT_ALL);
 
         if (false === $language->delete()) {
-            throw new LanguageException(sprintf('Failed to delete language "%s"', $language->iso_code));
+            throw new LanguageException(sprintf('Failed to delele language "%s"', $language->iso_code));
+        }
+    }
+
+    /**
+     * @param Language $language
+     */
+    private function assertLanguageIsNotDefault(Language $language)
+    {
+        if ($language->id === (int) Configuration::get('PS_LANG_DEFAULT')) {
+            throw new DefaultLanguageException(sprintf('Default language "%s" cannot be deleted', $language->iso_code), DefaultLanguageException::CANNOT_DELETE_ERROR);
+        }
+    }
+
+    /**
+     * @param Language $language
+     */
+    private function assertLanguageIsNotInUse(Language $language)
+    {
+        if ($language->id === (int) Context::getContext()->language->id) {
+            throw new DefaultLanguageException(sprintf('Used language "%s" cannot be deleted', $language->iso_code), DefaultLanguageException::CANNOT_DELETE_IN_USE_ERROR);
         }
     }
 }

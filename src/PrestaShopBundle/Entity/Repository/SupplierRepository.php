@@ -42,11 +42,6 @@ class SupplierRepository
     private $connection;
 
     /**
-     * @var int
-     */
-    public $shopId;
-
-    /**
      * @var string
      */
     private $tablePrefix;
@@ -54,7 +49,7 @@ class SupplierRepository
     /**
      * @param Connection $connection
      * @param ContextAdapter $contextAdapter
-     * @param string $tablePrefix
+     * @param $tablePrefix
      *
      * @throws NotImplementedException
      */

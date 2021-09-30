@@ -27,7 +27,6 @@
 namespace PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters;
 
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
-use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\LogGridDefinitionFactory;
 use PrestaShop\PrestaShop\Core\Search\Filters\LogsFilters;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Entity\Repository\LogRepository;
@@ -45,7 +44,7 @@ class LogsController extends FrameworkBundleAdminController
     /**
      * @var string the controller name for routing
      */
-    public const CONTROLLER_NAME = 'AdminLogs';
+    const CONTROLLER_NAME = 'AdminLogs';
 
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))", message="Access denied.")
@@ -75,10 +74,7 @@ class LogsController extends FrameworkBundleAdminController
     }
 
     /**
-     * @AdminSecurity(
-     *     "is_granted('read', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="You do not have permission to update this.", redirectRoute="admin_logs_index"
-     * )
+     * @AdminSecurity("is_granted(['read', 'update', 'create', 'delete'], request.get('_legacy_controller'))", message="You do not have permission to update this.", redirectRoute="admin_logs_index")
      * @DemoRestricted(redirectRoute="admin_logs_index")
      *
      * @param Request $request
@@ -87,23 +83,26 @@ class LogsController extends FrameworkBundleAdminController
      */
     public function searchAction(Request $request)
     {
+        $definitionFactory = $this->get('prestashop.core.grid.definition.factory.logs');
+        $logsDefinition = $definitionFactory->getDefinition();
+
+        $gridFilterFormFactory = $this->get('prestashop.core.grid.filter.form_factory');
+        $searchParametersForm = $gridFilterFormFactory->create($logsDefinition);
+
+        $searchParametersForm->handleRequest($request);
+        $filters = [];
+
         $this->dispatchHook('actionAdminLogsControllerPostProcessBefore', ['controller' => $this]);
 
-        $responseBuilder = $this->get('prestashop.bundle.grid.response_builder');
+        if ($searchParametersForm->isSubmitted()) {
+            $filters = $searchParametersForm->getData();
+        }
 
-        return $responseBuilder->buildSearchResponse(
-            $this->get('prestashop.core.grid.definition.factory.logs'),
-            $request,
-            LogGridDefinitionFactory::GRID_ID,
-            'admin_logs_index'
-        );
+        return $this->redirectToRoute('admin_logs_index', ['filters' => $filters]);
     }
 
     /**
-     * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="You do not have permission to update this.", redirectRoute="admin_logs_index"
-     * )
+     * @AdminSecurity("is_granted(['update', 'create','delete'], request.get('_legacy_controller'))", message="You do not have permission to update this.", redirectRoute="admin_logs_index")
      * @DemoRestricted(redirectRoute="admin_logs_index")
      *
      * @param Request $request
@@ -153,7 +152,7 @@ class LogsController extends FrameworkBundleAdminController
     /**
      * @return FormHandlerInterface the form handler to set the severity level
      */
-    private function getFormHandler(): FormHandlerInterface
+    private function getFormHandler()
     {
         return $this->get('prestashop.adapter.logs.form_handler');
     }

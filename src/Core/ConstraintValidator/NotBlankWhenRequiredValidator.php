@@ -26,7 +26,6 @@
 
 namespace PrestaShop\PrestaShop\Core\ConstraintValidator;
 
-use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\NotBlankWhenRequired;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\NotBlankValidator;
 
@@ -34,7 +33,7 @@ class NotBlankWhenRequiredValidator extends NotBlankValidator
 {
     public function validate($value, Constraint $constraint)
     {
-        if ($constraint instanceof NotBlankWhenRequired && true === $constraint->required) {
+        if (true === $constraint->required) {
             parent::validate($value, $constraint);
         }
     }

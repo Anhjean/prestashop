@@ -50,7 +50,7 @@ final class ImageTagSourceParser implements ImageTagSourceParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse(string $imageTag): ?string
+    public function parse($imageTag)
     {
         $replacement = 'src="/';
         $imageTag = preg_replace('/src="(\.\.\/|\.\/)+/', $replacement, $imageTag);

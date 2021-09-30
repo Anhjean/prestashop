@@ -36,18 +36,16 @@ use PrestaShop\PrestaShop\Adapter\Environment;
  *
  * WARNING: this factory is only to be used in the specific cases mentioned above, for any other case please use the
  * 'prestashop.module_kernel.repository' or 'prestashop.bundle.repository.module' depending on your needs.
- *
- * @deprecated Since 1.7.8
  */
 class ModuleRepositoryFactory
 {
     /**
-     * @var self|null
+     * @var self
      */
     private static $instance;
 
     /**
-     * @var array|null
+     * @var string
      */
     private $parameters;
 
@@ -148,10 +146,6 @@ class ModuleRepositoryFactory
             $config = require $this->getParametersFile();
             $this->parameters = $config['parameters'];
         }
-
-        array_walk($this->parameters, function (&$param) {
-            $param = str_replace('%%', '%', $param);
-        });
 
         return $this->parameters;
     }

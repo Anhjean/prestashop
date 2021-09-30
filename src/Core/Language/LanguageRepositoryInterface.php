@@ -26,13 +26,11 @@
 
 namespace PrestaShop\PrestaShop\Core\Language;
 
-use Doctrine\Persistence\ObjectRepository;
-
 /**
  * Interface LanguageRepositoryInterface allows to fetch a LanguageInterface
  * via different methods.
  */
-interface LanguageRepositoryInterface extends ObjectRepository
+interface LanguageRepositoryInterface
 {
     /**
      * Returns a LanguageInterface whose locale matches the provided one.
@@ -59,7 +57,7 @@ interface LanguageRepositoryInterface extends ObjectRepository
      *
      * @param string $locale
      *
-     * @return LanguageInterface|null
+     * @return LanguageInterface
      */
     public function getOneByLocaleOrIsoCode($locale);
 }

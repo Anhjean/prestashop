@@ -35,10 +35,10 @@ class EmployeeCore extends ObjectModel
     /** @var int Employee ID */
     public $id;
 
-    /** @var int Employee profile */
+    /** @var string Determine employee profile */
     public $id_profile;
 
-    /** @var int Employee language */
+    /** @var string employee language */
     public $id_lang;
 
     /** @var string Lastname */
@@ -53,7 +53,7 @@ class EmployeeCore extends ObjectModel
     /** @var string Password */
     public $passwd;
 
-    /** @var string Password */
+    /** @var datetime Password */
     public $last_passwd_gen;
 
     public $stats_date_from;
@@ -79,7 +79,7 @@ class EmployeeCore extends ObjectModel
     /** @var int employee desired screen width */
     public $bo_width;
 
-    /** @var bool */
+    /** @var bool, false */
     public $bo_menu = 1;
 
     /* Deprecated */
@@ -95,16 +95,11 @@ class EmployeeCore extends ObjectModel
     public $id_last_customer_message;
     public $id_last_customer;
 
-    /** @var string Unique token for forgot password feature */
+    /** @var string Unique token for forgot passsword feature */
     public $reset_password_token;
 
     /** @var string token validity date for forgot password feature */
     public $reset_password_validity;
-
-    /**
-     * @var bool
-     */
-    public $has_enabled_gravatar = false;
 
     /**
      * @see ObjectModel::$definition
@@ -138,7 +133,6 @@ class EmployeeCore extends ObjectModel
             'id_last_customer' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
             'reset_password_token' => ['type' => self::TYPE_STRING, 'validate' => 'isSha1', 'size' => 40, 'copy_post' => false],
             'reset_password_validity' => ['type' => self::TYPE_DATE, 'validate' => 'isDateOrNull', 'copy_post' => false],
-            'has_enabled_gravatar' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
         ],
     ];
 
@@ -366,7 +360,7 @@ class EmployeeCore extends ObjectModel
 		    SELECT `id_employee`
 		    FROM `' . _DB_PREFIX_ . 'employee`
 		    WHERE `email` = \'' . pSQL($email) . '\'
-        ', false);
+        ');
     }
 
     /**
@@ -599,40 +593,11 @@ class EmployeeCore extends ObjectModel
      */
     public function getImage()
     {
-        $defaultSystem = Tools::getAdminImageUrl('pr/default.jpg');
-        $imageUrl = null;
-
-        // Default from Profile
-        $profile = new Profile($this->id_profile);
-        $defaultProfile = (int) $profile->id === (int) $this->id_profile ? $profile->getProfileImage() : null;
-        $imageUrl = $imageUrl ?? $defaultProfile;
-
-        // Gravatar
-        if ($this->has_enabled_gravatar) {
-            $imageUrl = $imageUrl ?? 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($this->email))) . '?d=' . urlencode($defaultSystem);
+        if (!Validate::isLoadedObject($this)) {
+            return Tools::getAdminImageUrl('prestashop-avatar.png');
         }
 
-        // Local Image
-        $imagePath = $this->image_dir . $this->id . '.jpg';
-        if (file_exists($imagePath)) {
-            $imageUrl = $imageUrl ?? Context::getContext()->link->getMediaLink(
-                str_replace($this->image_dir, _THEME_EMPLOYEE_DIR_, $imagePath)
-            );
-        }
-
-        // Default from System
-        $imageUrl = $imageUrl ?? $defaultSystem;
-
-        // Hooks
-        Hook::exec(
-            'actionOverrideEmployeeImage',
-            [
-                'employee' => $this,
-                'imageUrl' => &$imageUrl,
-            ]
-        );
-
-        return $imageUrl;
+        return Tools::getShopProtocol() . 'profile.prestashop.com/' . urlencode($this->email) . '.jpg';
     }
 
     /**
@@ -740,7 +705,7 @@ class EmployeeCore extends ObjectModel
     {
         $access = Profile::getProfileAccess($this->id_profile, Tab::getIdFromClassName($tab));
 
-        return is_array($access) && $access[$action] == '1';
+        return $access[$action] == '1';
     }
 
     /**

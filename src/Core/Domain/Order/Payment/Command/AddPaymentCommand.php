@@ -27,7 +27,7 @@
 namespace PrestaShop\PrestaShop\Core\Domain\Order\Payment\Command;
 
 use DateTimeImmutable;
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Core\Domain\Currency\ValueObject\CurrencyId;
 use PrestaShop\PrestaShop\Core\Domain\Order\Exception\NegativePaymentAmountException;
 use PrestaShop\PrestaShop\Core\Domain\Order\Exception\OrderConstraintException;
@@ -64,7 +64,7 @@ class AddPaymentCommand
     private $paymentMethod;
 
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $paymentAmount;
 
@@ -101,7 +101,7 @@ class AddPaymentCommand
         ?int $orderInvoiceId = null,
         ?string $transactionId = null
     ) {
-        $amount = new DecimalNumber($paymentAmount);
+        $amount = new Number($paymentAmount);
         $this->assertAmountIsPositive($amount);
         $this->assertPaymentMethodIsGenericName($paymentMethod);
 
@@ -139,7 +139,7 @@ class AddPaymentCommand
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
     public function getPaymentAmount()
     {
@@ -180,7 +180,7 @@ class AddPaymentCommand
         }
     }
 
-    private function assertAmountIsPositive(DecimalNumber $amount)
+    private function assertAmountIsPositive(Number $amount)
     {
         if ($amount->isNegative()) {
             throw new NegativePaymentAmountException('The amount should be greater than 0.');

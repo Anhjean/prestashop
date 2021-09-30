@@ -39,7 +39,7 @@ class LocaleData
      * The locale code for this data (either language code or IETF tag).
      * e.G.: 'fr', 'fr-FR'...
      *
-     * @var string|null
+     * @var string
      */
     protected $localeCode;
 
@@ -47,14 +47,14 @@ class LocaleData
      * List of available numbering systems
      * Array of strings (codes).
      *
-     * @var string[]|null
+     * @var string[]
      */
     protected $numberingSystems;
 
     /**
      * Default numbering system.
      *
-     * @var string|null
+     * @var string
      */
     protected $defaultNumberingSystem;
 
@@ -64,14 +64,14 @@ class LocaleData
      * 1 -> grouping starts at 4 figures integers (1,000 and more)
      * 2 -> grouping starts at 5 figures integers (10,000 and more)
      *
-     * @var int|null
+     * @var int
      */
     protected $minimumGroupingDigits;
 
     /**
      * Collection of all available symbols list (by numbering system).
      *
-     * @var NumberSymbolsData[]|null
+     * @var NumberSymbolsData[]
      */
     protected $numberSymbols;
 
@@ -79,7 +79,7 @@ class LocaleData
      * Collection of all available decimal patterns (by numbering system)
      * Array of strings (patterns).
      *
-     * @var string[]|null
+     * @var string[]
      */
     protected $decimalPatterns;
 
@@ -87,7 +87,7 @@ class LocaleData
      * Collection of all available percent patterns (by numbering system)
      * Array of strings (patterns).
      *
-     * @var string[]|null
+     * @var string[]
      */
     protected $percentPatterns;
 
@@ -95,14 +95,14 @@ class LocaleData
      * Collection of all available currency patterns (by numbering system)
      * Array of strings (patterns).
      *
-     * @var string[]|null
+     * @var string[]
      */
     protected $currencyPatterns;
 
     /**
      * All currencies, by ISO code.
      *
-     * @var CurrencyData[]|null
+     * @var CurrencyData[]
      */
     protected $currencies;
 
@@ -123,7 +123,7 @@ class LocaleData
             if (null === $this->numberingSystems) {
                 $this->numberingSystems = [];
             }
-            $this->setNumberingSystems(array_merge($this->numberingSystems, $localeData->getNumberingSystems()));
+            $this->numberingSystems = array_merge($this->numberingSystems, $localeData->getNumberingSystems());
         }
 
         if (null !== $localeData->getDefaultNumberingSystem()) {
@@ -146,24 +146,18 @@ class LocaleData
         }
 
         if (null !== $localeData->getDecimalPatterns()) {
-            if (null === $this->decimalPatterns) {
-                $this->decimalPatterns = [];
-            }
-            $this->setDecimalPatterns(array_merge($this->decimalPatterns, $localeData->getDecimalPatterns()));
+            $this->setDecimalPatterns($localeData->getDecimalPatterns());
         }
 
         if (null !== $localeData->getPercentPatterns()) {
-            if (null === $this->percentPatterns) {
-                $this->percentPatterns = [];
-            }
-            $this->setPercentPatterns(array_merge($this->numberingSystems, $localeData->getPercentPatterns()));
+            $this->setPercentPatterns($localeData->getPercentPatterns());
         }
 
         if (null !== $localeData->getCurrencyPatterns()) {
             if (null === $this->currencyPatterns) {
                 $this->currencyPatterns = [];
             }
-            $this->setCurrencyPatterns(array_merge($this->currencyPatterns, $localeData->getCurrencyPatterns()));
+            $this->currencyPatterns = array_merge($this->currencyPatterns, $localeData->getCurrencyPatterns());
         }
 
         if (null !== $localeData->getCurrencies()) {
@@ -180,7 +174,7 @@ class LocaleData
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getLocaleCode()
     {
@@ -200,7 +194,7 @@ class LocaleData
     }
 
     /**
-     * @return string[]|null
+     * @return string[]
      */
     public function getNumberingSystems()
     {
@@ -220,7 +214,7 @@ class LocaleData
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getDefaultNumberingSystem()
     {
@@ -240,7 +234,7 @@ class LocaleData
     }
 
     /**
-     * @return int|null
+     * @return int
      */
     public function getMinimumGroupingDigits()
     {
@@ -260,7 +254,7 @@ class LocaleData
     }
 
     /**
-     * @return NumberSymbolsData[]|null
+     * @return \PrestaShop\PrestaShop\Core\Localization\CLDR\NumberSymbolsData[]
      */
     public function getNumberSymbols()
     {
@@ -268,7 +262,7 @@ class LocaleData
     }
 
     /**
-     * @param NumberSymbolsData[] $numberSymbols
+     * @param \PrestaShop\PrestaShop\Core\Localization\CLDR\NumberSymbolsData[] $numberSymbols
      *
      * @return LocaleData
      */
@@ -280,7 +274,7 @@ class LocaleData
     }
 
     /**
-     * @return string[]|null
+     * @return string[]
      */
     public function getDecimalPatterns()
     {
@@ -300,7 +294,7 @@ class LocaleData
     }
 
     /**
-     * @return string[]|null
+     * @return string[]
      */
     public function getPercentPatterns()
     {
@@ -320,7 +314,7 @@ class LocaleData
     }
 
     /**
-     * @return string[]|null
+     * @return string[]
      */
     public function getCurrencyPatterns()
     {
@@ -340,7 +334,7 @@ class LocaleData
     }
 
     /**
-     * @return CurrencyData[]|null
+     * @return CurrencyData[]
      */
     public function getCurrencies()
     {

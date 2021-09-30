@@ -27,7 +27,7 @@ class GroupCore extends ObjectModel
 {
     public $id;
 
-    /** @var string|array<int, string> */
+    /** @var string Lastname */
     public $name;
 
     /** @var string Reduction */
@@ -37,7 +37,7 @@ class GroupCore extends ObjectModel
     public $price_display_method;
 
     /** @var bool Show prices */
-    public $show_prices = true;
+    public $show_prices = 1;
 
     /** @var string Object creation date */
     public $date_add;

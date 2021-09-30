@@ -28,6 +28,7 @@ namespace PrestaShop\PrestaShop\Adapter\Attachment\CommandHandler;
 
 use Attachment;
 use PrestaShop\PrestaShop\Adapter\Attachment\AbstractAttachmentHandler;
+use PrestaShop\PrestaShop\Adapter\File\Uploader\AttachmentFileUploader;
 use PrestaShop\PrestaShop\Core\Domain\Attachment\AttachmentFileUploaderInterface;
 use PrestaShop\PrestaShop\Core\Domain\Attachment\Command\AddAttachmentCommand;
 use PrestaShop\PrestaShop\Core\Domain\Attachment\CommandHandler\AddAttachmentHandlerInterface;
@@ -46,7 +47,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class AddAttachmentHandler extends AbstractAttachmentHandler implements AddAttachmentHandlerInterface
 {
     /**
-     * @var AttachmentFileUploaderInterface
+     * @var AttachmentFileUploader
      */
     protected $fileUploader;
 
@@ -87,7 +88,6 @@ final class AddAttachmentHandler extends AbstractAttachmentHandler implements Ad
             $attachment->file_name = $command->getOriginalName();
             $attachment->file = $uniqueFileName;
             $attachment->mime = $command->getMimeType();
-            $attachment->file_size = $command->getFileSize();
 
             $this->assertValidFields($attachment);
 

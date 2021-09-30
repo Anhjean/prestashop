@@ -40,7 +40,6 @@
   {% set severityMessage = withMessage ? 'Major issue (crash)!'|trans({}, 'Admin.Advparameters.Help') : '' %}
 {% else %}
   {% set severityClass = '' %}
-  {% set severityMessage = '' %}
 {% endif %}
 
 <span class="badge badge-pill badge-{{ severityClass }}">

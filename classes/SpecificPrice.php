@@ -191,15 +191,14 @@ class SpecificPriceCore extends ObjectModel
         return false;
     }
 
-    public static function getByProductId($id_product, $id_product_attribute = false, $id_cart = false, $id_price_rule = null)
+    public static function getByProductId($id_product, $id_product_attribute = false, $id_cart = false)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
 			SELECT *
 			FROM `' . _DB_PREFIX_ . 'specific_price`
 			WHERE `id_product` = ' . (int) $id_product .
             ($id_product_attribute ? ' AND id_product_attribute = ' . (int) $id_product_attribute : '') . '
-			AND id_cart = ' . (int) $id_cart .
-            ($id_price_rule !== null ? ' AND id_specific_price_rule = ' . (int) $id_price_rule : ''));
+			AND id_cart = ' . (int) $id_cart);
     }
 
     public static function deleteByIdCart($id_cart, $id_product = false, $id_product_attribute = false)
@@ -283,7 +282,7 @@ class SpecificPriceCore extends ObjectModel
         $key_cache = __FUNCTION__ . '-' . $field_name . '-' . $threshold;
         $specific_list = [];
         if (!array_key_exists($key_cache, self::$_filterOutCache)) {
-            $query_count = 'SELECT COUNT(*) FROM (SELECT DISTINCT `' . $name . '` FROM `' . _DB_PREFIX_ . 'specific_price` WHERE `' . $name . '` != 0 GROUP BY id_product ) AS counted';
+            $query_count = 'SELECT COUNT(DISTINCT `' . $name . '`) FROM `' . _DB_PREFIX_ . 'specific_price` WHERE `' . $name . '` != 0';
             $specific_count = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query_count);
             if ($specific_count == 0) {
                 self::$_no_specific_values[$field_name] = true;

@@ -73,9 +73,7 @@ final class HookableKpiRowFactory implements KpiRowFactoryInterface
     }
 
     /**
-     * @return KpiRow|void
-     *
-     * @throws InvalidArgumentException
+     * {@inheritdoc}
      */
     public function build()
     {

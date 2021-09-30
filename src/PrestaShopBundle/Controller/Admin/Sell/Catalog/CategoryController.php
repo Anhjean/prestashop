@@ -39,16 +39,13 @@ use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CannotAddCategoryExcept
 use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CannotDeleteImageException;
 use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CannotDeleteRootCategoryForShopException;
 use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CannotEditCategoryException;
-use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CannotEditRootCategoryException;
 use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CannotUpdateCategoryStatusException;
 use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CategoryConstraintException;
 use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CategoryException;
 use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CategoryNotFoundException;
 use PrestaShop\PrestaShop\Core\Domain\Category\Exception\MenuThumbnailsLimitException;
-use PrestaShop\PrestaShop\Core\Domain\Category\Query\GetCategoriesTree;
 use PrestaShop\PrestaShop\Core\Domain\Category\Query\GetCategoryForEditing;
 use PrestaShop\PrestaShop\Core\Domain\Category\Query\GetCategoryIsEnabled;
-use PrestaShop\PrestaShop\Core\Domain\Category\QueryResult\CategoryForTree;
 use PrestaShop\PrestaShop\Core\Domain\Category\QueryResult\EditableCategory;
 use PrestaShop\PrestaShop\Core\Domain\Category\ValueObject\MenuThumbnailId;
 use PrestaShop\PrestaShop\Core\Domain\ShowcaseCard\Query\GetShowcaseCardIsClosed;
@@ -75,7 +72,7 @@ class CategoryController extends FrameworkBundleAdminController
      * Show categories listing.
      *
      * @AdminSecurity(
-     *     "is_granted('read', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
+     *     "is_granted(['read', 'update', 'create', 'delete'], request.get('_legacy_controller'))",
      *     message="You do not have permission to list this."
      * )
      *
@@ -100,7 +97,7 @@ class CategoryController extends FrameworkBundleAdminController
         $categoryGridFactory = $this->get('prestashop.core.grid.factory.category_decorator');
         $categoryGrid = $categoryGridFactory->getGrid($filters);
 
-        $deleteCategoriesForm = $this->createForm(DeleteCategoriesType::class, ['categories_to_delete_parent' => (int) $currentCategoryId], []);
+        $deleteCategoriesForm = $this->createForm(DeleteCategoriesType::class);
 
         $showcaseCardIsClosed = $this->getQueryBus()->handle(
             new GetShowcaseCardIsClosed((int) $this->getContext()->employee->id, ShowcaseCard::CATEGORIES_CARD)
@@ -121,11 +118,9 @@ class CategoryController extends FrameworkBundleAdminController
     }
 
     /**
-     * @deprecated since 1.7.8 and will be removed in next major. Use CommonController:searchGridAction instead
-     *
      * Process Grid search.
      *
-     * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     * @AdminSecurity("is_granted(['read'], request.get('_legacy_controller'))")
      *
      * @param Request $request
      *
@@ -148,7 +143,7 @@ class CategoryController extends FrameworkBundleAdminController
      * Show "Add new" form and handle form submit.
      *
      * @AdminSecurity(
-     *     "is_granted('create', request.get('_legacy_controller'))",
+     *     "is_granted(['create'], request.get('_legacy_controller'))",
      *     message="You do not have permission to create this.",
      *     redirectRoute="admin_categories_index"
      * )
@@ -190,7 +185,7 @@ class CategoryController extends FrameworkBundleAdminController
                 'categoryForm' => $categoryForm->createView(),
                 'defaultGroups' => $defaultGroups,
                 'categoryUrl' => $this->get('prestashop.adapter.shop.url.category_provider')
-                    ->getUrl(0, '{friendly-url}'),
+                    ->getUrl(0, '{friendy-url}'),
             ]
         );
     }
@@ -199,7 +194,7 @@ class CategoryController extends FrameworkBundleAdminController
      * Show "Add new root category" page & process adding.
      *
      * @AdminSecurity(
-     *     "is_granted('create', request.get('_legacy_controller'))",
+     *     "is_granted(['create'], request.get('_legacy_controller'))",
      *     message="You do not have permission to create this.",
      *     redirectRoute="admin_categories_index"
      * )
@@ -239,7 +234,7 @@ class CategoryController extends FrameworkBundleAdminController
                 'rootCategoryForm' => $rootCategoryForm->createView(),
                 'defaultGroups' => $defaultGroups,
                 'categoryUrl' => $this->get('prestashop.adapter.shop.url.category_provider')
-                    ->getUrl(0, '{friendly-url}'),
+                    ->getUrl(0, '{friendy-url}'),
             ]
         );
     }
@@ -248,7 +243,7 @@ class CategoryController extends FrameworkBundleAdminController
      * Show & process category editing.
      *
      * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller'))",
+     *     "is_granted(['update'], request.get('_legacy_controller'))",
      *     message="You do not have permission to edit this.",
      *     redirectRoute="admin_categories_index"
      * )
@@ -273,24 +268,18 @@ class CategoryController extends FrameworkBundleAdminController
             return $this->redirectToRoute('admin_categories_index');
         }
 
-        $categoryFormBuilder = $this->get('prestashop.core.form.identifiable_object.builder.category_form_builder');
-        $categoryFormHandler = $this->get('prestashop.core.form.identifiable_object.handler.category_form_handler');
-
-        $categoryFormOptions = [
-            'id_category' => (int) $categoryId,
-            'subcategories' => $editableCategory->getSubCategories(),
-        ];
-
         try {
+            $categoryFormBuilder = $this->get('prestashop.core.form.identifiable_object.builder.category_form_builder');
+            $categoryFormHandler = $this->get('prestashop.core.form.identifiable_object.handler.category_form_handler');
+
+            $categoryFormOptions = [
+                'id_category' => (int) $categoryId,
+                'subcategories' => $editableCategory->getSubCategories(),
+            ];
+
             $categoryForm = $categoryFormBuilder->getFormFor((int) $categoryId, [], $categoryFormOptions);
-        } catch (Exception $exception) {
-            $this->addFlash('error', $this->getErrorMessageForException($exception, $this->getErrorMessages()));
-
-            return $this->redirectToRoute('admin_categories_index');
-        }
-
-        try {
             $categoryForm->handleRequest($request);
+
             $handlerResult = $categoryFormHandler->handleFor((int) $categoryId, $categoryForm);
 
             if ($handlerResult->isSubmitted() && $handlerResult->isValid()) {
@@ -316,7 +305,7 @@ class CategoryController extends FrameworkBundleAdminController
                 'editableCategory' => $editableCategory,
                 'defaultGroups' => $defaultGroups,
                 'categoryUrl' => $this->get('prestashop.adapter.shop.url.category_provider')
-                    ->getUrl($categoryId, '{friendly-url}'),
+                    ->getUrl($categoryId, '{friendy-url}'),
             ]
         );
     }
@@ -325,7 +314,7 @@ class CategoryController extends FrameworkBundleAdminController
      * Show and process category editing.
      *
      * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller'))",
+     *     "is_granted(['update'], request.get('_legacy_controller'))",
      *     message="You do not have permission to edit this.",
      *     redirectRoute="admin_categories_index"
      * )
@@ -344,7 +333,7 @@ class CategoryController extends FrameworkBundleAdminController
             if (!$editableCategory->isRootCategory()) {
                 return $this->redirectToRoute('admin_categories_edit', ['categoryId' => $categoryId]);
             }
-        } catch (CannotEditRootCategoryException | CategoryNotFoundException $e) {
+        } catch (CategoryNotFoundException $e) {
             $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages()));
 
             return $this->redirectToRoute('admin_categories_index');
@@ -355,14 +344,8 @@ class CategoryController extends FrameworkBundleAdminController
 
         try {
             $rootCategoryForm = $rootCategoryFormBuilder->getFormFor((int) $categoryId);
-        } catch (Exception $exception) {
-            $this->addFlash('error', $this->getErrorMessageForException($exception, $this->getErrorMessages()));
-
-            return $this->redirectToRoute('admin_categories_index');
-        }
-
-        try {
             $rootCategoryForm->handleRequest($request);
+
             $handlerResult = $rootCategoryFormHandler->handleFor((int) $categoryId, $rootCategoryForm);
 
             if ($handlerResult->isSubmitted() && $handlerResult->isValid()) {
@@ -388,7 +371,7 @@ class CategoryController extends FrameworkBundleAdminController
                 'editableCategory' => $editableCategory,
                 'defaultGroups' => $defaultGroups,
                 'categoryUrl' => $this->get('prestashop.adapter.shop.url.category_provider')
-                    ->getUrl($categoryId, '{friendly-url}'),
+                    ->getUrl($categoryId, '{friendy-url}'),
             ]
         );
     }
@@ -397,7 +380,7 @@ class CategoryController extends FrameworkBundleAdminController
      * Deletes category cover image.
      *
      * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller'))",
+     *     "is_granted(['update'], request.get('_legacy_controller'))",
      *     message="You do not have permission to edit this.",
      *     redirectRoute="admin_categories_edit",
      *     redirectQueryParamsToKeep={"categoryId"}
@@ -438,7 +421,7 @@ class CategoryController extends FrameworkBundleAdminController
      * Delete given menu thumbnail for category.
      *
      * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller'))",
+     *     "is_granted(['update'], request.get('_legacy_controller'))",
      *     message="You do not have permission to edit this.",
      *     redirectRoute="admin_categories_edit",
      *     redirectQueryParamsToKeep={"categoryId"}
@@ -483,7 +466,7 @@ class CategoryController extends FrameworkBundleAdminController
      * Toggle category status.
      *
      * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller'))",
+     *     "is_granted(['update'], request.get('_legacy_controller'))",
      *     message="You do not have permission to update this."
      * )
      *
@@ -525,7 +508,7 @@ class CategoryController extends FrameworkBundleAdminController
      * Process bulk action for categories status enabling.
      *
      * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
+     *     "is_granted(['update', 'create', 'delete'], request.get('_legacy_controller'))",
      *     redirectRoute="admin_categories_index",
      *     message="You do not have permission to update this."
      * )
@@ -559,7 +542,7 @@ class CategoryController extends FrameworkBundleAdminController
      * Process bulk action for categories status disabling.
      *
      * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
+     *     "is_granted(['update', 'create', 'delete'], request.get('_legacy_controller'))",
      *     redirectRoute="admin_categories_index",
      *     message="You do not have permission to update this."
      * )
@@ -607,12 +590,10 @@ class CategoryController extends FrameworkBundleAdminController
     {
         $deleteCategoriesForm = $this->createForm(DeleteCategoriesType::class);
         $deleteCategoriesForm->handleRequest($request);
-        $idParent = $this->configuration->getInt('PS_HOME_CATEGORY');
 
         if ($deleteCategoriesForm->isSubmitted()) {
             try {
                 $categoriesDeleteData = $deleteCategoriesForm->getData();
-                $idParent = (int) $categoriesDeleteData['categories_to_delete_parent'];
                 $categoryIds = array_map(function ($categoryId) {
                     return (int) $categoryId;
                 }, $categoriesDeleteData['categories_to_delete']);
@@ -633,7 +614,7 @@ class CategoryController extends FrameworkBundleAdminController
             }
         }
 
-        return $this->redirectToRoute('admin_categories_index', ['categoryId' => $idParent]);
+        return $this->redirectToRoute('admin_categories_index');
     }
 
     /**
@@ -654,11 +635,9 @@ class CategoryController extends FrameworkBundleAdminController
     {
         $deleteCategoriesForm = $this->createForm(DeleteCategoriesType::class);
         $deleteCategoriesForm->handleRequest($request);
-        $idParent = $this->configuration->getInt('PS_HOME_CATEGORY');
 
         if ($deleteCategoriesForm->isSubmitted()) {
             $categoriesDeleteData = $deleteCategoriesForm->getData();
-            $idParent = (int) $categoriesDeleteData['categories_to_delete_parent'];
 
             try {
                 $command = new DeleteCategoryCommand(
@@ -674,14 +653,14 @@ class CategoryController extends FrameworkBundleAdminController
             }
         }
 
-        return $this->redirectToRoute('admin_categories_index', ['categoryId' => $idParent]);
+        return $this->redirectToRoute('admin_categories_index');
     }
 
     /**
      * Export filtered categories.
      *
      * @AdminSecurity(
-     *     "is_granted('read', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
+     *     "is_granted(['read', 'update', 'create', 'delete'], request.get('_legacy_controller'))",
      *     redirectRoute="admin_categories_index",
      *     message="You do not have permission to view this."
      * )
@@ -759,50 +738,6 @@ class CategoryController extends FrameworkBundleAdminController
     }
 
     /**
-     * @AdminSecurity("is_granted('read', request.get('_legacy_controller')) || is_granted('create', 'AdminProducts')")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function getCategoriesTreeAction(Request $request): JsonResponse
-    {
-        $langId = $request->query->getInt('langId') ?: (int) $this->getContextLangId();
-        $categoriesTree = $this->getQueryBus()->handle(new GetCategoriesTree($langId));
-
-        return $this->json($this->formatCategoriesTreeForPresentation($categoriesTree, $langId));
-    }
-
-    /**
-     * @param CategoryForTree[] $categoriesTree
-     * @param int $langId
-     *
-     * @return array
-     */
-    private function formatCategoriesTreeForPresentation(array $categoriesTree, int $langId): array
-    {
-        if (empty($categoriesTree)) {
-            return [];
-        }
-
-        $formattedCategories = [];
-        foreach ($categoriesTree as $categoryForTree) {
-            $children = $this->formatCategoriesTreeForPresentation($categoryForTree->getChildren(), $langId);
-
-            $names = $categoryForTree->getLocalizedNames();
-            $active = $categoryForTree->getActive();
-            $formattedCategories[] = [
-                'id' => $categoryForTree->getCategoryId(),
-                'active' => $active,
-                'name' => $names[$langId] ?? reset($names),
-                'children' => $children,
-            ];
-        }
-
-        return $formattedCategories;
-    }
-
-    /**
      * @param Request $request
      *
      * @return array
@@ -859,10 +794,6 @@ class CategoryController extends FrameworkBundleAdminController
                 'An error occurred while creating the category.',
                 'Admin.Catalog.Notification'
             ),
-            CannotEditRootCategoryException::class => $this->trans(
-                'The root category of a shop cannot be edited.',
-                'Admin.Catalog.Notification'
-            ),
             CannotEditCategoryException::class => $this->trans(
                 'An error occurred while editing the category.',
                 'Admin.Catalog.Notification'
@@ -906,6 +837,6 @@ class CategoryController extends FrameworkBundleAdminController
      */
     private function requestHasSearchParameters(Request $request)
     {
-        return !empty($request->query->get(CategoryGridDefinitionFactory::GRID_ID)['filters']);
+        return !empty($request->query->get('category')['filters']);
     }
 }

@@ -30,7 +30,7 @@ use PrestaShop\PrestaShop\Core\Domain\Currency\Exception\CurrencyConstraintExcep
 
 class Precision
 {
-    public const DEFAULT_PRECISION = 2;
+    const DEFAULT_PRECISION = 2;
 
     /**
      * @var int

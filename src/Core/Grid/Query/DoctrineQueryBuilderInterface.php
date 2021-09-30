@@ -37,7 +37,7 @@ interface DoctrineQueryBuilderInterface
     /**
      * Get query that searches grid rows.
      *
-     * @param SearchCriteriaInterface $searchCriteria
+     * @param SearchCriteriaInterface|null $searchCriteria
      *
      * @return QueryBuilder
      */
@@ -46,7 +46,7 @@ interface DoctrineQueryBuilderInterface
     /**
      * Get query that counts grid rows.
      *
-     * @param SearchCriteriaInterface $searchCriteria
+     * @param SearchCriteriaInterface|null $searchCriteria
      *
      * @return QueryBuilder
      */

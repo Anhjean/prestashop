@@ -35,21 +35,11 @@ use PrestaShop\PrestaShop\Core\Repository\RepositoryInterface;
 
 /**
  * Retrieve Logs data from database.
- * This class should not be used as a Grid query builder. @see LogQueryBuilder
  */
 class LogRepository implements RepositoryInterface, DoctrineQueryBuilderInterface
 {
-    /**
-     * @var Connection
-     */
     private $connection;
-    /**
-     * @var string
-     */
     private $databasePrefix;
-    /**
-     * @var string
-     */
     private $logTable;
 
     /**
@@ -182,17 +172,12 @@ class LogRepository implements RepositoryInterface, DoctrineQueryBuilderInterfac
     /**
      * Get query that searches grid rows.
      *
-     * @param SearchCriteriaInterface $searchCriteria
-     *
-     * @deprecated deprecated since 1.7.8.0
-     * @see LogQueryBuilder::getSearchQueryBuilder
+     * @param SearchCriteriaInterface|null $searchCriteria
      *
      * @return QueryBuilder
      */
     public function getSearchQueryBuilder(SearchCriteriaInterface $searchCriteria)
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated since 1.7.8.0', __METHOD__), E_USER_DEPRECATED);
-
         $qb = $this->buildGridQuery($searchCriteria);
         $qb->select('l.*', 'e.email', 'CONCAT(e.firstname, \' \', e.lastname) as employee');
 
@@ -206,17 +191,12 @@ class LogRepository implements RepositoryInterface, DoctrineQueryBuilderInterfac
     /**
      * Get query that counts grid rows.
      *
-     * @param SearchCriteriaInterface $searchCriteria
-     *
-     * @deprecated deprecated since 1.7.8.0
-     * @see LogQueryBuilder::getCountQueryBuilder
+     * @param SearchCriteriaInterface|null $searchCriteria
      *
      * @return QueryBuilder
      */
     public function getCountQueryBuilder(SearchCriteriaInterface $searchCriteria)
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated since 1.7.8.0', __METHOD__), E_USER_DEPRECATED);
-
         $qb = $this->buildGridQuery($searchCriteria);
         $qb->select('COUNT(*)');
 
@@ -226,17 +206,12 @@ class LogRepository implements RepositoryInterface, DoctrineQueryBuilderInterfac
     /**
      * Build query body without select, sorting & limiting.
      *
-     * @param SearchCriteriaInterface $searchCriteria
-     *
-     * @deprecated deprecated since 1.7.8.0
-     * @see LogQueryBuilder::buildGridQuery
+     * @param SearchCriteriaInterface|null $searchCriteria
      *
      * @return QueryBuilder
      */
     private function buildGridQuery(SearchCriteriaInterface $searchCriteria)
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated since 1.7.8.0', __METHOD__), E_USER_DEPRECATED);
-
         $allowedFilters = [
             'id_log',
             'employee',
@@ -254,6 +229,10 @@ class LogRepository implements RepositoryInterface, DoctrineQueryBuilderInterfac
             ->createQueryBuilder()
             ->from($this->logTable, 'l')
             ->leftJoin('l', $employeeTable, 'e', 'l.id_employee = e.id_employee');
+
+        if (null === $searchCriteria) {
+            return $qb;
+        }
 
         $filters = $searchCriteria->getFilters();
         foreach ($filters as $filterName => $filterValue) {

@@ -26,11 +26,11 @@
 
 namespace PrestaShop\PrestaShop\Core\Domain\Product\Combination\Exception;
 
-use PrestaShop\PrestaShop\Core\Domain\Product\Exception\ProductException;
+use PrestaShop\PrestaShop\Core\Domain\Exception\DomainException;
 
 /**
  * Base exception for product combination subdomain
  */
-class CombinationException extends ProductException
+class CombinationException extends DomainException
 {
 }

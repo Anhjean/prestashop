@@ -41,27 +41,27 @@ class InvalidRefundException extends OrderException
     /**
      * Used when the quantity refunded is not strictly positive
      */
-    public const INVALID_QUANTITY = 1;
+    const INVALID_QUANTITY = 1;
 
     /**
      * Used when the quantity refunded is higher than the remaining quantity
      */
-    public const QUANTITY_TOO_HIGH = 2;
+    const QUANTITY_TOO_HIGH = 2;
 
     /**
      * Used when the amount refunded is not strictly positive
      */
-    public const INVALID_AMOUNT = 3;
+    const INVALID_AMOUNT = 3;
 
     /**
      * Used when no refund details have been supplied (nor products nor shipping refund)
      */
-    public const NO_REFUNDS = 4;
+    const NO_REFUNDS = 4;
 
     /**
      * Used when no generation is set (no credit slip and no voucher generation)
      */
-    public const NO_GENERATION = 5;
+    const NO_GENERATION = 5;
 
     /**
      * @param int $code

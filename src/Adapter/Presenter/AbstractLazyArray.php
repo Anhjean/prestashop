@@ -30,9 +30,9 @@ use ArrayAccess;
 use ArrayIterator;
 use ArrayObject;
 use Countable;
+use Doctrine\Common\Util\Inflector;
 use Iterator;
 use JsonSerializable;
-use PrestaShop\PrestaShop\Core\Util\Inflector;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -143,21 +143,6 @@ abstract class AbstractLazyArray implements Iterator, ArrayAccess, Countable, Js
     }
 
     /**
-     * @param mixed $key
-     * @param \Closure $closure
-     */
-    public function appendClosure($key, \Closure $closure)
-    {
-        $this->arrayAccessList->offsetSet(
-            $key,
-            [
-                'type' => 'closure',
-                'value' => $closure,
-            ]
-        );
-    }
-
-    /**
      * The number of keys defined into the lazyArray.
      *
      * @return int
@@ -203,8 +188,9 @@ abstract class AbstractLazyArray implements Iterator, ArrayAccess, Countable, Js
      * The properties are provided as an array. But callers checking the type of this class (is_object === true)
      * think they must use the object syntax.
      *
-     * @param mixed $name
+     * @param mixed $offset
      * @param mixed $value
+     * @param bool $force if set, allow override of an existing method
      *
      * @throws RuntimeException
      */
@@ -217,7 +203,8 @@ abstract class AbstractLazyArray implements Iterator, ArrayAccess, Countable, Js
      * The properties are provided as an array. But callers checking the type of this class (is_object === true)
      * think they must use the object syntax.
      *
-     * @param mixed $name
+     * @param mixed $offset
+     * @param bool $force if set, allow unset of an existing method
      *
      * @throws RuntimeException
      */
@@ -247,44 +234,21 @@ abstract class AbstractLazyArray implements Iterator, ArrayAccess, Countable, Js
     public function offsetGet($index)
     {
         if (isset($this->arrayAccessList[$index])) {
-            $type = $this->arrayAccessList[$index]['type'];
-            switch ($type) {
-                case 'method':
-                    $isResultAvailableInCache = (isset($this->methodCacheResults[$index]));
-
-                    if (!$isResultAvailableInCache) {
-                        $methodName = $this->arrayAccessList[$index]['value'];
-                        $this->methodCacheResults[$index] = $this->{$methodName}();
-                    }
-                    $result = $this->methodCacheResults[$index];
-
-                    break;
-
-                case 'closure':
-                    $isResultAvailableInCache = (isset($this->methodCacheResults[$index]));
-
-                    if (!$isResultAvailableInCache) {
-                        $methodName = $this->arrayAccessList[$index]['value'];
-                        $this->methodCacheResults[$index] = $methodName();
-                    }
-                    $result = $this->methodCacheResults[$index];
-
-                    break;
-
-                default:
-                    $result = $this->arrayAccessList[$index]['value'];
-                    break;
+            // if the index is associated with a method, execute the method an cache the result
+            if ($this->arrayAccessList[$index]['type'] === 'method') {
+                if (!isset($this->methodCacheResults[$index])) {
+                    $methodName = $this->arrayAccessList[$index]['value'];
+                    $this->methodCacheResults[$index] = $this->{$methodName}();
+                }
+                $result = $this->methodCacheResults[$index];
+            } else { // if the index is associated with a value, just return the value
+                $result = $this->arrayAccessList[$index]['value'];
             }
 
             return $result;
         }
 
         return [];
-    }
-
-    public function clearMethodCacheResults()
-    {
-        $this->methodCacheResults = [];
     }
 
     /**
@@ -423,6 +387,6 @@ abstract class AbstractLazyArray implements Iterator, ArrayAccess, Countable, Js
         // remove "get" prefix from the function name
         $strippedMethodName = substr($methodName, 3);
 
-        return Inflector::getInflector()->tableize($strippedMethodName);
+        return Inflector::tableize($strippedMethodName);
     }
 }

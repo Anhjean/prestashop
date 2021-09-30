@@ -213,9 +213,9 @@ class AddonsCollection implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Remove an addon from the collection by key.
      *
-     * @param int|string $key
+     * @param mixed the key (can be int or string)
      *
-     * @return bool|null true if the addon has been found and removed
+     * @return bool true if the addon has been found and removed
      */
     public function removeByKey($key)
     {

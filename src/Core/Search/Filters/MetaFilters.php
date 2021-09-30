@@ -26,7 +26,6 @@
 
 namespace PrestaShop\PrestaShop\Core\Search\Filters;
 
-use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\MetaGridDefinitionFactory;
 use PrestaShop\PrestaShop\Core\Search\Filters;
 
 /**
@@ -34,9 +33,6 @@ use PrestaShop\PrestaShop\Core\Search\Filters;
  */
 final class MetaFilters extends Filters
 {
-    /** @var string */
-    protected $filterId = MetaGridDefinitionFactory::GRID_ID;
-
     /**
      * {@inheritdoc}
      */

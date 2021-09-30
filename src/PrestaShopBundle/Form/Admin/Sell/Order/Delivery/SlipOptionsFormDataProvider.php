@@ -50,7 +50,9 @@ final class SlipOptionsFormDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->configuration->getConfiguration();
+        return [
+            'options' => $this->configuration->getConfiguration(),
+        ];
     }
 
     /**
@@ -58,6 +60,6 @@ final class SlipOptionsFormDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        return $this->configuration->updateConfiguration($data);
+        return $this->configuration->updateConfiguration($data['options']);
     }
 }

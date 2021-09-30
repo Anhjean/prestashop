@@ -30,7 +30,7 @@ use PrestaShop\PrestaShop\Core\Localization\Exception\LocalizationException;
 use PrestaShop\PrestaShop\Core\Localization\Number\Formatter as NumberFormatter;
 use PrestaShop\PrestaShop\Core\Localization\Specification\Number as NumberSpecification;
 use PrestaShop\PrestaShop\Core\Localization\Specification\NumberCollection as PriceSpecificationMap;
-use PrestaShop\PrestaShop\Core\Localization\Specification\NumberInterface as NumberSpecificationInterface;
+use PrestaShop\PrestaShop\Core\Localization\Specification\Price as PriceSpecification;
 
 /**
  * Locale entity.
@@ -45,7 +45,7 @@ class Locale implements LocaleInterface
      * This is the default numbering system in PrestaShop, even for arabian or asian languages, until we
      * provide a way to configure this in admin.
      */
-    public const NUMBERING_SYSTEM_LATIN = 'latn';
+    const NUMBERING_SYSTEM_LATIN = 'latn';
 
     /**
      * The locale code (simplified IETF tag syntax)
@@ -160,7 +160,7 @@ class Locale implements LocaleInterface
      *
      * @param string $currencyCode Currency of the price
      *
-     * @return NumberSpecificationInterface
+     * @return PriceSpecification
      */
     public function getPriceSpecification($currencyCode)
     {

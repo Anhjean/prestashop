@@ -26,7 +26,7 @@
 
 namespace PrestaShop\PrestaShop\Core\Domain\Order\QueryResult;
 
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 
 class OrderPricesForViewing
 {
@@ -66,47 +66,47 @@ class OrderPricesForViewing
     private $totalAmountFormatted;
 
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $productsPriceRaw;
 
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $discountsAmountRaw;
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $wrappingPriceRaw;
 
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $shippingPriceRaw;
 
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $shippingRefundableAmountRaw;
 
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $taxesAmountRaw;
 
     /**
-     * @var DecimalNumber
+     * @var Number
      */
     private $totalAmountRaw;
 
     public function __construct(
-        DecimalNumber $productsPriceRaw,
-        DecimalNumber $discountsAmountRaw,
-        DecimalNumber $wrappingPriceRaw,
-        DecimalNumber $shippingPriceRaw,
-        DecimalNumber $shippingRefundableAmountRaw,
-        DecimalNumber $taxesAmountRaw,
-        DecimalNumber $totalAmountRaw,
+        Number $productsPriceRaw,
+        Number $discountsAmountRaw,
+        Number $wrappingPriceRaw,
+        Number $shippingPriceRaw,
+        Number $shippingRefundableAmountRaw,
+        Number $taxesAmountRaw,
+        Number $totalAmountRaw,
         string $productsPrice,
         string $discountsAmount,
         string $wrappingPrice,
@@ -188,57 +188,57 @@ class OrderPricesForViewing
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getProductsPriceRaw(): DecimalNumber
+    public function getProductsPriceRaw(): Number
     {
         return $this->productsPriceRaw;
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getDiscountsAmountRaw(): DecimalNumber
+    public function getDiscountsAmountRaw(): Number
     {
         return $this->discountsAmountRaw;
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getWrappingPriceRaw(): DecimalNumber
+    public function getWrappingPriceRaw(): Number
     {
         return $this->wrappingPriceRaw;
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getShippingPriceRaw(): DecimalNumber
+    public function getShippingPriceRaw(): Number
     {
         return $this->shippingPriceRaw;
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getShippingRefundableAmountRaw(): DecimalNumber
+    public function getShippingRefundableAmountRaw(): Number
     {
         return $this->shippingRefundableAmountRaw;
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getTaxesAmountRaw(): DecimalNumber
+    public function getTaxesAmountRaw(): Number
     {
         return $this->taxesAmountRaw;
     }
 
     /**
-     * @return DecimalNumber
+     * @return Number
      */
-    public function getTotalAmountRaw(): DecimalNumber
+    public function getTotalAmountRaw(): Number
     {
         return $this->totalAmountRaw;
     }

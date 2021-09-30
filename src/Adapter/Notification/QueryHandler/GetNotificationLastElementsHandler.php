@@ -27,7 +27,6 @@
 namespace PrestaShop\PrestaShop\Adapter\Notification\QueryHandler;
 
 use Notification;
-use PrestaShop\PrestaShop\Adapter\Admin\NotificationsConfiguration;
 use PrestaShop\PrestaShop\Core\Domain\Notification\Query\GetNotificationLastElements;
 use PrestaShop\PrestaShop\Core\Domain\Notification\QueryHandler\GetNotificationLastElementsHandlerInterface;
 use PrestaShop\PrestaShop\Core\Domain\Notification\QueryResult\NotificationResult;
@@ -42,20 +41,6 @@ use PrestaShop\PrestaShop\Core\Domain\Notification\QueryResult\NotificationsResu
 final class GetNotificationLastElementsHandler implements GetNotificationLastElementsHandlerInterface
 {
     /**
-     * @var array
-     */
-    protected $configuration;
-
-    /**
-     * @param NotificationsConfiguration $notificationsConfiguration
-     */
-    public function __construct(
-        NotificationsConfiguration $notificationsConfiguration
-    ) {
-        $this->configuration = $notificationsConfiguration->getConfiguration();
-    }
-
-    /**
      * @param GetNotificationLastElements $query
      *
      * @return NotificationsResults
@@ -68,48 +53,25 @@ final class GetNotificationLastElementsHandler implements GetNotificationLastEle
         $results = [];
         foreach ($elements as $type => $notifications) {
             $notificationsResult = [];
-            $totalNotifications = 0;
-            if ($this->isDisplayed($type)) {
-                $totalNotifications = $notifications['total'];
-                foreach ($notifications['results'] as $notification) {
-                    $notificationsResult[] = new NotificationResult(
-                        $notification['id_order'],
-                        $notification['id_customer'],
-                        $notification['customer_name'],
-                        $notification['id_customer_message'],
-                        $notification['id_customer_thread'],
-                        $notification['customer_view_url'],
-                        $notification['total_paid'],
-                        $notification['carrier'],
-                        $notification['iso_code'],
-                        $notification['company'],
-                        $notification['status'],
-                        $notification['date_add']
-                    );
-                }
+            foreach ($notifications['results'] as $notification) {
+                $notificationsResult[] = new NotificationResult(
+                    $notification['id_order'],
+                    $notification['id_customer'],
+                    $notification['customer_name'],
+                    $notification['id_customer_message'],
+                    $notification['id_customer_thread'],
+                    $notification['customer_view_url'],
+                    $notification['total_paid'],
+                    $notification['carrier'],
+                    $notification['iso_code'],
+                    $notification['company'],
+                    $notification['status'],
+                    $notification['date_add']
+                );
             }
-            $results[] = new NotificationsResult($type, $totalNotifications, $notificationsResult);
+            $results[] = new NotificationsResult($type, $notifications['total'], $notificationsResult);
         }
 
         return new NotificationsResults($results);
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return bool
-     */
-    protected function isDisplayed(string $type): bool
-    {
-        switch ($type) {
-            case 'customer':
-                return $this->configuration['show_notifs_new_customers'] ?: false;
-            case 'customer_message':
-                return $this->configuration['show_notifs_new_messages'] ?: false;
-            case 'order':
-                return $this->configuration['show_notifs_new_orders'] ?: false;
-        }
-
-        return false;
     }
 }

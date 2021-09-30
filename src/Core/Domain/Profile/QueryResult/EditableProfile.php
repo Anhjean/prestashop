@@ -44,23 +44,13 @@ class EditableProfile
     private $localizedNames;
 
     /**
-     * @var string|null
-     */
-    private $avatarUrl;
-
-    /**
      * @param ProfileId $profileId
      * @param string[] $localizedNames
-     * @param string|null $avatarUrl
      */
-    public function __construct(
-        ProfileId $profileId,
-        array $localizedNames,
-        ?string $avatarUrl = null
-    ) {
+    public function __construct(ProfileId $profileId, array $localizedNames)
+    {
         $this->profileId = $profileId;
         $this->localizedNames = $localizedNames;
-        $this->avatarUrl = $avatarUrl;
     }
 
     /**
@@ -77,13 +67,5 @@ class EditableProfile
     public function getLocalizedNames()
     {
         return $this->localizedNames;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAvatarUrl(): ?string
-    {
-        return $this->avatarUrl;
     }
 }

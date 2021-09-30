@@ -30,6 +30,7 @@ use Doctrine\Common\Annotations\Reader;
 use PrestaShopBundle\Routing\Linter\Exception\LinterException;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use ReflectionMethod;
+use Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -43,29 +44,26 @@ final class SecurityAnnotationLinter implements RouteLinterInterface
     private $annotationReader;
 
     /**
-     * @param Reader $annotationReader
+     * @var ControllerNameParser
      */
-    public function __construct(Reader $annotationReader)
+    private $controllerNameParser;
+
+    /**
+     * @param Reader $annotationReader
+     * @param ControllerNameParser $controllerNameParser
+     */
+    public function __construct(Reader $annotationReader, ControllerNameParser $controllerNameParser)
     {
         $this->annotationReader = $annotationReader;
+        $this->controllerNameParser = $controllerNameParser;
     }
 
     /**
-     * @param string $routeName
-     * @param Route $route
-     *
-     * @return AdminSecurity
-     *
-     * @throws \ReflectionException
-     * @throws LinterException
+     * {@inheritdoc}
      */
-    public function getRouteSecurityAnnotation($routeName, Route $route)
+    public function lint($routeName, Route $route)
     {
         $controllerAndMethod = $this->extractControllerAndMethodNamesFromRoute($route);
-
-        if ($controllerAndMethod === null) {
-            throw new LinterException(sprintf('"%s" cannot be parsed', $route->getDefault('_controller')));
-        }
 
         $reflection = new ReflectionMethod(
             $controllerAndMethod['controller'],
@@ -77,29 +75,20 @@ final class SecurityAnnotationLinter implements RouteLinterInterface
         if (null === $annotation) {
             throw new LinterException(sprintf('"%s:%s" does not have AdminSecurity annotation configured', $controllerAndMethod['controller'], $controllerAndMethod['method']));
         }
-
-        return $annotation;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function lint($routeName, Route $route)
-    {
-        $this->getRouteSecurityAnnotation($routeName, $route);
     }
 
     /**
      * @param Route $route
      *
-     * @return array|null
+     * @return array
      */
     private function extractControllerAndMethodNamesFromRoute(Route $route)
     {
         $controller = $route->getDefault('_controller');
 
         if (strpos($controller, '::') === false) {
-            return null;
+            // we need to support controllers defined as services & defined using short notation
+            $controller = $this->controllerNameParser->parse($controller);
         }
 
         list($controller, $method) = explode('::', $controller, 2);

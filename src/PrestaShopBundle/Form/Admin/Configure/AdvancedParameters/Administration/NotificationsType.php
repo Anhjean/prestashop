@@ -40,13 +40,13 @@ class NotificationsType extends TranslatorAwareType
     {
         $builder
             ->add('show_notifs_new_orders', SwitchType::class, [
-                'label' => $this->trans('Show notifications for new orders', 'Admin.Advparameters.Feature'),
+                'required' => true,
             ])
             ->add('show_notifs_new_customers', SwitchType::class, [
-                'label' => $this->trans('Show notifications for new customers', 'Admin.Advparameters.Feature'),
+                'required' => true,
             ])
             ->add('show_notifs_new_messages', SwitchType::class, [
-                'label' => $this->trans('Show notifications for new messages', 'Admin.Advparameters.Feature'),
+                'required' => true,
             ]);
     }
 

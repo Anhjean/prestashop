@@ -31,16 +31,15 @@ class ContactCore extends ObjectModel
 {
     public $id;
 
-    /** @var string|array<int, string> Name */
+    /** @var string Name */
     public $name;
 
-    /** @var string E-mail */
+    /** @var string e-mail */
     public $email;
 
-    /** @var string|array<int, string> Detailed description */
+    /** @var string Detailed description */
     public $description;
 
-    /** @var bool */
     public $customer_service;
 
     /**
@@ -72,7 +71,7 @@ class ContactCore extends ObjectModel
             'description' => [
                 'type' => self::TYPE_STRING,
                 'lang' => true,
-                'validate' => 'isString',
+                'validate' => 'isCleanHtml',
             ],
         ],
     ];

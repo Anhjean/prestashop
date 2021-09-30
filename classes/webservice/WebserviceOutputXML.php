@@ -111,11 +111,9 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
                     }
                 }
                 $node_content .= '<language id="' . $language . '"' . $more_attr . '>';
-                $node_content .= '<![CDATA[';
-                if (isset($field['value'][$language])) {
-                    $node_content .= $field['value'][$language];
+                if (isset($field['value']) && is_array($field['value']) && isset($field['value'][$language])) {
+                    $node_content .= '<![CDATA[' . $field['value'][$language] . ']]>';
                 }
-                $node_content .= ']]>';
                 $node_content .= '</language>';
             }
         } else {
@@ -137,7 +135,7 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
                 $ret .= ' read_only="true"';
             }
 
-            if (array_key_exists('value', $field)) {
+            if ($field['value'] !== '') {
                 $node_content .= '<![CDATA[' . $field['value'] . ']]>';
             }
         }

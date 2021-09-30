@@ -26,10 +26,7 @@
 
 namespace PrestaShopBundle\Form\Admin\Product;
 
-use Language;
 use Pack;
-use PrestaShop\PrestaShop\Adapter\Configuration;
-use PrestaShop\PrestaShop\Adapter\LegacyContext;
 use PrestaShopBundle\Form\Admin\Type\CommonAbstractType;
 use PrestaShopBundle\Form\Admin\Type\DatePickerType;
 use PrestaShopBundle\Form\Admin\Type\TranslateType;
@@ -38,8 +35,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Routing\Router;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -47,33 +42,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ProductQuantity extends CommonAbstractType
 {
-    /**
-     * @var Configuration
-     */
-    public $configuration;
-    /**
-     * @var LegacyContext
-     */
-    public $legacyContext;
-    /**
-     * @var array<int|Language>
-     */
-    public $locales;
-    /**
-     * @var Router
-     */
     private $router;
-    /**
-     * @var TranslatorInterface
-     */
     private $translator;
+    private $configuration;
 
     /**
      * Constructor.
      *
-     * @param TranslatorInterface $translator
-     * @param Router $router
-     * @param LegacyContext $legacyContext
+     * @param object $translator
+     * @param object $router
+     * @param object $legacyContext
      */
     public function __construct($translator, $router, $legacyContext)
     {

@@ -30,7 +30,6 @@
 class ShopGroupCore extends ObjectModel
 {
     public $name;
-    public $color;
     public $active = true;
     public $share_customer;
     public $share_stock;
@@ -45,7 +44,6 @@ class ShopGroupCore extends ObjectModel
         'primary' => 'id_shop_group',
         'fields' => [
             'name' => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'color' => ['type' => self::TYPE_STRING, 'validate' => 'isColor'],
             'share_customer' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'share_order' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'share_stock' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
@@ -173,8 +171,7 @@ class ShopGroupCore extends ObjectModel
             FROM ' . _DB_PREFIX_ . 'shop
             WHERE name = "' . pSQL($name) . '"
             AND id_shop_group = ' . (int) $this->id . '
-            ' . ($id_shop ? 'AND id_shop != ' . (int) $id_shop : ''),
-            false
+            ' . ($id_shop ? 'AND id_shop != ' . (int) $id_shop : '')
         );
     }
 }

@@ -84,7 +84,7 @@ class AdminAttributeGeneratorControllerWrapper
      * @param int $idAttribute The attribute ID
      * @param int $idProduct The product ID
      *
-     * @return array|bool
+     * @return array
      */
     public function ajaxProcessDeleteProductAttribute($idAttribute, $idProduct)
     {

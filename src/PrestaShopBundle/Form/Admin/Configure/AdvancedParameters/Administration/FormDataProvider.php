@@ -26,7 +26,9 @@
 
 namespace PrestaShopBundle\Form\Admin\Configure\AdvancedParameters\Administration;
 
-use PrestaShop\PrestaShop\Core\Configuration\DataConfigurationInterface;
+use PrestaShop\PrestaShop\Adapter\Admin\NotificationsConfiguration;
+use PrestaShop\PrestaShop\Adapter\GeneralConfiguration;
+use PrestaShop\PrestaShop\Adapter\Upload\UploadQuotaConfiguration;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 
 /**
@@ -35,19 +37,29 @@ use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
  */
 final class FormDataProvider implements FormDataProviderInterface
 {
-    public const ERROR_NOT_NUMERIC_OR_LOWER_THAN_ZERO = 1;
-    public const ERROR_COOKIE_LIFETIME_MAX_VALUE_EXCEEDED = 2;
-    public const ERROR_COOKIE_SAMESITE_NONE = 3;
+    /**
+     * @var GeneralConfiguration
+     */
+    private $generalConfiguration;
 
     /**
-     * @var DataConfigurationInterface
+     * @var UploadQuotaConfiguration
      */
-    private $dataConfiguration;
+    private $uploadConfiguration;
+
+    /**
+     * @var NotificationsConfiguration
+     */
+    private $notificationsConfiguration;
 
     public function __construct(
-        DataConfigurationInterface $dataConfiguration
+        GeneralConfiguration $generalConfiguration,
+        UploadQuotaConfiguration $uploadConfiguration,
+        NotificationsConfiguration $notificationsConfiguration
     ) {
-        $this->dataConfiguration = $dataConfiguration;
+        $this->generalConfiguration = $generalConfiguration;
+        $this->uploadConfiguration = $uploadConfiguration;
+        $this->notificationsConfiguration = $notificationsConfiguration;
     }
 
     /**
@@ -55,7 +67,11 @@ final class FormDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->dataConfiguration->getConfiguration();
+        return [
+            'general' => $this->generalConfiguration->getConfiguration(),
+            'upload_quota' => $this->uploadConfiguration->getConfiguration(),
+            'notifications' => $this->notificationsConfiguration->getConfiguration(),
+        ];
     }
 
     /**
@@ -63,6 +79,8 @@ final class FormDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        return $this->dataConfiguration->updateConfiguration($data);
+        return $this->generalConfiguration->updateConfiguration($data['general']) +
+            $this->uploadConfiguration->updateConfiguration($data['upload_quota']) +
+            $this->notificationsConfiguration->updateConfiguration($data['notifications']);
     }
 }

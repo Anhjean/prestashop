@@ -37,9 +37,9 @@ use Symfony\Component\Filesystem\Filesystem;
 class PhpParameters
 {
     /**
-     * @var ArrayFinder the current configuration
+     * @var array the current configuration
      */
-    private $configuration;
+    private $configuration = [];
 
     /**
      * @var string the PHP filename
@@ -68,8 +68,8 @@ class PhpParameters
     /**
      * Insert a value into configuration at the specified path.
      *
-     * @param string $propertyPath
-     * @param mixed $value
+     * @param $propertyPath
+     * @param $value
      */
     public function setProperty($propertyPath, $value)
     {

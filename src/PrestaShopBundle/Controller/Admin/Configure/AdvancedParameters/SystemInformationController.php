@@ -43,7 +43,7 @@ class SystemInformationController extends FrameworkBundleAdminController
      *
      * @param Request $request
      *
-     * @return array<string, array|bool|string|null>
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function indexAction(Request $request)
     {

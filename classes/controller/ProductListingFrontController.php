@@ -300,10 +300,6 @@ abstract class ProductListingFrontControllerCore extends ProductPresentingFrontC
 
         $query->setEncodedFacets($encodedFacets);
 
-        Hook::exec('actionProductSearchProviderRunQueryBefore', [
-            'query' => $query,
-        ]);
-
         // We're ready to run the actual query!
 
         /** @var ProductSearchResult $result */
@@ -311,11 +307,6 @@ abstract class ProductListingFrontControllerCore extends ProductPresentingFrontC
             $context,
             $query
         );
-
-        Hook::exec('actionProductSearchProviderRunQueryAfter', [
-            'query' => $query,
-            'result' => $result,
-        ]);
 
         if (Configuration::get('PS_CATALOG_MODE') && !Configuration::get('PS_CATALOG_MODE_WITH_PRICES')) {
             $this->disablePriceControls($result);

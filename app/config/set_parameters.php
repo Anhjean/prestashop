@@ -50,20 +50,17 @@ if (!defined('_PS_IN_TEST_') && isset($_SERVER['argv'])) {
     }
 }
 
-if (isset($container) && $container instanceof \Symfony\Component\DependencyInjection\Container) {
+if ($container instanceof \Symfony\Component\DependencyInjection\Container) {
     foreach ($parameters['parameters'] as $key => $value) {
         $container->setParameter($key, $value);
     }
 
     $driver = 'array';
     $cacheType = [
+        'CacheMemcache' => ['memcache'],
         'CacheMemcached' => ['memcached'],
-        'CacheApc' => ['apcu'],
-    ];
-    $adapters = [
-        'array' => 'cache.adapter.array',
-        'memcached' => 'cache.adapter.memcached',
-        'apcu' => 'cache.adapter.apcu'
+        'CacheApc' => ['apcu', 'apc'],
+        'CacheXcache' => ['xcache'],
     ];
 
     if (isset(
@@ -81,8 +78,6 @@ if (isset($container) && $container instanceof \Symfony\Component\DependencyInje
         }
     }
     $container->setParameter('cache.driver', $driver);
-    $container->setParameter('cache.driver.doctrine', $driver . '_doctrine');
-    $container->setParameter('cache.adapter', $adapters[$driver]);
 
     // Parameter used only in dev and test env
     $envParameter = getenv('DISABLE_DEBUG_TOOLBAR');

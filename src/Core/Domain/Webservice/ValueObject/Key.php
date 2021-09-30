@@ -36,7 +36,7 @@ class Key
     /**
      * @var string Required length of webservice key
      */
-    public const LENGTH = 32;
+    const LENGTH = 32;
 
     /**
      * @var string

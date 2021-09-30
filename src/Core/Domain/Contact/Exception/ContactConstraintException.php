@@ -34,21 +34,21 @@ class ContactConstraintException extends ContactException
     /**
      * @var int - error is raised when preg match fails to validate according to regex /^[^<>={}]*$/u
      */
-    public const INVALID_TITLE = 1;
+    const INVALID_TITLE = 1;
 
     /**
      * @var int - error is raised when a value in array is not integer type
      */
-    public const INVALID_SHOP_ASSOCIATION = 2;
+    const INVALID_SHOP_ASSOCIATION = 2;
 
     /**
      * @var int - error is raised when CleanHtml constraint validation fails
      */
-    public const INVALID_DESCRIPTION = 3;
+    const INVALID_DESCRIPTION = 3;
 
     /**
      * @var int - error is raised when an array does not have the default language value. It might not exist or is empty.
      *          DefaultLanguage constraint is used here.
      */
-    public const MISSING_TITLE_FOR_DEFAULT_LANGUAGE = 4;
+    const MISSING_TITLE_FOR_DEFAULT_LANGUAGE = 4;
 }

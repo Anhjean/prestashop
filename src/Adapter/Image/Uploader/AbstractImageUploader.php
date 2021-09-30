@@ -29,10 +29,11 @@ namespace PrestaShop\PrestaShop\Adapter\Image\Uploader;
 use Configuration;
 use ImageManager;
 use ImageType;
-use PrestaShop\PrestaShop\Core\Image\Exception\ImageOptimizationException;
+use PrestaShop\PrestaShop\Core\Image\Uploader\Exception\ImageOptimizationException;
 use PrestaShop\PrestaShop\Core\Image\Uploader\Exception\ImageUploadException;
 use PrestaShop\PrestaShop\Core\Image\Uploader\Exception\MemoryLimitException;
 use PrestaShop\PrestaShop\Core\Image\Uploader\Exception\UploadedImageConstraintException;
+use PrestaShop\PrestaShop\Core\Image\Uploader\ImageUploaderInterface;
 use PrestaShopException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tools;
@@ -42,14 +43,16 @@ use Tools;
  *
  * @internal
  */
-abstract class AbstractImageUploader
+abstract class AbstractImageUploader implements ImageUploaderInterface
 {
     /**
+     * Check if image is allowed to be uploaded.
+     *
      * @param UploadedFile $image
      *
      * @throws UploadedImageConstraintException
      */
-    public function checkImageIsAllowedForUpload(UploadedFile $image)
+    protected function checkImageIsAllowedForUpload(UploadedFile $image)
     {
         $maxFileSize = Tools::getMaxUploadSize();
 
@@ -88,8 +91,8 @@ abstract class AbstractImageUploader
     /**
      * Uploads resized image from temporary folder to image destination
      *
-     * @param string $temporaryImageName
-     * @param string $destination
+     * @param $temporaryImageName
+     * @param $destination
      *
      * @throws ImageOptimizationException
      * @throws MemoryLimitException
@@ -131,6 +134,7 @@ abstract class AbstractImageUploader
         } catch (PrestaShopException $e) {
             throw new ImageOptimizationException('Unable to resize one or more of your pictures.');
         }
+
         if (!$resized) {
             throw new ImageOptimizationException('Unable to resize one or more of your pictures.');
         }
@@ -139,7 +143,7 @@ abstract class AbstractImageUploader
     }
 
     /**
-     * Resizes the image depending on its type
+     * Resizes the image depending from its type
      *
      * @param int $id
      * @param string $imageDir

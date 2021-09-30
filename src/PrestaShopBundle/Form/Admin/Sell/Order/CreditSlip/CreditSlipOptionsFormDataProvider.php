@@ -52,7 +52,9 @@ final class CreditSlipOptionsFormDataProvider implements FormDataProviderInterfa
      */
     public function getData()
     {
-        return $this->creditSlipOptionsConfiguration->getConfiguration();
+        return [
+            'options' => $this->creditSlipOptionsConfiguration->getConfiguration(),
+        ];
     }
 
     /**
@@ -60,6 +62,6 @@ final class CreditSlipOptionsFormDataProvider implements FormDataProviderInterfa
      */
     public function setData(array $data)
     {
-        return $this->creditSlipOptionsConfiguration->updateConfiguration($data);
+        return $this->creditSlipOptionsConfiguration->updateConfiguration($data['options']);
     }
 }

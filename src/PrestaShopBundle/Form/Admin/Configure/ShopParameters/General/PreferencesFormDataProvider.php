@@ -50,7 +50,9 @@ final class PreferencesFormDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->preferencesConfiguration->getConfiguration();
+        return [
+            'general' => $this->preferencesConfiguration->getConfiguration(),
+        ];
     }
 
     /**
@@ -58,6 +60,6 @@ final class PreferencesFormDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        return $this->preferencesConfiguration->updateConfiguration($data);
+        return $this->preferencesConfiguration->updateConfiguration($data['general']);
     }
 }

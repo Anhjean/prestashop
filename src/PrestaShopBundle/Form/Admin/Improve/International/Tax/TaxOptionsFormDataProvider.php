@@ -52,7 +52,9 @@ final class TaxOptionsFormDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->taxOptionsDataConfiguration->getConfiguration();
+        return [
+            'options' => $this->taxOptionsDataConfiguration->getConfiguration(),
+        ];
     }
 
     /**
@@ -60,6 +62,6 @@ final class TaxOptionsFormDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        return $this->taxOptionsDataConfiguration->updateConfiguration($data);
+        return $this->taxOptionsDataConfiguration->updateConfiguration($data['options']);
     }
 }

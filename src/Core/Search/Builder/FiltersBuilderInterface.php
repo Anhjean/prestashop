@@ -38,7 +38,7 @@ use PrestaShop\PrestaShop\Core\Search\Filters;
  */
 interface FiltersBuilderInterface
 {
-    public const FILTER_TYPES = [
+    const FILTER_TYPES = [
         'limit',
         'offset',
         'orderBy',

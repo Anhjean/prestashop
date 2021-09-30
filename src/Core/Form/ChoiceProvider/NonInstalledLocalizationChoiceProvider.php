@@ -27,6 +27,7 @@
 namespace PrestaShop\PrestaShop\Core\Form\ChoiceProvider;
 
 use PrestaShop\PrestaShop\Adapter\Language\LanguageDataProvider;
+use PrestaShop\PrestaShop\Adapter\Language\LanguageValidator;
 use PrestaShop\PrestaShop\Core\Form\FormChoiceProviderInterface;
 use PrestaShop\PrestaShop\Core\Language\LanguageValidatorInterface;
 
@@ -37,7 +38,7 @@ use PrestaShop\PrestaShop\Core\Language\LanguageValidatorInterface;
 final class NonInstalledLocalizationChoiceProvider implements FormChoiceProviderInterface
 {
     /**
-     * @var LanguageValidatorInterface
+     * @var LanguageValidator
      */
     private $languageValidator;
 

@@ -23,13 +23,12 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  *#}
 
-{% form_theme pdfByDateForm '@PrestaShop/Admin/TwigTemplateForm/prestashop_ui_kit.html.twig' %}
 {% trans_default_domain "Admin.Orderscustomers.Feature" %}
+{% import '@PrestaShop/Admin/macros.html.twig' as ps %}
 
 {{ form_start(pdfByDateForm, {
   'method': 'GET',
-  'action': path('_admin_credit_slips_pdf_by_date'),
-  attr: {id: 'form-generate-credit-slips-by-date'}})
+  'action': path('_admin_credit_slips_pdf_by_date')})
 }}
 <div class="card">
   <h3 class="card-header">
@@ -38,15 +37,25 @@
 
   <div class="card-block row">
     <div class="card-text">
-      {% block credit_slip_pdf_by_date_form %}
-        {{ form_widget(pdfByDateForm) }}
-      {% endblock %}
+      {% set dateHint = 'Format: 2011-12-31 (inclusive).'|trans({}, 'Admin.Orderscustomers.Help') %}
+      {{ ps.form_group_row(pdfByDateForm.from, {}, {
+        'label': 'From'|trans({}, 'Admin.Global'),
+        'help': dateHint
+      }) }}
+
+      {{ ps.form_group_row(pdfByDateForm.to, {}, {
+        'label': 'To'|trans({}, 'Admin.Global'),
+        'help': dateHint
+      }) }}
     </div>
+    {% block credit_slip_pdf_by_date_form_rest %}
+      {{ form_rest(pdfByDateForm) }}
+    {% endblock %}
   </div>
 
   <div class="card-footer">
     <div class="d-flex justify-content-end">
-      <button class="btn btn-primary" id="generate-credit-slip-by-date">
+      <button class="btn btn-primary">
         {{ 'Generate PDF file by date'|trans({}, 'Admin.Orderscustomers.Feature') }}
       </button>
     </div>

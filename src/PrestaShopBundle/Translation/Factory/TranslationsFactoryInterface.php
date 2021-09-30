@@ -31,7 +31,7 @@ use Symfony\Component\Translation\MessageCatalogueInterface;
 
 interface TranslationsFactoryInterface
 {
-    public const DEFAULT_LOCALE = 'en_US';
+    const DEFAULT_LOCALE = 'en_US';
 
     /**
      * Generates extract of global Catalogue, using domain's identifiers.

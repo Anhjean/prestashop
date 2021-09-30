@@ -52,7 +52,7 @@ class ImageManager
      *
      * Use it upon a new Image management system is available.
      *
-     * @param int $imageId
+     * @param $imageId
      * @param string $imageType
      * @param string $tableName
      * @param string $imageDir
@@ -70,11 +70,6 @@ class ImageManager
         return $thumbPath;
     }
 
-    /**
-     * @param int $imageId
-     *
-     * @return string
-     */
     public function getThumbnailPath($imageId)
     {
         $imageType = 'jpg';
@@ -94,7 +89,7 @@ class ImageManager
     }
 
     /**
-     * @param int $imageId
+     * @param $imageId
      * @param string $imageType
      * @param string $tableName
      * @param string $imageDir
@@ -114,10 +109,10 @@ class ImageManager
     }
 
     /**
-     * @param int $imageId
-     * @param string $imageType
-     * @param string $tableName
-     * @param string $imageDir
+     * @param $imageId
+     * @param $imageType
+     * @param $tableName
+     * @param $imageDir
      *
      * @return string
      */
@@ -133,9 +128,9 @@ class ImageManager
     }
 
     /**
-     * @param int $imageId
-     * @param string $imageType
-     * @param string $tableName
+     * @param $imageId
+     * @param $imageType
+     * @param $tableName
      *
      * @return string
      */

@@ -34,10 +34,10 @@ class CannotDeleteCmsPageCategoryException extends CmsPageCategoryException
     /**
      * When fails to delete single cms page category
      */
-    public const FAILED_DELETE = 10;
+    const FAILED_DELETE = 10;
 
     /**
      * When fails to delete cms page categories on bulk action
      */
-    public const FAILED_BULK_DELETE = 20;
+    const FAILED_BULK_DELETE = 20;
 }

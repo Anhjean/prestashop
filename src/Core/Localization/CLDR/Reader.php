@@ -38,25 +38,25 @@ use SimpleXMLElement;
  */
 class Reader implements ReaderInterface
 {
-    public const CLDR_ROOT = 'localization/CLDR/';
-    public const CLDR_MAIN = 'localization/CLDR/core/common/main/';
-    public const CLDR_SUPPLEMENTAL = 'localization/CLDR/core/common/supplemental/';
+    const CLDR_ROOT = 'localization/CLDR/';
+    const CLDR_MAIN = 'localization/CLDR/core/common/main/';
+    const CLDR_SUPPLEMENTAL = 'localization/CLDR/core/common/supplemental/';
 
-    public const CLDR_ROOT_LOCALE = 'root';
+    const CLDR_ROOT_LOCALE = 'root';
 
-    public const SUPPL_DATA_CURRENCY = 'currencyData';
-    public const SUPPL_DATA_LANGUAGE = 'languageData';
-    public const SUPPL_DATA_NUMBERING = 'numberingSystems';
-    public const SUPPL_DATA_PARENT_LOCALES = 'parentLocales'; // For specific locales hierarchy
+    const SUPPL_DATA_CURRENCY = 'currencyData';
+    const SUPPL_DATA_LANGUAGE = 'languageData';
+    const SUPPL_DATA_NUMBERING = 'numberingSystems';
+    const SUPPL_DATA_PARENT_LOCALES = 'parentLocales'; // For specific locales hierarchy
 
-    public const DEFAULT_CURRENCY_DIGITS = 2;
+    const DEFAULT_CURRENCY_DIGITS = 2;
 
-    public const CURRENCY_CODE_TEST = 'XTS';
+    const CURRENCY_CODE_TEST = 'XTS';
 
     /**
      * delay after currency deactivation to prevent currency add by list
      */
-    public const CURRENCY_ACTIVE_DELAY = 365;
+    const CURRENCY_ACTIVE_DELAY = 365;
 
     protected $mainXml = [];
 
@@ -64,7 +64,7 @@ class Reader implements ReaderInterface
      * Supplemental data for all locales.
      * Contains data about parent locales, currencies, languages...
      *
-     * @var SimpleXMLElement
+     * @var SimplexmlElement
      */
     protected $supplementalXml;
 
@@ -79,14 +79,17 @@ class Reader implements ReaderInterface
     /**
      * Read locale data by locale code.
      *
-     * @param string $localeCode The locale code (simplified IETF tag syntax)
-     *                           Combination of ISO 639-1 (2-letters language code) and ISO 3166-2 (2-letters region code)
-     *                           eg: fr-FR, en-US
-     *                           The underscore notation is also accepted (fr_FR, en_US...)
+     * @param $localeCode
+     *  The locale code (simplified IETF tag syntax)
+     *  Combination of ISO 639-1 (2-letters language code) and ISO 3166-2 (2-letters region code)
+     *  eg: fr-FR, en-US
+     *  The underscore notation is also accepted (fr_FR, en_US...)
      *
-     * @return LocaleData A LocaleData object
+     * @return LocaleData
+     *                    A LocaleData object
      *
-     * @throws LocalizationException When the locale code is unknown or invalid
+     * @throws LocalizationException
+     *                               When the locale code is unknown or invalid
      */
     public function readLocaleData($localeCode)
     {
@@ -119,9 +122,11 @@ class Reader implements ReaderInterface
      * If the passed code doesn't respect the CLDR files naming style, an exception will be raised
      * e.g.: "fr_FR" and "en_001" are valid
      *
-     * @param string $localeCode Locale code to be validated
+     * @param $localeCode
+     *  Locale code to be validated
      *
-     * @throws LocalizationException When locale code is invalid
+     * @throws LocalizationException
+     *                               When locale code is invalid
      */
     protected function validateLocaleCodeForFilenames($localeCode)
     {
@@ -159,11 +164,15 @@ class Reader implements ReaderInterface
     /**
      * Build lookup files stack for a given locale code.
      *
-     * @param string $localeCode The given locale code (simplified IETF notation)
+     * @param $localeCode
+     *  The given locale code (simplified IETF notation)
      *
-     * @return array The lookup ['root', <intermediate codes>, $localeCode]
+     * @return array
+     *               The lookup
+     *               ['root', <intermediate codes>, $localeCode]
      *
-     * @throws LocalizationException When locale code is invalid or unknown
+     * @throws LocalizationException
+     *                               When locale code is invalid or unknown
      *
      * @see http://www.unicode.org/reports/tr35/tr35.html#Lookup
      */
@@ -181,9 +190,12 @@ class Reader implements ReaderInterface
     /**
      * Get the parent locale for a given locale code.
      *
-     * @param string $localeCode CLDR filenames' style locale code (with underscores) eg.: en, fr, en_GB, fr_FR...
+     * @param $localeCode
+     *  CLDR filenames' style locale code (with underscores)
+     *  eg.: en, fr, en_GB, fr_FR...
      *
-     * @return string|null The parent locale code (CLDR filenames' style). Null if no parent.
+     * @return string|null
+     *                     The parent locale code (CLDR filenames' style). Null if no parent.
      *
      * @throws LocalizationException
      */
@@ -205,7 +217,12 @@ class Reader implements ReaderInterface
         // The common case with truncation
         $pos = strrpos($localeCode, '_');
         if (false !== $pos) {
-            return substr($localeCode, 0, $pos);
+            $parent = substr($localeCode, 0, $pos);
+            if (false === $parent) {
+                throw new LocalizationException(sprintf('Invalid locale code: "%s"', $localeCode));
+            }
+
+            return $parent;
         }
 
         // The "top level" case. When only language code is left in $localeCode: 'en', 'fr'... then parent is "root".
@@ -217,11 +234,14 @@ class Reader implements ReaderInterface
      *
      * The locale tag can be either an IETF tag (en-GB) or a simple language code (en)
      *
-     * @param string $localeCode The locale code
+     * @param string $localeCode
+     *                           The locale code
      *
-     * @return SimpleXMLElement The locale data
+     * @return SimplexmlElement
+     *                          The locale data
      *
-     * @throws LocalizationFileNotFoundException If this locale code has no corresponding xml file
+     * @throws LocalizationFileNotFoundException
+     *                                           If this locale code has no corresponding xml file
      */
     protected function getMainXmlData($localeCode)
     {
@@ -405,7 +425,8 @@ class Reader implements ReaderInterface
                 $numberSystem = (string) $format['numberSystem'];
                 // If alias is set, we just copy data from another numbering system:
                 $alias = $format->alias;
-                if (isset($alias['path']) && preg_match(
+                if ($alias
+                    && preg_match(
                         "#^\.\.\/decimalFormats\[@numberSystem='([^)]+)'\]$#",
                         (string) $alias['path'],
                         $matches
@@ -437,7 +458,8 @@ class Reader implements ReaderInterface
                 $numberSystem = (string) $format['numberSystem'];
                 // If alias is set, we just copy data from another numbering system:
                 $alias = $format->alias;
-                if (isset($alias['path']) && preg_match(
+                if ($alias
+                    && preg_match(
                         "#^\.\.\/percentFormats\[@numberSystem='([^)]+)'\]$#",
                         (string) $alias['path'],
                         $matches
@@ -472,7 +494,8 @@ class Reader implements ReaderInterface
                 $numberSystem = (string) $format['numberSystem'];
                 // If alias is set, we just copy data from another numbering system:
                 $alias = $format->alias;
-                if (isset($alias['path']) && preg_match(
+                if ($alias
+                    && preg_match(
                         "#^\.\.\/currencyFormats\[@numberSystem='([^)]+)'\]$#",
                         (string) $alias['path'],
                         $matches
@@ -503,7 +526,7 @@ class Reader implements ReaderInterface
                 $currencyData->setIsoCode($currencyCode);
 
                 // check if currency is still active in one territory
-                $currencyDates = $this->supplementalXml->currencyData->xpath('//region/currency[@iso4217="' . $currencyCode . '"]');
+                $currencyDates = $this->supplementalXml->supplementalData->xpath('//region/currency[@iso4217="' . $currencyCode . '"]');
                 if (!empty($currencyDates) && $this->isCurrencyActiveSomewhere($currencyDates, $currencyActiveDateThreshold)) {
                     $currencyData->setActive(true);
                 } else {
@@ -534,7 +557,7 @@ class Reader implements ReaderInterface
                 $currencyData->setDisplayNames($displayNames);
 
                 // Supplemental (fraction digits and numeric iso code)
-                $codesMapping = $this->supplementalXml->xpath(
+                $codesMapping = $this->supplementalXml->supplementalData->xpath(
                     '//codeMappings/currencyCodes[@type="' . $currencyCode . '"]'
                 );
 
@@ -548,12 +571,12 @@ class Reader implements ReaderInterface
                     $currencyData->setNumericIsoCode($numericIsoCode);
                 }
 
-                $fractionsData = $this->supplementalXml->xpath(
+                $fractionsData = $this->supplementalXml->supplementalData->xpath(
                     '//currencyData/fractions/info[@iso4217="' . $currencyCode . '"]'
                 );
 
                 if (empty($fractionsData)) {
-                    $fractionsData = $this->supplementalXml->xpath(
+                    $fractionsData = $this->supplementalXml->supplementalData->xpath(
                         '//currencyData/fractions/info[@iso4217="DEFAULT"]'
                     );
                 }

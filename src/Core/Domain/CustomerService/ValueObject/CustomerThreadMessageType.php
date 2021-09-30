@@ -34,10 +34,10 @@ final class CustomerThreadMessageType
     /**
      * When message is written by employee
      */
-    public const EMPLOYEE = 'employee';
+    const EMPLOYEE = 'employee';
 
     /**
      * When message is written by customer
      */
-    public const CUSTOMER = 'customer';
+    const CUSTOMER = 'customer';
 }

@@ -60,7 +60,7 @@ class QueryStockMovementParamsCollection extends QueryStockParamsCollection
     }
 
     /**
-     * @param array $queryParams
+     * @param $queryParams
      *
      * @return mixed
      */

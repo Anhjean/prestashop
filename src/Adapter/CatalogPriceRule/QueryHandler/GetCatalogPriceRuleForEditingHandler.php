@@ -27,7 +27,7 @@
 namespace PrestaShop\PrestaShop\Adapter\CatalogPriceRule\QueryHandler;
 
 use DateTime;
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Adapter\CatalogPriceRule\AbstractCatalogPriceRuleHandler;
 use PrestaShop\PrestaShop\Core\Domain\CatalogPriceRule\Query\GetCatalogPriceRuleForEditing;
 use PrestaShop\PrestaShop\Core\Domain\CatalogPriceRule\QueryHandler\GetCatalogPriceRuleForEditingHandlerInterface;
@@ -62,11 +62,11 @@ final class GetCatalogPriceRuleForEditingHandler extends AbstractCatalogPriceRul
             (int) $specificPriceRule->id_country,
             (int) $specificPriceRule->id_group,
             (int) $specificPriceRule->from_quantity,
-            new DecimalNumber($specificPriceRule->price),
-            new Reduction($specificPriceRule->reduction_type, (string) $specificPriceRule->reduction),
+            new Number($specificPriceRule->price),
+            new Reduction($specificPriceRule->reduction_type, (float) $specificPriceRule->reduction),
             (bool) $specificPriceRule->reduction_tax,
-            $from !== DateTimeUtils::NULL_DATETIME ? new DateTime($from) : null,
-            $to !== DateTimeUtils::NULL_DATETIME ? new DateTime($to) : null
+            $from !== DateTimeUtils::NULL_VALUE ? new DateTime($from) : null,
+            $to !== DateTimeUtils::NULL_VALUE ? new DateTime($to) : null
         );
     }
 }

@@ -686,7 +686,7 @@ abstract class DbCore
      * @param string|DbQuery $sql
      * @param bool $use_cache
      *
-     * @return string|false Returns false if no results
+     * @return string|false|null
      */
     public function getValue($sql, $use_cache = true)
     {
@@ -694,8 +694,7 @@ abstract class DbCore
             $sql = $sql->build();
         }
 
-        $result = $this->getRow($sql, $use_cache);
-        if (false === $result) {
+        if (!$result = $this->getRow($sql, $use_cache)) {
             return false;
         }
 
@@ -779,12 +778,15 @@ abstract class DbCore
      *
      * @param string $string SQL data which will be injected into SQL query
      * @param bool $html_ok Does data contain HTML code ? (optional)
-     * @param bool $bq_sql Escape backticks
      *
      * @return string Sanitized data
      */
     public function escape($string, $html_ok = false, $bq_sql = false)
     {
+        if (_PS_MAGIC_QUOTES_GPC_) {
+            $string = stripslashes($string);
+        }
+
         if (!is_numeric($string)) {
             $string = $this->_escape($string);
 
@@ -866,20 +868,17 @@ abstract class DbCore
     }
 
     /**
-     * Tries to connect to the database and select content (checking select privileges).
+     * Checks if auto increment value and offset is 1.
      *
      * @param string $server
      * @param string $user
      * @param string $pwd
-     * @param string $db
-     * @param string $prefix
-     * @param string|null $engine Table engine
      *
-     * @return bool|string True, false or error
+     * @return bool
      */
-    public static function checkSelectPrivilege($server, $user, $pwd, $db, $prefix, $engine = null)
+    public static function checkAutoIncrement($server, $user, $pwd)
     {
-        return call_user_func_array([Db::getClass(), 'checkSelectPrivilege'], [$server, $user, $pwd, $db, $prefix, $engine]);
+        return call_user_func_array([Db::getClass(), 'checkAutoIncrement'], [$server, $user, $pwd]);
     }
 
     /**

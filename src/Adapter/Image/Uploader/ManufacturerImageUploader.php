@@ -29,17 +29,16 @@ namespace PrestaShop\PrestaShop\Adapter\Image\Uploader;
 use Configuration;
 use ImageManager;
 use ImageType;
-use PrestaShop\PrestaShop\Core\Image\Exception\ImageOptimizationException;
+use PrestaShop\PrestaShop\Core\Image\Uploader\Exception\ImageOptimizationException;
 use PrestaShop\PrestaShop\Core\Image\Uploader\Exception\ImageUploadException;
 use PrestaShop\PrestaShop\Core\Image\Uploader\Exception\MemoryLimitException;
-use PrestaShop\PrestaShop\Core\Image\Uploader\ImageUploaderInterface;
 use PrestaShopException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Uploads manufacturer logo image
  */
-final class ManufacturerImageUploader extends AbstractImageUploader implements ImageUploaderInterface
+final class ManufacturerImageUploader extends AbstractImageUploader
 {
     /**
      * {@inheritdoc}
@@ -81,7 +80,8 @@ final class ManufacturerImageUploader extends AbstractImageUploader implements I
 
         try {
             /* Generate images with different size */
-            if (count($_FILES) &&
+            if (isset($_FILES) &&
+                count($_FILES) &&
                 file_exists(_PS_MANU_IMG_DIR_ . $manufacturerId . '.jpg')
             ) {
                 $imageTypes = ImageType::getImagesTypes('manufacturers');

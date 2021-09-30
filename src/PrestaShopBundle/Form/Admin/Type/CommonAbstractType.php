@@ -34,13 +34,12 @@ use Symfony\Component\Form\AbstractType;
  */
 abstract class CommonAbstractType extends AbstractType
 {
-    public const PRESTASHOP_DECIMALS = 6;
-    public const PRESTASHOP_WEIGHT_DECIMALS = 6;
+    const PRESTASHOP_DECIMALS = 6;
 
     /**
      * Get the configuration adapter.
      *
-     * @return Configuration Configuration adapter
+     * @return object Configuration adapter
      */
     protected function getConfiguration()
     {

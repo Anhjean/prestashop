@@ -36,6 +36,7 @@ use PrestaShopBundle\Form\Admin\Type\Material\MaterialChoiceTreeType;
 use PrestaShopBundle\Form\Admin\Type\ShopChoiceTreeType;
 use PrestaShopBundle\Form\Admin\Type\SwitchType;
 use PrestaShopBundle\Form\Admin\Type\TranslatableType;
+use PrestaShopBundle\Form\Admin\Type\TranslateType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -49,11 +50,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class CmsPageType extends TranslatorAwareType
 {
-    public const TITLE_MAX_CHARS = 255;
-    public const META_DESCRIPTION_MAX_CHARS = 512;
-    public const META_KEYWORD_MAX_CHARS = 512;
-    public const FRIENDLY_URL_MAX_CHARS = 128;
-
     /**
      * @var array
      */
@@ -68,7 +64,7 @@ class CmsPageType extends TranslatorAwareType
      * @param TranslatorInterface $translator
      * @param array $locales
      * @param array $allCmsCategories
-     * @param bool $isMultiShopEnabled
+     * @param $isMultiShopEnabled
      */
     public function __construct(
         TranslatorInterface $translator,
@@ -126,11 +122,11 @@ class CmsPageType extends TranslatorAwareType
                             'type' => 'generic_name',
                         ]),
                         new Length([
-                            'max' => self::TITLE_MAX_CHARS,
+                            'max' => 255,
                             'maxMessage' => $this->trans(
                                 'This field cannot be longer than %limit% characters',
                                 'Admin.Notifications.Error',
-                                ['%limit%' => self::TITLE_MAX_CHARS]
+                                ['%limit%' => 255]
                             ),
                         ]),
                     ],
@@ -157,11 +153,11 @@ class CmsPageType extends TranslatorAwareType
                             'type' => 'generic_name',
                         ]),
                         new Length([
-                            'max' => self::TITLE_MAX_CHARS,
+                            'max' => 255,
                             'maxMessage' => $this->trans(
                                 'This field cannot be longer than %limit% characters',
                                 'Admin.Notifications.Error',
-                                ['%limit%' => self::TITLE_MAX_CHARS]
+                                ['%limit%' => 255]
                             ),
                         ]),
                     ],
@@ -175,14 +171,6 @@ class CmsPageType extends TranslatorAwareType
                     'constraints' => [
                         new TypedRegex([
                             'type' => 'generic_name',
-                        ]),
-                        new Length([
-                            'max' => self::META_DESCRIPTION_MAX_CHARS,
-                            'maxMessage' => $this->trans(
-                                'This field cannot be longer than %limit% characters',
-                                'Admin.Notifications.Error',
-                                ['%limit%' => self::META_DESCRIPTION_MAX_CHARS]
-                            ),
                         ]),
                     ],
                 ],
@@ -206,11 +194,11 @@ class CmsPageType extends TranslatorAwareType
                             'type' => 'generic_name',
                         ]),
                         new Length([
-                            'max' => self::META_KEYWORD_MAX_CHARS,
+                            'max' => 512,
                             'maxMessage' => $this->trans(
                                 'This field cannot be longer than %limit% characters',
                                 'Admin.Notifications.Error',
-                                ['%limit%' => self::META_KEYWORD_MAX_CHARS]
+                                ['%limit%' => 512]
                             ),
                         ]),
                     ],
@@ -240,19 +228,21 @@ class CmsPageType extends TranslatorAwareType
                     'constraints' => [
                         new IsUrlRewrite(),
                         new Length([
-                            'max' => self::FRIENDLY_URL_MAX_CHARS,
+                            'max' => 128,
                             'maxMessage' => $this->trans(
                                 'This field cannot be longer than %limit% characters',
                                 'Admin.Notifications.Error',
-                                ['%limit%' => self::FRIENDLY_URL_MAX_CHARS]
+                                ['%limit%' => 128]
                             ),
                         ]),
                     ],
                 ],
             ])
-            ->add('content', TranslatableType::class, [
+            ->add('content', TranslateType::class, [
                 'label' => $this->trans('Page content', 'Admin.Design.Feature'),
                 'type' => FormattedTextareaType::class,
+                'locales' => $this->locales,
+                'hideTabs' => false,
                 'required' => false,
                 'options' => [
                     'constraints' => [

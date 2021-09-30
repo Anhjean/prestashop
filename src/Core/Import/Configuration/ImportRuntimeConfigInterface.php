@@ -116,7 +116,7 @@ interface ImportRuntimeConfigInterface
     /**
      * Set the total number of rows to be imported.
      *
-     * @param int $number
+     * @param $number
      */
     public function setTotalNumberOfRows($number);
 

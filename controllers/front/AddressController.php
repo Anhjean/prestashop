@@ -76,6 +76,8 @@ class AddressControllerCore extends FrontController
 
                 $this->should_redirect = true;
             }
+
+            return;
         }
 
         // There is no id_adress, no need to continue
@@ -84,20 +86,6 @@ class AddressControllerCore extends FrontController
         }
 
         if (Tools::getValue('delete')) {
-            if (
-                Validate::isLoadedObject($this->context->cart)
-                && ($this->context->cart->id_address_invoice == $id_address
-                || $this->context->cart->id_address_delivery == $id_address)
-            ) {
-                $this->errors[] = $this->trans(
-                    'Could not delete the address since it is used in the shopping cart.',
-                    [],
-                    'Shop.Notifications.Error'
-                );
-
-                return;
-            }
-
             $ok = $this->makeAddressPersister()->delete(
                 new Address($id_address, $this->context->language->id),
                 Tools::getValue('token')
@@ -148,16 +136,6 @@ class AddressControllerCore extends FrontController
         $breadcrumb['links'][] = [
             'title' => $this->trans('Addresses', [], 'Shop.Theme.Global'),
             'url' => $this->context->link->getPageLink('addresses'),
-        ];
-
-        $id_address = Tools::getValue('id_address');
-        $title = $id_address
-            ? $this->trans('Update your address', [], 'Shop.Theme.Customeraccount')
-            : $this->trans('New address', [], 'Shop.Theme.Customeraccount');
-
-        $breadcrumb['links'][] = [
-            'title' => $title,
-            'url' => '#',
         ];
 
         return $breadcrumb;

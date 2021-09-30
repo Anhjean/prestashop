@@ -53,7 +53,9 @@ final class WebserviceFormDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->webserviceConfiguration->getConfiguration();
+        return [
+            'webservice_configuration' => $this->webserviceConfiguration->getConfiguration(),
+        ];
     }
 
     /**
@@ -61,6 +63,6 @@ final class WebserviceFormDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        return $this->webserviceConfiguration->updateConfiguration($data);
+        return $this->webserviceConfiguration->updateConfiguration($data['webservice_configuration']);
     }
 }

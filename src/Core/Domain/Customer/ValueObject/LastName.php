@@ -36,7 +36,7 @@ class LastName
     /**
      * @var int Maximum allowed length for customer's last name
      */
-    public const MAX_LENGTH = 255;
+    const MAX_LENGTH = 255;
 
     /**
      * @var string

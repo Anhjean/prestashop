@@ -42,9 +42,6 @@ abstract class ApiController
      */
     protected $logger;
 
-    /**
-     * @param LoggerInterface $logger
-     */
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
@@ -73,9 +70,9 @@ abstract class ApiController
     }
 
     /**
-     * @param string $content
+     * @param $content
      *
-     * @return array
+     * @return mixed
      */
     protected function guardAgainstInvalidJsonBody($content)
     {
@@ -171,9 +168,9 @@ abstract class ApiController
     }
 
     /**
-     * @param array $data
      * @param Request $request
      * @param QueryParamsCollection|null $queryParams
+     * @param null $data
      * @param int $status
      * @param array $headers
      *
@@ -197,8 +194,8 @@ abstract class ApiController
     /**
      * Checks if access is granted.
      *
-     * @param array $accessLevel
      * @param string $controller name of the controller
+     * @param array $accessLevel
      *
      * @return bool
      */

@@ -63,7 +63,7 @@ class ImageManagerCore
             return '';
         }
 
-        if ($regenerate && file_exists(_PS_TMP_IMG_DIR_ . $cacheImage)) {
+        if (file_exists(_PS_TMP_IMG_DIR_ . $cacheImage) && $regenerate) {
             @unlink(_PS_TMP_IMG_DIR_ . $cacheImage);
         }
 
@@ -107,8 +107,7 @@ class ImageManagerCore
     {
         $cacheParam = $disableCache ? '?time=' . time() : '';
 
-        $controller = Context::getContext()->controller;
-        if (isset($controller->controller_type) && $controller->controller_type == 'admin') {
+        if (Context::getContext()->controller->controller_type == 'admin') {
             return __PS_BASE_URI__ . 'img/tmp/' . $cacheImage . $cacheParam;
         }
 
@@ -118,7 +117,7 @@ class ImageManagerCore
     /**
      * Check if memory limit is too long or not.
      *
-     * @param string $image
+     * @param mixed $image
      *
      * @return bool
      */
@@ -273,8 +272,8 @@ class ImageManagerCore
 
         $destImage = imagecreatetruecolor($destinationWidth, $destinationHeight);
 
-        // If the output is PNG, fill with transparency. Else fill with white background.
-        if ($fileType == 'png') {
+        // If image is a PNG and the output is PNG, fill with transparency. Else fill with white background.
+        if ($fileType == 'png' && $type == IMAGETYPE_PNG) {
             imagealphablending($destImage, false);
             imagesavealpha($destImage, true);
             $transparent = imagecolorallocatealpha($destImage, 255, 255, 255, 127);

@@ -99,7 +99,7 @@ class CategoryController extends FrameworkBundleAdminController
                     if ($request->query->has('id_product')) {
                         $assignProductToCategoryCommand = new AssignProductToCategoryCommand(
                             $categoryId->getValue(),
-                            $request->query->getInt('id_product')
+                            $request->query->get('id_product')
                         );
                         $commandBus->handle($assignProductToCategoryCommand);
                     }
@@ -124,7 +124,7 @@ class CategoryController extends FrameworkBundleAdminController
     /**
      * Get Categories formatted like ajax_product_file.php.
      *
-     * @param int $limit
+     * @param $limit
      * @param Request $request
      *
      * @return JsonResponse

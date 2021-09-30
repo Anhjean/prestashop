@@ -26,7 +26,6 @@
 
 namespace PrestaShop\PrestaShop\Core\Grid\Column;
 
-use Symfony\Component\OptionsResolver\Exception\NoSuchOptionException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -106,18 +105,6 @@ abstract class AbstractColumn implements ColumnInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getOption(string $name)
-    {
-        if (array_key_exists($name, $this->options)) {
-            return $this->options[$name];
-        }
-
-        throw new NoSuchOptionException(sprintf('Option "%s" does not exist in "%s"', $name, get_class($this)));
-    }
-
-    /**
      * Default column options configuration. You can override or extend it needed options.
      *
      * @param OptionsResolver $resolver
@@ -128,12 +115,9 @@ abstract class AbstractColumn implements ColumnInterface
             ->setDefaults([
                 'sortable' => true,
                 'clickable' => false,
-                'alignment' => 'left',
             ])
             ->setAllowedTypes('sortable', 'bool')
-            ->setAllowedTypes('clickable', 'bool')
-            ->setAllowedTypes('alignment', 'string')
-            ->setAllowedValues('alignment', ['center', 'left', 'right', 'justify']);
+            ->setAllowedTypes('clickable', 'bool');
     }
 
     /**

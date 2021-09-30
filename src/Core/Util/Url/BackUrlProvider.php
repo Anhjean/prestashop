@@ -42,6 +42,6 @@ class BackUrlProvider
     {
         $backUrl = $request->query->get('back');
 
-        return rawurldecode($backUrl);
+        return urldecode($backUrl);
     }
 }

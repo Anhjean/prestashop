@@ -53,7 +53,9 @@ final class PaymentPreferencesFormDataProvider implements FormDataProviderInterf
      */
     public function getData()
     {
-        return $this->paymentModulePreferencesConfiguration->getConfiguration();
+        return [
+            'payment_module_preferences' => $this->paymentModulePreferencesConfiguration->getConfiguration(),
+        ];
     }
 
     /**
@@ -61,6 +63,6 @@ final class PaymentPreferencesFormDataProvider implements FormDataProviderInterf
      */
     public function setData(array $data)
     {
-        return $this->paymentModulePreferencesConfiguration->updateConfiguration($data);
+        return $this->paymentModulePreferencesConfiguration->updateConfiguration($data['payment_module_preferences']);
     }
 }

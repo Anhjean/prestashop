@@ -34,15 +34,15 @@ class CatalogPriceRuleConstraintException extends CatalogPriceRuleException
     /**
      * When catalog price rule id is not valid
      */
-    public const INVALID_ID = 10;
+    const INVALID_ID = 10;
 
     /**
      * When date-time format is invalid
      */
-    public const INVALID_DATETIME = 20;
+    const INVALID_DATETIME = 20;
 
     /**
      * When date range is not valid
      */
-    public const INVALID_DATE_RANGE = 30;
+    const INVALID_DATE_RANGE = 30;
 }

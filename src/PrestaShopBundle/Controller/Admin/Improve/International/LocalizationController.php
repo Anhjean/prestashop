@@ -59,9 +59,7 @@ class LocalizationController extends FrameworkBundleAdminController
         }
 
         $localizationPackImportForm = $this->createForm(ImportLocalizationPackType::class);
-        $configurationForm = $this->getConfigurationFormHandler()->getForm();
-        $localUnitsForm = $this->getLocalUnitsFormHandler()->getForm();
-        $advancedForm = $this->getAdvancedFormHandler()->getForm();
+        $localizationForm = $this->getLocalizationFormHandler()->getForm();
 
         return $this->render('@PrestaShop/Admin/Improve/International/Localization/index.html.twig', [
             'layoutHeaderToolbarBtn' => [],
@@ -69,109 +67,39 @@ class LocalizationController extends FrameworkBundleAdminController
             'requireAddonsSearch' => true,
             'enableSidebar' => true,
             'help_link' => $this->generateSidebarLink($legacyController),
-            'configurationForm' => $configurationForm->createView(),
-            'localUnitsForm' => $localUnitsForm->createView(),
-            'advancedForm' => $advancedForm->createView(),
+            'localizationForm' => $localizationForm->createView(),
             'localizationPackImportForm' => $localizationPackImportForm->createView(),
         ]);
     }
 
     /**
-     * Process the Localization Configuration form.
+     * Save localization settings.
      *
-     * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="You do not have permission to edit this."
-     * )
+     * @AdminSecurity("is_granted(['update', 'create', 'delete'], request.get('_legacy_controller'))", message="You do not have permission to edit this.")
      * @DemoRestricted(redirectRoute="admin_localization_index")
      *
      * @param Request $request
      *
      * @return RedirectResponse
      */
-    public function processConfigurationFormAction(Request $request)
+    public function saveOptionsAction(Request $request)
     {
-        return $this->processForm(
-            $request,
-            $this->getConfigurationFormHandler(),
-            'Configuration'
-        );
-    }
+        $localizationFormHandler = $this->getLocalizationFormHandler();
 
-    /**
-     * Process the Localization Local Units form.
-     *
-     * @AdminSecurity(
-     *     "is_granted('read', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="You do not have permission to edit this."
-     * )
-     * @DemoRestricted(redirectRoute="admin_localization_index")
-     *
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     */
-    public function processLocalUnitsFormAction(Request $request)
-    {
-        return $this->processForm(
-            $request,
-            $this->getLocalUnitsFormHandler(),
-            'LocalUnits'
-        );
-    }
+        $localizationForm = $localizationFormHandler->getForm();
+        $localizationForm->handleRequest($request);
 
-    /**
-     * Process the Localization Advanced form.
-     *
-     * @AdminSecurity(
-     *     "is_granted('read', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="You do not have permission to edit this."
-     * )
-     * @DemoRestricted(redirectRoute="admin_localization_index")
-     *
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     */
-    public function processAdvancedFormAction(Request $request)
-    {
-        return $this->processForm(
-            $request,
-            $this->getAdvancedFormHandler(),
-            'Advanced'
-        );
-    }
+        if ($localizationForm->isSubmitted()) {
+            $data = $localizationForm->getData();
 
-    /**
-     * Process the Localization configuration form.
-     *
-     * @param Request $request
-     * @param FormHandlerInterface $formHandler
-     * @param string $hookName
-     *
-     * @return RedirectResponse
-     */
-    protected function processForm(Request $request, FormHandlerInterface $formHandler, string $hookName)
-    {
-        $this->dispatchHook(
-            'actionAdminInternationalLocalizationControllerPostProcess' . $hookName . 'Before',
-            ['controller' => $this]
-        );
-
-        $this->dispatchHook('actionAdminInternationalLocalizationControllerPostProcessBefore', ['controller' => $this]);
-
-        $form = $formHandler->getForm();
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()) {
-            $data = $form->getData();
-            $saveErrors = $formHandler->save($data);
-
-            if (0 === count($saveErrors)) {
+            $errors = $localizationFormHandler->save($data);
+            if (empty($errors)) {
                 $this->addFlash('success', $this->trans('Update successful', 'Admin.Notifications.Success'));
-            } else {
-                $this->flashErrors($saveErrors);
+
+                return $this->redirectToRoute('admin_localization_index');
             }
+
+            $this->flashErrors($errors);
         }
 
         return $this->redirectToRoute('admin_localization_index');
@@ -180,10 +108,7 @@ class LocalizationController extends FrameworkBundleAdminController
     /**
      * Handles localization pack import.
      *
-     * @AdminSecurity(
-     *     "is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="You do not have permission to edit this."
-     * )
+     * @AdminSecurity("is_granted(['update', 'create','delete'], request.get('_legacy_controller'))", message="You do not have permission to edit this.")
      * @DemoRestricted(redirectRoute="admin_localization_index")
      *
      * @param Request $request
@@ -225,32 +150,12 @@ class LocalizationController extends FrameworkBundleAdminController
     }
 
     /**
-     * Returns localization configuration form handler.
+     * Returns localization settings form handler.
      *
      * @return FormHandlerInterface
      */
-    private function getConfigurationFormHandler()
+    private function getLocalizationFormHandler()
     {
-        return $this->get('prestashop.admin.localization.configuration.form_handler');
-    }
-
-    /**
-     * Returns localization local units form handler.
-     *
-     * @return FormHandlerInterface
-     */
-    private function getLocalUnitsFormHandler()
-    {
-        return $this->get('prestashop.admin.localization.local_units.form_handler');
-    }
-
-    /**
-     * Returns localization advanced form handler.
-     *
-     * @return FormHandlerInterface
-     */
-    private function getAdvancedFormHandler()
-    {
-        return $this->get('prestashop.admin.localization.advanced.form_handler');
+        return $this->get('prestashop.admin.localization.form_handler');
     }
 }

@@ -52,14 +52,14 @@ class ModuleActivated extends ConfigurationAnnotation
     /**
      * The route for the redirection.
      *
-     * @var string|null
+     * @var string
      */
     protected $redirectRoute;
 
     /**
      * The module name to check.
      *
-     * @var string|null
+     * @var string
      */
     protected $moduleName;
 
@@ -96,7 +96,7 @@ class ModuleActivated extends ConfigurationAnnotation
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getRedirectRoute()
     {
@@ -124,7 +124,7 @@ class ModuleActivated extends ConfigurationAnnotation
     /**
      * Returns the name of the module to check.
      *
-     * @return string|null
+     * @return string
      */
     public function getModuleName()
     {

@@ -32,9 +32,9 @@ use PrestaShopBundle\Entity\Tab;
 class TabRepository extends EntityRepository
 {
     /**
-     * @param string $moduleName
+     * @param $moduleName
      *
-     * @return Tab[]
+     * @return array
      */
     public function findByModule($moduleName)
     {
@@ -42,7 +42,7 @@ class TabRepository extends EntityRepository
     }
 
     /**
-     * @param int $idParent
+     * @param $idParent
      *
      * @return array
      */
@@ -52,7 +52,7 @@ class TabRepository extends EntityRepository
     }
 
     /**
-     * @param string $className
+     * @param $className
      *
      * @return \PrestaShopBundle\Entity\Tab|null
      */
@@ -62,7 +62,7 @@ class TabRepository extends EntityRepository
     }
 
     /**
-     * @param string $className
+     * @param $className
      *
      * @return int|null
      */

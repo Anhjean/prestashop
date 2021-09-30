@@ -38,9 +38,7 @@ use Tools;
  */
 class LogoUploader
 {
-    /**
-     * @var Shop
-     */
+    /** @var the shop */
     private $shop;
 
     /**
@@ -88,9 +86,9 @@ class LogoUploader
     /**
      * Generic function which allows logo upload.
      *
-     * @param string $fieldName
-     * @param string $logoPrefix
-     * @param array<string,array<string,string>> $files[] the array of files to avoid use $_POST
+     * @param $fieldName
+     * @param $logoPrefix
+     * @param $files[] the array of files to avoid use $_POST
      *
      * @return bool
      *
@@ -183,17 +181,14 @@ class LogoUploader
         return !count($this->errors);
     }
 
-    /**
-     * @param string $logoPrefix
-     * @param string $fileExtension
-     *
-     * @return string
-     */
     private function getLogoName($logoPrefix, $fileExtension)
     {
         $shopId = $this->shop->id;
+        $shopName = $this->shop->name;
 
-        $logoName = $logoPrefix
+        $logoName = Tools::link_rewrite($shopName)
+            . '-'
+            . $logoPrefix
             . '-'
             . (int) Configuration::get('PS_IMG_UPDATE_TIME')
             . (int) $shopId . $fileExtension;
@@ -202,7 +197,9 @@ class LogoUploader
             || $shopId == 0
             || Shop::isFeatureActive() == false
         ) {
-            $logoName = $logoPrefix . '-' . (int) Configuration::get('PS_IMG_UPDATE_TIME') . $fileExtension;
+            $logoName = Tools::link_rewrite($shopName)
+                . '-'
+                . $logoPrefix . '-' . (int) Configuration::get('PS_IMG_UPDATE_TIME') . $fileExtension;
         }
 
         return $logoName;

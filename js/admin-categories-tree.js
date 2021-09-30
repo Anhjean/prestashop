@@ -24,7 +24,7 @@
  */
 
 /**
- * /!\ Deprecated since 1.6.0.4, it will be deleted in next major release /!\
+ * Deprecated since 1.6.0.4
  */
 
 var readyToExpand = true;

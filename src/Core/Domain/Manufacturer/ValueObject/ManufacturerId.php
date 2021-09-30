@@ -31,12 +31,12 @@ use PrestaShop\PrestaShop\Core\Domain\Manufacturer\Exception\ManufacturerConstra
 /**
  * Provides manufacturer id
  */
-class ManufacturerId implements ManufacturerIdInterface
+class ManufacturerId
 {
     /**
      * @var int
      */
-    protected $id;
+    private $id;
 
     /**
      * @param int $id
@@ -50,7 +50,7 @@ class ManufacturerId implements ManufacturerIdInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
     public function getValue()
     {
@@ -60,17 +60,14 @@ class ManufacturerId implements ManufacturerIdInterface
     /**
      * Validates that the value is integer and is greater than zero
      *
-     * @param int $value
+     * @param $value
      *
      * @throws ManufacturerConstraintException
      */
     private function assertIsIntegerGreaterThanZero($value)
     {
         if (!is_int($value) || 0 >= $value) {
-            throw new ManufacturerConstraintException(
-                sprintf('Invalid manufacturer id "%s".', var_export($value, true)),
-                ManufacturerConstraintException::INVALID_ID
-            );
+            throw new ManufacturerConstraintException(sprintf('Invalid manufacturer id "%s".', var_export($value, true)));
         }
     }
 }

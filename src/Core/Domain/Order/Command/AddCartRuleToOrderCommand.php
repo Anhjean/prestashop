@@ -26,7 +26,7 @@
 
 namespace PrestaShop\PrestaShop\Core\Domain\Order\Command;
 
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number;
 use PrestaShop\PrestaShop\Core\Domain\Order\Exception\OrderConstraintException;
 use PrestaShop\PrestaShop\Core\Domain\Order\Invoice\ValueObject\OrderInvoiceId;
 use PrestaShop\PrestaShop\Core\Domain\Order\OrderDiscountType;
@@ -48,17 +48,17 @@ class AddCartRuleToOrderCommand
     private $cartRuleName;
 
     /**
-     * @var string
+     * @var int
      */
     private $cartRuleType;
 
     /**
-     * @var DecimalNumber|null
+     * @var float
      */
     private $value;
 
     /**
-     * @var OrderInvoiceId|null
+     * @var int|null
      */
     private $orderInvoiceId;
 
@@ -67,7 +67,7 @@ class AddCartRuleToOrderCommand
      * @param string $cartRuleName
      * @param string $cartRuleType
      * @param string|null $value
-     * @param int|null $orderInvoiceId
+     * @param null $orderInvoiceId
      */
     public function __construct(
         int $orderId,
@@ -82,7 +82,7 @@ class AddCartRuleToOrderCommand
         $this->orderId = new OrderId($orderId);
         $this->cartRuleName = $cartRuleName;
         $this->cartRuleType = $cartRuleType;
-        $this->value = null !== $value ? new DecimalNumber($value) : null;
+        $this->value = null !== $value ? new Number($value) : null;
         $this->orderInvoiceId = $orderInvoiceId ? new OrderInvoiceId($orderInvoiceId) : null;
     }
 
@@ -103,7 +103,7 @@ class AddCartRuleToOrderCommand
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getCartRuleType(): string
     {
@@ -111,9 +111,9 @@ class AddCartRuleToOrderCommand
     }
 
     /**
-     * @return DecimalNumber|null
+     * @return Number|null
      */
-    public function getDiscountValue(): ?DecimalNumber
+    public function getDiscountValue(): ?Number
     {
         return $this->value;
     }
@@ -141,15 +141,7 @@ class AddCartRuleToOrderCommand
         $isNullValueAllowed = OrderDiscountType::FREE_SHIPPING === $cartRuleType;
 
         if (!$isNullValueAllowed && null === $value) {
-            throw new OrderConstraintException(
-                sprintf(
-                    'Null values are not allowed for "%s" discount types.',
-                    implode(',', [
-                        OrderDiscountType::DISCOUNT_AMOUNT,
-                        OrderDiscountType::DISCOUNT_PERCENT,
-                    ])
-                )
-            );
+            throw new OrderConstraintException(sprintf('Null values are not allowed for "%s" discount types.', [OrderDiscountType::DISCOUNT_AMOUNT, OrderDiscountType::DISCOUNT_PERCENT]));
         }
     }
 }

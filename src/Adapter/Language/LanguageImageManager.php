@@ -37,41 +37,36 @@ class LanguageImageManager
     /**
      * Path where images are saved to
      */
-    public const IMG_PATH = _PS_IMG_DIR_ . '/l/';
-
-    /**
-     * Path were source images are stored
-     */
-    public const IMG_SOURCE_PATH = _PS_IMG_SOURCE_DIR_ . '/l/';
+    const IMG_PATH = _PS_IMG_DIR_ . '/l/';
 
     /**
      * Path where flags are stored
      */
-    public const FLAGS_SOURCE = _PS_IMG_SOURCE_DIR_ . 'flags/%s.jpg';
+    const FLAGS_SOURCE = _PS_IMG_DIR_ . 'flags/%s.jpg';
 
     /**
      * Path where flags are copied to
      */
-    public const FLAGS_DESTINATION = self::IMG_PATH . '%d.jpg';
+    const FLAGS_DESTINATION = self::IMG_PATH . '%d.jpg';
 
     /**
      * Default flag
      */
-    public const FALLBACK_FLAG_SOURCE = self::IMG_SOURCE_PATH . 'none.jpg';
+    const FALLBACK_FLAG_SOURCE = self::IMG_PATH . 'none.jpg';
 
-    public const IMAGE_DIRECTORIES = [
+    const IMAGE_DIRECTORIES = [
         _PS_CAT_IMG_DIR_,
         _PS_MANU_IMG_DIR_,
         _PS_PROD_IMG_DIR_,
         _PS_SUPP_IMG_DIR_,
     ];
 
-    public const PLACEHOLDER_IMAGE_NAME_PATTERNS = [
+    const PLACEHOLDER_IMAGE_NAME_PATTERNS = [
         '%s.jpg',
         '%s-default-%s.jpg',
     ];
 
-    public const DEFAULT_LANGUAGE_CODE = 'en';
+    const DEFAULT_LANGUAGE_CODE = 'en';
 
     /**
      * Sets up the language flag image for the given language
@@ -120,7 +115,7 @@ class LanguageImageManager
 
         foreach (static::IMAGE_DIRECTORIES as $destinationDir) {
             foreach ($filesToCopy as $sourceFile => $newFile) {
-                @copy(static::IMG_SOURCE_PATH . $sourceFile, $destinationDir . $newFile);
+                @copy(static::IMG_PATH . $sourceFile, $destinationDir . $newFile);
             }
         }
     }

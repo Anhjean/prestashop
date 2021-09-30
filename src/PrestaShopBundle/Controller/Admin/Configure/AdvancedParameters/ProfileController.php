@@ -72,17 +72,12 @@ class ProfileController extends FrameworkBundleAdminController
                         'href' => $this->generateUrl('admin_profiles_create'),
                         'desc' => $this->trans('Add new profile', 'Admin.Advparameters.Feature'),
                         'icon' => 'add_circle_outline',
-                    ],
+                  ],
                 ],
                 'help_link' => $this->generateSidebarLink('AdminProfiles'),
                 'enableSidebar' => true,
                 'layoutTitle' => $this->trans('Profiles', 'Admin.Navigation.Menu'),
                 'grid' => $this->presentGrid($profilesGridFactory->getGrid($filters)),
-                'multistoreInfoTip' => $this->trans(
-                    'Note that this page is available in all shops context only, this is why your context has just switched.',
-                    'Admin.Notifications.Info'
-                ),
-                'multistoreIsUsed' => $this->get('prestashop.adapter.multistore_feature')->isUsed(),
             ]
         );
     }
@@ -90,7 +85,7 @@ class ProfileController extends FrameworkBundleAdminController
     /**
      * Used for applying filtering actions.
      *
-     * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
+     * @AdminSecurity("is_granted(['read'], request.get('_legacy_controller'))")
      *
      * @param Request $request
      *
@@ -147,11 +142,6 @@ class ProfileController extends FrameworkBundleAdminController
             'layoutTitle' => $this->trans('Add new profile', 'Admin.Advparameters.Feature'),
             'help_link' => $this->generateSidebarLink('AdminProfiles'),
             'enableSidebar' => true,
-            'multistoreInfoTip' => $this->trans(
-                'Note that this feature is available in all shops context only. It will be added to all your stores.',
-                'Admin.Notifications.Info'
-            ),
-            'multistoreIsUsed' => $this->get('prestashop.adapter.multistore_feature')->isUsed(),
         ]);
     }
 
@@ -176,17 +166,8 @@ class ProfileController extends FrameworkBundleAdminController
 
         try {
             $form = $formBuilder->getFormFor((int) $profileId);
-        } catch (Exception $exception) {
-            $this->addFlash(
-                'error',
-                $this->getErrorMessageForException($exception, $this->getErrorMessages())
-            );
-
-            return $this->redirectToRoute('admin_profiles_index');
-        }
-
-        try {
             $form->handleRequest($request);
+
             $handlerResult = $formHandler->handleFor((int) $profileId, $form);
 
             if ($handlerResult->isSubmitted() && $handlerResult->isValid()) {
@@ -202,8 +183,8 @@ class ProfileController extends FrameworkBundleAdminController
             }
         }
 
-        /** @var EditableProfile $editableProfile */
-        $editableProfile = $this->getQueryBus()->handle(new GetProfileForEditing((int) $profileId));
+        /** @var EditableProfile $editableProfiler */
+        $editableProfiler = $this->getQueryBus()->handle(new GetProfileForEditing((int) $profileId));
 
         return $this->render('@PrestaShop/Admin/Configure/AdvancedParameters/Profiles/edit.html.twig', [
             'profileForm' => $form->createView(),
@@ -211,12 +192,11 @@ class ProfileController extends FrameworkBundleAdminController
                 'Edit: %value%',
                 'Admin.Catalog.Feature',
                 [
-                    '%value%' => $editableProfile->getLocalizedNames()[$this->getContextLangId()],
+                    '%value%' => $editableProfiler->getLocalizedNames()[$this->getContextLangId()],
                 ]
             ),
             'help_link' => $this->generateSidebarLink('AdminProfiles'),
             'enableSidebar' => true,
-            'editableProfile' => $editableProfile,
         ]);
     }
 

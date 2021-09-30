@@ -24,7 +24,6 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 use PrestaShop\PrestaShop\Core\Util\InternationalizedDomainNameConverter;
-use Symfony\Component\HttpFoundation\IpUtils;
 
 class AdminLoginControllerCore extends AdminController
 {
@@ -80,7 +79,7 @@ class AdminLoginControllerCore extends AdminController
             // header('HTTP/1.1 301 Moved Permanently');
             // header('Location: '.Tools::getShopDomainSsl(true).$_SERVER['REQUEST_URI']);
             // exit();
-            $clientIsMaintenanceOrLocal = IpUtils::checkIp(Tools::getRemoteAddr(), array_merge(['127.0.0.1'], explode(',', Configuration::get('PS_MAINTENANCE_IP'))));
+            $clientIsMaintenanceOrLocal = in_array(Tools::getRemoteAddr(), array_merge(['127.0.0.1'], explode(',', Configuration::get('PS_MAINTENANCE_IP'))));
             // If ssl is enabled, https protocol is required. Exception for maintenance and local (127.0.0.1) IP
             if ($clientIsMaintenanceOrLocal) {
                 $warningSslMessage = $this->trans('SSL is activated. However, your IP is allowed to enter unsecure mode for maintenance or local IP issues.', [], 'Admin.Login.Notification');
@@ -100,11 +99,7 @@ class AdminLoginControllerCore extends AdminController
         }
 
         if (basename(_PS_ADMIN_DIR_) == 'admin' && file_exists(_PS_ADMIN_DIR_ . '/../admin/')) {
-            $rand = sprintf(
-                'admin%03d%s/',
-                mt_rand(0, 999),
-                Tools::strtolower(Tools::passwdGen(16))
-            );
+            $rand = 'admin' . sprintf('%03d', mt_rand(0, 999)) . Tools::strtolower(Tools::passwdGen(6)) . '/';
             if (@rename(_PS_ADMIN_DIR_ . '/../admin/', _PS_ADMIN_DIR_ . '/../' . $rand)) {
                 Tools::redirectAdmin('../' . $rand);
             } else {
@@ -119,7 +114,6 @@ class AdminLoginControllerCore extends AdminController
         $this->context->smarty->assign([
             'randomNb' => $rand,
             'adminUrl' => Tools::getCurrentUrlProtocolPrefix() . Tools::getShopDomain() . __PS_BASE_URI__ . $rand,
-            'homeUrl' => Tools::getCurrentUrlProtocolPrefix() . Tools::getShopDomain() . __PS_BASE_URI__,
         ]);
 
         // Redirect to admin panel

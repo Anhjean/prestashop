@@ -46,7 +46,7 @@ final class FormHandlerFactory implements FormHandlerFactoryInterface
     private $translator;
 
     /**
-     * @var bool
+     * @var string
      */
     private $isDemoModeEnabled;
 

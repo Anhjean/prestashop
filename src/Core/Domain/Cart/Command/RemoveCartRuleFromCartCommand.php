@@ -26,7 +26,6 @@
 
 namespace PrestaShop\PrestaShop\Core\Domain\Cart\Command;
 
-use PrestaShop\PrestaShop\Core\Domain\Cart\Exception\CartConstraintException;
 use PrestaShop\PrestaShop\Core\Domain\Cart\ValueObject\CartId;
 use PrestaShop\PrestaShop\Core\Domain\CartRule\ValueObject\CartRuleId;
 
@@ -46,10 +45,8 @@ class RemoveCartRuleFromCartCommand
     private $cartRuleId;
 
     /**
-     * @param int $cartId
-     * @param int $cartRuleId
-     *
-     * @throws CartConstraintException
+     * @param $cartId
+     * @param $cartRuleId
      */
     public function __construct(int $cartId, int $cartRuleId)
     {

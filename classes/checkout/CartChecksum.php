@@ -34,11 +34,6 @@ class CartChecksumCore implements ChecksumInterface
         $this->addressChecksum = $addressChecksum;
     }
 
-    /**
-     * @param $cart
-     *
-     * @return string cart SHA1
-     */
     public function generateChecksum($cart)
     {
         $uniq_id = '';

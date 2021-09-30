@@ -26,14 +26,13 @@
 
 namespace PrestaShop\PrestaShop\Adapter\Image\Uploader;
 
-use PrestaShop\PrestaShop\Core\Image\Uploader\ImageUploaderInterface;
 use Supplier;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Uploads supplier logo image
  */
-final class SupplierImageUploader extends AbstractImageUploader implements ImageUploaderInterface
+final class SupplierImageUploader extends AbstractImageUploader
 {
     /**
      * {@inheritdoc}
@@ -55,7 +54,7 @@ final class SupplierImageUploader extends AbstractImageUploader implements Image
     /**
      * Deletes old image
      *
-     * @param int $id
+     * @param $id
      */
     private function deleteOldImage($id)
     {
